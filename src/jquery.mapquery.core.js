@@ -27,18 +27,6 @@ var Map = function(element, options) {
 };
 
 Map.prototype = {
-    // NOTE vmx: I haven't created an "addLayer" method, as I saw this
-    //     comparable with jQuery's $.data().
-    // NOTE dw: $.data allows you to modify existing structures,
-    //      this one doesn't
-    layer: function(options) {
-        if ( typeof options === "string" ) {
-            return this.layersList[options];
-        }
-        else {
-            return this._addLayer(options);
-        }
-    },
     layers: function(id, options) {
         //var o = $.extend({}, options);
         switch(arguments.length) {

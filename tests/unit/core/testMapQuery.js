@@ -9,7 +9,7 @@ test("constructor", function() {
     expect(1);
 
     var mapElement = $('#map').mapQuery();
-    ok(mapElement.data('mapQuery').layer, "Layer property exists");
+    ok(mapElement.data('mapQuery').layers, "Layers function exists");
 });
 
 // NOTE: This test needs an internet connecion
