@@ -366,7 +366,8 @@ $.fn.mapQuery.defaults = {
             // input (e.g. for .center()) will be automatically transformed
             // if map has a different projection (from this proejction to the
             // one of the map)
-            defaultProjection: 'EPSG:900913'
+            defaultProjection: 'EPSG:900913',
+            sphericalMercator: false
         };
     },
     layer: {
