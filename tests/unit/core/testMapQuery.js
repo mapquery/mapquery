@@ -131,4 +131,36 @@ test("Setting the map center is correctly transformed", function() {
         'Map was correctly recentered');
 });
 
+test("Add layers on initialisation", function() {
+    expect(3);
+    var mapDom = $('#map_init').mapQuery({
+        layers: [{
+            type: 'WMTS',
+            label: 'naturalearth',
+            url: '../../../demo/data/wmts/1.0.0/NE1_HR_LC_SR_W_DR/default/10m',
+            sphericalMercator: true
+        }]
+    });
+    var map = mapDom.data("mapQuery");
+    equals(map.layersList.mapquery0.label, 'naturalearth', 'Layer was added');
+
+    var mapDom2 = $('#map_init2').mapQuery({
+        layers: [{
+            type: 'WMTS',
+            label: 'naturalearth',
+            url: '../../../demo/data/wmts/1.0.0/NE1_HR_LC_SR_W_DR/default/10m',
+            sphericalMercator: true
+        },{
+            type: 'WMS',
+            label: 'World',
+            url: 'http://vmap0.tiles.osgeo.org/wms/vmap0',
+            layers: 'basic'
+        }]
+    });
+    var map2 = mapDom2.data("mapQuery");
+    equals(map2.layersList.mapquery0.label, 'naturalearth',
+           'Layer1 was added');
+    equals(map2.layersList.mapquery1.label, 'World', 'Layer2 was added');
+});
+
 })(jQuery);

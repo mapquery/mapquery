@@ -4,7 +4,11 @@ var Map = function(element, options) {
     this.options = $.extend({}, new $.fn.mapQuery.defaults.map(), options);
 
     this.element = element;
-    this.olMap = new OpenLayers.Map(this.element[0], this.options);
+    // TODO vmx 20110609: do proper options building
+    var olMapOptions = $.extend({}, this.options);
+    delete olMapOptions.layers;
+
+    this.olMap = new OpenLayers.Map(this.element[0], olMapOptions);
     this.defaultProjection = new OpenLayers.Projection(
         this.options.defaultProjection);
     // Keep IDs of vector layer for select feature control
@@ -26,11 +30,17 @@ var Map = function(element, options) {
         };
     });
     this.olMap.events.on(events);
+
+    // Add layers to the map
+    if (this.options.layers!==undefined) {
+        this.layers(this.options.layers);
+    }
 };
 
 Map.prototype = {
     layers: function(options) {
         //var o = $.extend({}, options);
+        var self = this;
         switch(arguments.length) {
         case 0:
             return this._allLayers();
@@ -39,8 +49,8 @@ Map.prototype = {
                 return this._addLayer(options);
             }
             else {
-                return $.map(options, function() {
-                    return this._addLayer(options);
+                return $.map(options, function(layer) {
+                    return self._addLayer(layer);
                 });
             }
         default:
