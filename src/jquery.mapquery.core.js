@@ -10,6 +10,8 @@ var Map = function(element, options) {
     // Keep IDs of vector layer for select feature control
     this.vectorLayers = [];
     this.selectFeatureControl = null;
+    // Counts up to create unique IDs
+    this.idCounter = 0;
 
     element.data('mapQuery', this);
     this.layersList = {};
@@ -27,15 +29,20 @@ var Map = function(element, options) {
 };
 
 Map.prototype = {
-    layers: function(id, options) {
+    layers: function(options) {
         //var o = $.extend({}, options);
         switch(arguments.length) {
         case 0:
             return this._allLayers();
         case 1:
-            return this.layersList[id];
-        case 2:
-            return this._addLayer(id, options);
+            if (!$.isArray(options)) {
+                return this._addLayer(options);
+            }
+            else {
+                return $.map(options, function() {
+                    return this._addLayer(options);
+                });
+            }
         default:
             throw('wrong argument number');
         };
@@ -56,7 +63,8 @@ Map.prototype = {
         });
         return result.reverse();
     },
-    _addLayer: function(id, options) {
+    _addLayer: function(options) {
+        var id = this._createId();
         var layer = new Layer(this, id, options);
         this.layersList[id] = layer;
         if (layer.isVector) {
@@ -64,6 +72,10 @@ Map.prototype = {
         }
         this._updateSelectFeatureControl(this.vectorLayers);
         return layer;
+    },
+    // Creates a new unique ID for a layer
+    _createId: function() {
+        return 'mapquery' + this.idCounter++;
     },
     _removeLayer: function(id) {
         // remove id from vectorlayer if it is there list
