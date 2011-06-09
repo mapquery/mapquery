@@ -17,8 +17,7 @@ test("create only one instance", function() {
     expect(2);
 
     var map = $('#map').mapQuery().data('mapQuery');
-    map.layer({
-        id: 'world',
+    map.layers('world', {
         type: 'WMS',
         label: 'World',
         url: 'http://vmap0.tiles.osgeo.org/wms/vmap0',
@@ -33,8 +32,7 @@ test("WMTS layer parses URL correctly", function() {
     expect(6);
 
     var map = $('#map_wmts').mapQuery().data('mapQuery');
-    map.layer({
-        id: 'naturalearth',
+    map.layers('naturalearth', {
         type: 'WMTS',
         label: 'naturalearth',
         url: '../../../demo/data/wmts/1.0.0/NE1_HR_LC_SR_W_DR/default/10m'
@@ -48,8 +46,7 @@ test("WMTS layer parses URL correctly", function() {
     equals(map.layersList.naturalearth.olLayer.url,
            '../../../demo/data/wmts', 'url is correct');
 
-    map.layer({
-        id: 'naturalearth2',
+    map.layers('naturalearth2', {
         type: 'WMTS',
         label: 'naturalearth2',
         url: 'http://example.com/wmts/1.0.0/NE1_HR_LC_SR_W_DR/default/10m'
@@ -57,8 +54,7 @@ test("WMTS layer parses URL correctly", function() {
     equals(map.layersList.naturalearth2.olLayer.url,
            'http://example.com/wmts', 'Remote URL is parsed correctly');
 
-    map.layer({
-        id: 'naturalearth3',
+    map.layers('naturalearth3', {
         type: 'WMTS',
         label: 'naturalearth3',
         url: 'http://usr:passwd@example.com/wmts/1.0.0/NE1_HR_LC_SR_W_DR/default/10m'
@@ -72,16 +68,14 @@ test("WMTS layer sets paramters for spherical mercator correctly", function() {
     expect(5);
 
     var map = $('#map_wmts2').mapQuery().data('mapQuery');
-    map.layer({
-        id: 'naturalearth',
+    map.layers('naturalearth', {
         type: 'WMTS',
         label: 'naturalearth',
         url: '../../../demo/data/wmts/1.0.0/NE1_HR_LC_SR_W_DR/default/10m',
         sphericalMercator: true
     });
-    equals(map.layersList.naturalearth.olLayer.maxExtent,
-           "left-bottom=(-20037508.3392,-20037508.3392) " +
-           "right-top=(20037508.3392,20037508.3392)",
+    equals(map.layersList.naturalearth.olLayer.maxExtent.toString(),
+           '-20037508.3392,-20037508.3392,20037508.3392,20037508.3392',
            'maxExtent was set');
     equals(map.layersList.naturalearth.olLayer.maxResolution, 156543.0339,
            'maxResolution was set');
@@ -91,8 +85,7 @@ test("WMTS layer sets paramters for spherical mercator correctly", function() {
            'units was set');
 
     map = $('#map_wmts3').mapQuery().data('mapQuery');
-    map.layer({
-        id: 'naturalearth',
+    map.layers('naturalearth', {
         type: 'WMTS',
         label: 'naturalearth',
         url: '../../../demo/data/wmts/1.0.0/NE1_HR_LC_SR_W_DR/default/10m',
@@ -110,8 +103,7 @@ test("OSM layer can be created", function() {
     expect(1);
 
     var map = $('#map_osm').mapQuery().data('mapQuery');
-    map.layer({
-        id: 'osm',
+    map.layers('osm', {
         type: 'OSM',
         label: 'OpenStreetMap'
     });
@@ -123,8 +115,7 @@ test("Setting the map center is correctly transformed", function() {
     expect(2);
 
     var map = $('#map_center').mapQuery().data('mapQuery');
-    map.layer({
-        id: 'naturalearth',
+    map.layers('naturalearth', {
         type: 'WMTS',
         label: 'naturalearth',
         url: '../../../demo/data/wmts/1.0.0/NE1_HR_LC_SR_W_DR/default/10m',

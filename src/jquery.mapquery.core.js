@@ -39,39 +39,37 @@ Map.prototype = {
             return this._addLayer(options);
         }
     },
-    layers: function(options) {
-        var o = $.extend({
-            // possible values are: index | alpha | asis
-            sort: 'position',
-            order: 'asc'
-        }, options);
-        var layers = [];
-
-        switch(o.sort) {
-        case 'position':
-            $.each(this.layersList, function(id, layer) {
-                var item = [layer.position(), layer];
-                layers.push(item);
-            });
-            var sorted = layers.sort( function compare(a, b) {
-                return a[0] - b[0];
-            });
-            //console.log(sorted);
-            var result = $.map(sorted, function(item) {
-                return item[1];
-            });
-            return o.order=='asc' ? result : result.reverse();
-        case 'asis':
+    layers: function(id, options) {
+        //var o = $.extend({}, options);
+        switch(arguments.length) {
+        case 0:
+            return this._allLayers();
+        case 1:
+            return this.layersList[id];
+        case 2:
+            return this._addLayer(id, options);
         default:
-            $.each(this.layersList, function(id, layer) {
-                layers.push(layer);
-            });
-            return layers;
-        }
+            throw('wrong argument number');
+        };
     },
-    _addLayer: function(options) {
-        var id = options.id;
-        var layer = new Layer(this, options);
+    // Returns all layers as an array, sorted by there order in the map. First
+    // element in the array is the topmost layer
+    _allLayers: function() {
+        var layers = [];
+        $.each(this.layersList, function(id, layer) {
+            var item = [layer.position(), layer];
+            layers.push(item);
+        });
+        var sorted = layers.sort( function compare(a, b) {
+            return a[0] - b[0];
+        });
+        var result = $.map(sorted, function(item) {
+            return item[1];
+        });
+        return result.reverse();
+    },
+    _addLayer: function(id, options) {
+        var layer = new Layer(this, id, options);
         this.layersList[id] = layer;
         if (layer.isVector) {
             this.vectorLayers.push(id);
@@ -79,7 +77,7 @@ Map.prototype = {
         this._updateSelectFeatureControl(this.vectorLayers);
         return layer;
     },
-    removeLayer: function(id) {
+    _removeLayer: function(id) {
         // remove id from vectorlayer if it is there list
         this.vectorLayers = $.grep(this.vectorLayers, function(elem) {
             return elem != id;
@@ -133,12 +131,11 @@ Map.prototype = {
     }
 };
 
-var Layer = function(map, options) {
+var Layer = function(map, id, options) {
     var self = this;
     // apply default options that are not specific to a layer
 
-    this.id = options.id;
-    delete options.id;
+    this.id = id;
     this.label = options.label || this.id;
     // a reference to the map object is needed as it stores e.g. the list
     // of all layers (and we need to keep track of it, if we delete a
@@ -310,7 +307,7 @@ Layer.prototype = {
         this.map.olMap.removeLayer(this.olLayer);
         // remove references to this layer that are stored in the
         // map object
-        return this.map.removeLayer();
+        return this.map._removeLayer();
     },
     position: function(pos) {
         if (pos===undefined) {
