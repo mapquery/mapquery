@@ -1,0 +1,37 @@
+{
+    "type": "FeatureCollection",
+    "features": [{
+        "type": "Feature",
+        "geometry": {
+            "type": "Polygon",
+            "coordinates": [[
+                [20.0, 0.0], [40.0, 10.0],
+                [50.0, -25.0], [10.0, -30.0], [20.0, 0.0]
+            ]]
+        },
+        "properties": {
+            "id": "poly2-1",
+            "amount": 579,
+            "weight": 5687.324,
+            "isNice": false,
+            "value": "something"
+        }
+    },{
+        "type": "Feature",
+        "geometry": {
+            "type": "Polygon",
+            "coordinates": [[
+                [70.0, 20.0], [90.0, 10.0],
+                [100.0, -40.0], [50.0, -20.0], [70.0, 20.0]
+            ]]
+        },
+        "properties": {
+            "id": "poly2-2",
+            "amount": 43,
+            "weight": 37.3958,
+            "isNice": true,
+            "prop": "none"
+        }
+    }]
+}
+
