@@ -362,11 +362,11 @@ $.fn.mapQuery.defaults = {
                 new OpenLayers.Control.ArgParser(),
                 new OpenLayers.Control.Attribution()
             ],
-            format: 'image/jpeg',
+            format: 'image/png',
             // input (e.g. for .center()) will be automatically transformed
             // if map has a different projection (from this proejction to the
             // one of the map)
-            defaultProjection: 'EPSG:4326'
+            defaultProjection: 'EPSG:900913'
         };
     },
     layer: {
