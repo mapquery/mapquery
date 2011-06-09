@@ -368,7 +368,12 @@ $.fn.mapQuery.defaults = {
             allOverlays: true,
             controls: [
                 new OpenLayers.Control.Navigation({documentDrag: true}),
-                new OpenLayers.Control.PanZoom(),
+                new OpenLayers.Control.TouchNavigation({
+                dragPanOptions: {
+                    interval: 1,
+                    enableKinetic: true
+                }
+            }),
                 new OpenLayers.Control.ArgParser(),
                 new OpenLayers.Control.Attribution()
             ],
@@ -393,7 +398,8 @@ $.fn.mapQuery.defaults = {
             strategies: ['fixed']
         },
         osm: {
-            isBaseLayer: false
+            isBaseLayer: false,
+            transitionEffect: 'resize'
         },
         wmts: {
             format: 'image/jpeg',
