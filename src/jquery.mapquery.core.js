@@ -367,13 +367,11 @@ $.fn.mapQuery.defaults = {
             // long run
             allOverlays: true,
             controls: [
-                new OpenLayers.Control.Navigation({documentDrag: true}),
-                new OpenLayers.Control.TouchNavigation({
-                dragPanOptions: {
+                new OpenLayers.Control.Navigation({documentDrag: true, dragPanOptions: {
                     interval: 1,
                     enableKinetic: true
-                }
-            }),
+                }}),
+             
                 new OpenLayers.Control.ArgParser(),
                 new OpenLayers.Control.Attribution()
             ],
