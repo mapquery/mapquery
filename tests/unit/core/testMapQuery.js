@@ -111,26 +111,6 @@ test("OSM layer can be created", function() {
        'OpenStreetMap layer was loaded (attribution is there)');
 });
 
-test("Setting the map center is correctly transformed", function() {
-    expect(2);
-
-    var map = $('#map_center').mapQuery().data('mapQuery');
-    map.layers({
-        type: 'WMTS',
-        label: 'naturalearth',
-        url: '../../../demo/data/wmts/1.0.0/NE1_HR_LC_SR_W_DR/default/10m',
-        sphericalMercator: true
-    });
-
-    ok(map.olMap.getCenter().equals(new OpenLayers.LonLat(0.0,0.0)),
-      'Initial center of the map is (0,0)');
-    map.center(10, 50, 4);
-    ok(map.olMap.getCenter().equals(new OpenLayers.LonLat(10, 50).transform(
-            new OpenLayers.Projection('EPSG:4326'),
-            new OpenLayers.Projection('EPSG:900913'))),
-        'Map was correctly recentered');
-});
-
 test("Add layers on initialisation", function() {
     expect(3);
     var mapDom = $('#map_init').mapQuery({
@@ -161,6 +141,102 @@ test("Add layers on initialisation", function() {
     equals(map2.layersList.mapquery0.label, 'naturalearth',
            'Layer1 was added');
     equals(map2.layersList.mapquery1.label, 'World', 'Layer2 was added');
+});
+
+test("goto works properly (EPSG:900913)", function() {
+    expect(30);
+
+    var maps = [
+        // this is EPSG:900913
+        $('#map_goto').mapQuery({layers: [{
+            type: 'OSM',
+            label: 'OpenStreetMap'
+        }]}),
+        // this is EPSG:4326
+        $('#map_goto2').mapQuery({layers: [{
+            type: 'WMTS',
+            label: 'naturalearth',
+            url: '../../../demo/data/wmts/1.0.0/NE1_HR_LC_SR_W_DR/default/10m'
+        }]})
+    ];
+
+    for (var i=0; i<maps.length; i++) {
+        var map = maps[i].data('mapQuery');
+
+        // position
+
+        map.goto({position: [10.898333, 48.371667]});
+        var goto = map.goto();
+        same(goto.position, [10.898333, 48.371667],
+             'Setting the position only');
+        map.goto({position: [4.892222, 52.373056]});
+        goto = map.goto();
+        same(goto.position, [4.892222, 52.373056],
+             'Setting the position only (2)');
+        map.goto({position: [4.892222, 52.373056], zoom: 5});
+        map.goto({position: [4.892222, 52.373056], zoom: 7});
+        map.goto({position: [10.898333, 48.371667]});
+        goto = map.goto();
+        equals(goto.zoom, 7,
+             'Setting the position only, keep the current zoom level');
+
+        // zoom
+
+        map.goto({position: [10.898333, 48.371667], zoom: 5});
+        map.goto({zoom: 3});
+        goto = map.goto();
+        same(goto.position, [10.898333, 48.371667],
+             'Setting the zoom only zoom (position is right)');
+        equals(goto.zoom, 3, 'Setting the zoom only (zoom is right)');
+
+        // position + zoom
+
+        map.goto({position: [10.898333, 48.371667], zoom: 6});
+        goto = map.goto();
+        same(goto.position, [10.898333, 48.371667],
+             'Setting the position and zoom (position is right)');
+        equals(goto.zoom, 6, 'Setting the position and zoom (zoom is right)');
+        map.goto({position: [4.892222, 52.373056], zoom: 4});
+        goto = map.goto();
+        same(goto.position, [4.892222, 52.373056],
+             'Setting the position and zoom (position is right) (2)');
+        equals(goto.zoom, 4, 'Setting the position and zoom ' +
+               '(zoom is right) (2)');
+
+        // box
+
+        map.goto({box: [4.892222, 48.371667, 10.898333, 52.373056]});
+        goto = map.goto();
+        // The extend will be fit in to the nearest zoom level, hence
+        // the box given, doesn't match the final one
+            console.log(goto.box);
+
+        same(goto.box, [-21.962936669741, 20.514147330259, 37.753491669741,
+                        80.230575669741],
+             'Setting box only (position is right)');
+        same(goto.zoom, 18,
+             'Setting box only (zoom is right)');
+
+        // ignore position or zoom settings
+        map.goto({position: [-22.566667, 17.15], zoom: 9});
+        goto = map.goto();
+        same(goto.position, [-22.566667, 17.15],
+             'Reset position to somewhere outside of the box we\'ll set');
+        equals(goto.zoom, 9,
+               'Reset position to somewhere outside of the box we\'ll set ' +
+               '(zoom)');
+        map.goto({box: [4.892222, 48.371667, 10.898333, 52.373056],
+                  position: [135, -25], zoom: 7});
+        goto = map.goto();
+        // The extend will be fit in to the nearest zoom level, hence
+        // the box given, doesn't match the final one
+        console.log(goto.box);
+        same(goto.box, [-21.962936669741, 20.514147330259, 37.753491669741,
+                        80.230575669741],
+             'Setting box only (position is right)');
+        same(goto.zoom, 18,
+             'Setting box only (zoom is right)');
+    }
 });
 
 })(jQuery);

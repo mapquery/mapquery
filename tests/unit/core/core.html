@@ -14,8 +14,10 @@
 
   <script type="text/javascript" src="testMapQuery.js"></script>
   <style type="text/css">
-    .zindex {z-index: 100}
-    .absolute {position: absolute}
+    .zindex {z-index:100}
+    .absolute {position:absolute}
+    .map {height:100px;left:0;position:absolute;top:0;visibility:hidden;
+        width:100px}
   </style>
 </head>
 <body>
@@ -34,5 +36,7 @@
 <div id="map_center"></div>
 <div id="map_init"></div>
 <div id="map_init2"></div>
+<div id="map_goto" class="map"></div>
+<div id="map_goto2" class="map"></div>
 </body>
 </html>
