@@ -218,17 +218,52 @@ var Layer = function(map, id, options) {
 
 $.extend(Layer, {
     types: {
-        wms: function(options) {
+    	bing: function(options) {
+            var o = $.fn.mapQuery.defaults.layer.all;
+            $.extend(true, o, $.fn.mapQuery.defaults.layer.bing);
+            $.extend(true, o, options);
+			var view = o.view;
+			switch(view){
+				case 'road':
+					view = 'Road'; break;
+				case 'hybrid':
+					view = 'AerialWithLabels'; break;
+				case 'satellite':
+					view = 'Aerial'; break;
+			}
+            return {
+                layer: new OpenLayers.Layer.Bing({type:view,key:o.key}),
+                options: o
+            };
+        },
+        //Not sure this one is worth pursuing works with ecwp:// & jpip:// urls
+        //See ../lib/NCSOpenLayersECWP.js
+        ecwp: function(options) {
             var o = $.fn.mapQuery.defaults.layer.all;
             $.extend(true, o, $.fn.mapQuery.defaults.layer.raster);
             $.extend(true, o, options);
-            var params = {
-                layers: o.layers,
-                transparent: o.transparent
-            };
-            //SMO20110611: TODO WMS requires a label, autogenerate one if not provided
             return {
-                layer: new OpenLayers.Layer.WMS(o.label, o.url, params),
+                layer: new OpenLayers.Layer.ECWP(o.label, o.url, o),
+                options: o
+            };
+        },
+        google: function(options) {
+            var o = $.fn.mapQuery.defaults.layer.all;
+            $.extend(true, o, $.fn.mapQuery.defaults.layer.google);
+            $.extend(true, o, options);
+			var view = o.view;
+			switch(view){
+				case 'road':
+					view = google.maps.MapTypeId.ROADMAP; break;
+				case 'terrain':
+					view = google.maps.MapTypeId.TERRAIN; break;
+				case 'hybrid':
+					view = google.maps.MapTypeId.HYBRID; break;
+				case 'satellite':
+					view = google.maps.MapTypeId.SATELLITE; break;
+			}
+            return {
+                layer: new OpenLayers.Layer.GoogleNG({type:view}),
                 options: o
             };
         },
@@ -278,26 +313,20 @@ $.extend(Layer, {
                 options: o
             };
         },
-        google: function(options) {
+        wms: function(options) {
             var o = $.fn.mapQuery.defaults.layer.all;
-            $.extend(true, o, $.fn.mapQuery.defaults.layer.google);
+            $.extend(true, o, $.fn.mapQuery.defaults.layer.raster);
             $.extend(true, o, options);
-			var view = o.view;
-			switch(view){
-				case 'road':
-					view = google.maps.MapTypeId.ROADMAP; break;
-				case 'terrain':
-					view = google.maps.MapTypeId.TERRAIN; break;
-				case 'hybrid':
-					view = google.maps.MapTypeId.HYBRID; break;
-				case 'satellite':
-					view = google.maps.MapTypeId.SATELLITE; break;
-			}
+            var params = {
+                layers: o.layers,
+                transparent: o.transparent
+            };
+            //SMO20110611: TODO WMS requires a label, autogenerate one if not provided
             return {
-                layer: new OpenLayers.Layer.GoogleNG({type:view}),
+                layer: new OpenLayers.Layer.WMS(o.label, o.url, params),
                 options: o
             };
-        },
+        },       
         wmts: function(options) {
             var o = $.fn.mapQuery.defaults.layer.all;
             $.extend(true, o, $.fn.mapQuery.defaults.layer.wmts);
@@ -341,18 +370,7 @@ $.extend(Layer, {
                 layer: new OpenLayers.Layer.WMTS(params),
                 options: o
             };
-        },
-        //Not sure this one is worth pursuing works with ecwp:// & jpip:// urls
-        //See ../lib/NCSOpenLayersECWP.js
-        ecwp: function(options) {
-            var o = $.fn.mapQuery.defaults.layer.all;
-            $.extend(true, o, $.fn.mapQuery.defaults.layer.raster);
-            $.extend(true, o, options);
-            return {
-                layer: new OpenLayers.Layer.ECWP(o.label, o.url, o),
-                options: o
-            };
-        }
+        } 
     }
 });
 
@@ -436,20 +454,38 @@ $.fn.mapQuery.defaults = {
             // if map has a different projection (from this proejction to the
             // one of the map)
 			// defaultProjection: 'EPSG:4326', //NOTE smo; this breaks 2 tests on the same way as 25 and 29 
+            /*SMO20110611 sphericalMercator by default means all this mess down below. Can't we just check if 
+            sphericalMercator equals true and set the default settings and if sphericalMercator equals false
+            we don't set them. As such when a user doesn't want to use sphericalMercator, he doesn't need to 
+            unset them?*/
+            sphericalMercator: true
+            
             //SMO20110611 do we want to set the map.maxextent within MQ or use the OLmap function? 
-            maxExtent: new OpenLayers.Bounds(
+           /* maxExtent: new OpenLayers.Bounds(
                        -128 * 156543.0339, -128 * 156543.0339,
                         128 * 156543.0339, 128 * 156543.0339),
             maxResolution: 156543.0339,
             numZoomLevels: 19,
 			projection: 'EPSG:900913',
             units: 'm',
-            sphericalMercator: true
+            sphericalMercator: true*/
         };
     },
     layer: {
         all: {
+        	isBaseLayer: false,
             zoomToMaxExtent: true
+        },
+        bing: {
+            transitionEffect: 'resize',
+            view: 'road'
+        },
+        google: {
+            transitionEffect: 'resize',
+            view: 'road'
+        },
+        osm: {
+            transitionEffect: 'resize'
         },
         raster: {
             // options for raster layers
@@ -458,15 +494,6 @@ $.fn.mapQuery.defaults = {
         vector: {
             // options for vector layers
             strategies: ['fixed']
-        },
-        osm: {
-            isBaseLayer: false,
-            transitionEffect: 'resize'
-        },
-        google: {
-            isBaseLayer: false,
-            transitionEffect: 'resize',
-            view: 'road'
         },
         wmts: {
             format: 'image/jpeg',
