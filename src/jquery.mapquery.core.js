@@ -277,6 +277,28 @@ $.extend(Layer, {
                 options: o
             };
         },
+        google: function(options) {
+            var o = $.fn.mapQuery.defaults.layer.all;
+            $.extend(true, o, $.fn.mapQuery.defaults.layer.google);
+            $.extend(true, o, options);
+			var view;
+			if(o.view) {
+				switch(o.view){
+					case 'road':
+						view = google.maps.MapTypeId.ROADMAP; break;
+					case 'terrain':
+						view = google.maps.MapTypeId.TERRAIN; break;
+					case 'hybrid':
+						view = google.maps.MapTypeId.HYBRID; break;
+					case 'satellite':
+						view = google.maps.MapTypeId.SATELLITE; break;
+				}
+			}
+            return {
+                layer: new OpenLayers.Layer.GoogleNG({type:view}),
+                options: o
+            };
+        },
         wmts: function(options) {
             var o = $.fn.mapQuery.defaults.layer.all;
             $.extend(true, o, $.fn.mapQuery.defaults.layer.wmts);
@@ -432,6 +454,11 @@ $.fn.mapQuery.defaults = {
         osm: {
             isBaseLayer: false,
             transitionEffect: 'resize'
+        },
+        google: {
+            isBaseLayer: false,
+            transitionEffect: 'resize',
+            view: 'road'
         },
         wmts: {
             format: 'image/jpeg',
