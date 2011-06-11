@@ -226,6 +226,7 @@ $.extend(Layer, {
                 layers: o.layers,
                 transparent: o.transparent
             };
+            //SMO20110611: TODO WMS requires a label, autogenerate one if not provided
             return {
                 layer: new OpenLayers.Layer.WMS(o.label, o.url, params),
                 options: o
@@ -281,18 +282,16 @@ $.extend(Layer, {
             var o = $.fn.mapQuery.defaults.layer.all;
             $.extend(true, o, $.fn.mapQuery.defaults.layer.google);
             $.extend(true, o, options);
-			var view;
-			if(o.view) {
-				switch(o.view){
-					case 'road':
-						view = google.maps.MapTypeId.ROADMAP; break;
-					case 'terrain':
-						view = google.maps.MapTypeId.TERRAIN; break;
-					case 'hybrid':
-						view = google.maps.MapTypeId.HYBRID; break;
-					case 'satellite':
-						view = google.maps.MapTypeId.SATELLITE; break;
-				}
+			var view = o.view;
+			switch(view){
+				case 'road':
+					view = google.maps.MapTypeId.ROADMAP; break;
+				case 'terrain':
+					view = google.maps.MapTypeId.TERRAIN; break;
+				case 'hybrid':
+					view = google.maps.MapTypeId.HYBRID; break;
+				case 'satellite':
+					view = google.maps.MapTypeId.SATELLITE; break;
 			}
             return {
                 layer: new OpenLayers.Layer.GoogleNG({type:view}),
@@ -302,6 +301,7 @@ $.extend(Layer, {
         wmts: function(options) {
             var o = $.fn.mapQuery.defaults.layer.all;
             $.extend(true, o, $.fn.mapQuery.defaults.layer.wmts);
+            //TODO: check if this is still needed SMO20110611
             if (options.sphericalMercator===true) {
                 $.extend(true, o, {
                     maxExtent: new OpenLayers.Bounds(
@@ -423,11 +423,11 @@ $.fn.mapQuery.defaults = {
             // long run
             allOverlays: true,
             controls: [
+            	// Since OL2.11 the Navigation control includes touch navigation as well
                 new OpenLayers.Control.Navigation({documentDrag: true, dragPanOptions: {
                     interval: 1,
                     enableKinetic: true
                 }}),
-             
                 new OpenLayers.Control.ArgParser(),
                 new OpenLayers.Control.Attribution()
             ],
@@ -435,8 +435,16 @@ $.fn.mapQuery.defaults = {
             // input (e.g. for .center()) will be automatically transformed
             // if map has a different projection (from this proejction to the
             // one of the map)
-            //defaultProjection: 'EPSG:900913',
-            sphericalMercator: false
+			// defaultProjection: 'EPSG:4326', //NOTE smo; this breaks 2 tests on the same way as 25 and 29 
+            //SMO20110611 do we want to set the map.maxextent within MQ or use the OLmap function? 
+            maxExtent: new OpenLayers.Bounds(
+                       -128 * 156543.0339, -128 * 156543.0339,
+                        128 * 156543.0339, 128 * 156543.0339),
+            maxResolution: 156543.0339,
+            numZoomLevels: 19,
+			projection: 'EPSG:900913',
+            units: 'm',
+            sphericalMercator: true
         };
     },
     layer: {
