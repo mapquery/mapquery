@@ -344,10 +344,6 @@ Layer.prototype = {
     // you could use $.each($.geojq.layer())) instead, this is for pure
     // convenience.
     each: function () {},
-    hide: function() {
-        this.olLayer.setVisibility(false);
-        return this;
-    },
     // will return the map object
     remove: function() {
         this.map.olMap.removeLayer(this.olLayer);
@@ -363,17 +359,19 @@ Layer.prototype = {
             return this.map.olMap.setLayerIndex(this.olLayer, pos);
         }
     },
-    show: function() {
-        this.olLayer.setVisibility(true);
-        return this;
-    },
     up: function(delta) {
         delta = delta || 1;
         this.map.olMap.raiseLayer(this.olLayer, delta);
         return this;
     },
-    visible: function() {
-        return this.olLayer.getVisibility();
+    visible: function(vis) {
+    	if (vis===undefined) {
+        	return this.olLayer.getVisibility();
+        }
+        else {
+            this.olLayer.setVisibility(vis);
+            return this;
+        }
     },
     // every event gets the layer passed in
     bind: function() {
