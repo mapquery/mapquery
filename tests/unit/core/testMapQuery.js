@@ -110,7 +110,17 @@ test("OSM layer can be created", function() {
     ok(map.layersList.mapquery0.olLayer.attribution.indexOf('OpenStreetMap')!==-1,
        'OpenStreetMap layer was loaded (attribution is there)');
 });
+test("Google layer can be created", function() {
+    expect(1);
 
+    var map = $('#map_google').mapQuery().data('mapQuery');
+    map.layers({
+        type: 'google',
+        view: 'road'
+    });
+    ok(map.layersList.mapquery0.olLayer.type=='roadmap',
+       'Google layer was loaded (type is roadmap)');
+});
 test("Add layers on initialisation", function() {
     expect(3);
     var mapDom = $('#map_init').mapQuery({
