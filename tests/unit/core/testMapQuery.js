@@ -121,6 +121,16 @@ test("Google layer can be created", function() {
     ok(map.layersList.mapquery0.olLayer.type=='roadmap',
        'Google layer was loaded (type is roadmap)');
 });
+test("Bing layer can be created", function() {
+    expect(1);
+
+    var map = $('#map_bing').mapQuery().data('mapQuery');
+    map.layers({
+        type:'bing',view:'satellite',key:'ArAGGPJ16xm0RXRbw27PvYc9Tfuj1k1dUr_gfA5j8QBD6yAYMlsAtF6YkVyiiLGn'
+    });
+    ok(map.layersList.mapquery0.olLayer.name=="Bing Aerial",
+       'Bing layer was loaded (name is Bong Aerial)');
+});
 test("Add layers on initialisation", function() {
     expect(3);
     var mapDom = $('#map_init').mapQuery({
