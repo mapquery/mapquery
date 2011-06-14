@@ -110,7 +110,7 @@ test("OSM layer can be created", function() {
     ok(map.layersList.mapquery0.olLayer.attribution.indexOf('OpenStreetMap')!==-1,
        'OpenStreetMap layer was loaded (attribution is there)');
 });
-test("Google layer can be created", function() {
+test("Google layer can be created (works only with dev-build of openlayers)", function() {
     expect(1);
 
     var map = $('#map_google').mapQuery().data('mapQuery');

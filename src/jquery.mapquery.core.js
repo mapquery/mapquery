@@ -17,17 +17,11 @@ var Map = function(element, options) {
     delete olMapOptions.maxExtent;    
 	this.maxExtent = this.options.maxExtent;	
 	olMapOptions.maxExtent = new OpenLayers.Bounds(this.maxExtent[0],this.maxExtent[1],this.maxExtent[2],this.maxExtent[3])
-
-    
-    this.olMap = new OpenLayers.Map(this.element[0], olMapOptions);
-    /*OpenLayers.IMAGE_RELOAD_ATTEMPTS = 3; 
-
+	OpenLayers.IMAGE_RELOAD_ATTEMPTS = 3; 
 	OpenLayers.Util.onImageLoadErrorColor = "transparent"; 
-	*/
-    /* there is no such thing as a defaultProjection
-     
-     this.defaultProjection = new OpenLayers.Projection(
-        this.options.defaultProjection);*/
+	
+    this.olMap = new OpenLayers.Map(this.element[0], olMapOptions);
+
     // Keep IDs of vector layer for select feature control
     this.vectorLayers = [];
     this.selectFeatureControl = null;
@@ -157,10 +151,6 @@ Map.prototype = {
         else {
             position = new OpenLayers.LonLat(options.position[0],
                                              options.position[1]);
-            //var mapProjection = this.olMap.getProjectionObject();
-            //if (!mapProjection.equals(this.defaultProjection)) {
-            //    position.transform(this.defaultProjection, mapProjection);
-            //}
             var mapProjection = this.olMap.getProjectionObject();
             var epsg4326 = new OpenLayers.Projection('EPSG:4326');
             if (!mapProjection.equals(epsg4326)) {
@@ -352,11 +342,10 @@ $.extend(Layer, {
             var o = $.fn.mapQuery.defaults.layer.all;
             $.extend(true, o, $.fn.mapQuery.defaults.layer.wmts);
             //TODO: check if this is still needed SMO20110611
+            // it is probably nice that we automagically add the 900913 settings if sphericalMercator=true
             if (options.sphericalMercator===true) {
                 $.extend(true, o, {
-                    maxExtent: new OpenLayers.Bounds(
-                        -128 * 156543.0339, -128 * 156543.0339,
-                        128 * 156543.0339, 128 * 156543.0339),
+                    maxExtent: [-128 * 156543.0339, -128 * 156543.0339, 128 * 156543.0339, 128 * 156543.0339],
                     maxResolution: 156543.0339,
                     numZoomLevels: 19,
                     projection: 'EPSG:900913',
@@ -459,7 +448,7 @@ $.fn.mapQuery.defaults = {
     map: function() {
         return {
             // Remove quirky moveTo behavior, probably not a good idea in the
-            // long run
+            // long run            
             allOverlays: true,
             controls: [
             	// Since OL2.11 the Navigation control includes touch navigation as well
@@ -474,17 +463,6 @@ $.fn.mapQuery.defaults = {
                 new OpenLayers.Control.Attribution()
             ],
             format: 'image/png',
-            // input (e.g. for .center()) will be automatically transformed
-            // if map has a different projection (from this proejction to the
-            // one of the map)
-			// defaultProjection: 'EPSG:4326', //NOTE smo; this breaks 2 tests on the same way as 25 and 29 
-            /*SMO20110611 sphericalMercator by default means all this mess down below. Can't we just check if 
-            sphericalMercator equals true and set the default settings and if sphericalMercator equals false
-            we don't set them. As such when a user doesn't want to use sphericalMercator, he doesn't need to 
-            unset them?*/
-            
-            
-            //SMO20110611 do we want to set the map.maxextent within MQ or use the OLmap function? 
             maxExtent: [-128 * 156543.0339, -128 * 156543.0339, 128 * 156543.0339, 128 * 156543.0339],
             maxResolution: 156543.0339,
             numZoomLevels: 19,
@@ -494,8 +472,9 @@ $.fn.mapQuery.defaults = {
     },
     layer: {
         all: {
+        	zoomToMaxExtent: true, 			//needed for at least spherical mercator, osm, google and bing
         	isBaseLayer: false,
-            zoomToMaxExtent: true
+            displayOutsideMaxExtent: false  //in general it is kinda pointless to load tiles outside a maxextent
         },
         bing: {
             transitionEffect: 'resize',
@@ -507,7 +486,7 @@ $.fn.mapQuery.defaults = {
             view: 'road',
             sphericalMercator: true
         },
-        osm: {
+        osm: {        	
             transitionEffect: 'resize',
             sphericalMercator: true
         },
