@@ -2,14 +2,16 @@
 var Map = function(element, options) {
     var self = this;
 	//If there are a maxExtent and a projection other than Spherical Mercator automagically set maxResolution if it is not set
+	// TODO smo 20110614: put maxExtent and maxResolution setting in the proper option building routine
+	if(options){
 	if(!options.maxResolution&&options.maxExtent&&options.projection){
 		options.maxResolution = (options.maxExtent[2]-options.maxExtent[0])/256;
-	}
+	}};
     this.options = $.extend({}, new $.fn.mapQuery.defaults.map(), options);
 
     this.element = element;
     // TODO vmx 20110609: do proper options building
-    // TODO smo 20110614: put maxExtent and maxResolution setting in the proper option building routine
+    
     var olMapOptions = $.extend({}, this.options);
     delete olMapOptions.layers;
     delete olMapOptions.maxExtent;    
