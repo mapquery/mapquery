@@ -7,6 +7,9 @@ $.template('mqZoomButtons',
 		
 $.widget("mapQuery.mqZoomButtons", {
 	_create: function() {
+		var self = this;
+		var element = this.element;
+		$.tmpl('mqZoomButtons').appendTo(element);
 	}
 });
 })(jQuery);
