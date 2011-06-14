@@ -3,23 +3,32 @@
 <head>
   <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0;">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <title>MapQuery WMS example</title>
+  <title>MapQuery WMS other projection example</title>
+  <link rel='StyleSheet' type='text/css' href='style/style.css'/>  
   <script src="../lib/openlayers/OpenLayers.js" type="text/javascript"></script>
   <script src="../lib/jquery/jquery-1.4.4.js" type="text/javascript"></script>
   <script src="../src/jquery.mapquery.core.js" type="text/javascript"></script>
+  <script type="text/javascript" src="http://proj4js.org/lib/proj4js-combined.js"></script> <!--You need to include proj4js if you use different coordinate systems, TODO: smo 20110614 do this automatically?-->
+
   <script type="text/javascript">
     $(document).ready(function() {
-    $('#map').mapQuery({layers:[{type:'wms',url:'http://mapserver.edugis.nl/cgi-bin/mapserv?map=maps/edugis/cache/base.map',layers:'topografie'}],projection:'EPSG:28992',maxExtent:[0,200000,350000,700000],units:'m'}); //initialise mapquery with an OSM layer
+    Proj4js.defs["EPSG:28992"] = "+title=Amersfoort / RD New +proj=sterea +lat_0=52.15616055555555 +lon_0=5.38763888888889 +k=0.9999079 +x_0=155000 +y_0=463000 +ellps=bessel +units=m +no_defs"; //TODO: smo 20110614 do this automatically? 
+
+   	//initialise mapquery with a non-spherical mercator WMS 
+    var map = $('#map').mapQuery({
+    	maxExtent:[-819200,-819200,819200,819200],  // Set the max extent of the map, this will be used to define the tileschema of the map, use .goto() to zoom in to a specific area at startup
+    	maxResolution:2048,							// since this is a weird tileschema we need to define maxResolution, instead of automagically guessing it
+    	tileSize: new OpenLayers.Size(400,400), 	// it uses non standard tilesizes, so we need to set it. Note this is currently no supported in mapquery, so we need to set it directly in openlayers
+    	projection:'EPSG:28992',    	
+    	layers:[{
+	   		type:'wms',
+    		url:'http://r1.edugis.nl/tiles/tilecache.py?map=maps/edugis/cache/base.map',
+    		layers:'topografie'
+    		}]
+    	}).data('mapQuery'); 						// we directly get the mapQuery map object to be able to set the initial extent 
+    map.goto({box:[5,52,6,54]}); 					// we zoom to a area defined as a box in wgs84 (long/lat) 
     });
   </script>
-  <style type="text/css">
-.map {
-  height:512px;
-  width:512px;
-  float:left;
-  clear:left;
-}
- </style>
 </head>
 <body>
   <div id="map" class="map"></div>

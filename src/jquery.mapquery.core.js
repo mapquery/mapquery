@@ -20,8 +20,14 @@ var Map = function(element, options) {
 
     
     this.olMap = new OpenLayers.Map(this.element[0], olMapOptions);
-    this.defaultProjection = new OpenLayers.Projection(
-        this.options.defaultProjection);
+    /*OpenLayers.IMAGE_RELOAD_ATTEMPTS = 3; 
+
+	OpenLayers.Util.onImageLoadErrorColor = "transparent"; 
+	*/
+    /* there is no such thing as a defaultProjection
+     
+     this.defaultProjection = new OpenLayers.Projection(
+        this.options.defaultProjection);*/
     // Keep IDs of vector layer for select feature control
     this.vectorLayers = [];
     this.selectFeatureControl = null;
@@ -112,19 +118,19 @@ Map.prototype = {
     // vmx 20110609 Still true?
     goto: function (options) {
         var position;
+        var epsg4326 = new OpenLayers.Projection('EPSG:4326');
         // Get the current position
         if (arguments.length===0) {
             position = this.olMap.getCenter();
             var zoom = this.olMap.getZoom();
             var box = this.olMap.getExtent();
             var mapProjection = this.olMap.getProjectionObject();
-            var epsg4326 = new OpenLayers.Projection('EPSG:4326');
+            
 
             if (!mapProjection.equals(epsg4326)) {
                 position.transform(mapProjection, epsg4326);
             }
-            console.log('extent: ' + box.transform(this.defaultProjection,
-                                                   mapProjection));
+            console.log('extent: ' + box.transform(mapProjection,epsg4326));
             box = box!==null ? box.toArray() : [];
             return {
                 position: [position.lon, position.lat],
@@ -135,9 +141,13 @@ Map.prototype = {
 
         // Zoom to the extent of the box
         if (options.box!==undefined) {
-            this.olMap.zoomToExtent(
-                new OpenLayers.Bounds(options.box[0], options.box[1],
-                                      options.box[2], options.box[3]));
+        	var mapProjection = this.olMap.getProjectionObject();
+        	var box = new OpenLayers.Bounds(options.box[0], options.box[1],options.box[2], options.box[3]);
+            if (!mapProjection.equals(epsg4326)) {
+            	box.transform(epsg4326,mapProjection);
+            };
+            this.olMap.zoomToExtent(box);
+              
         }
         // Only zoom is given
         else if (options.position===undefined) {
