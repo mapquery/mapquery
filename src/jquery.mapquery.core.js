@@ -22,6 +22,7 @@ var Map = function(element, options) {
 	
     this.olMap = new OpenLayers.Map(this.element[0], olMapOptions);
 
+
     // Keep IDs of vector layer for select feature control
     this.vectorLayers = [];
     this.selectFeatureControl = null;
@@ -341,11 +342,12 @@ $.extend(Layer, {
         wmts: function(options) {
             var o = $.fn.mapQuery.defaults.layer.all;
             $.extend(true, o, $.fn.mapQuery.defaults.layer.wmts);
-            //TODO: check if this is still needed SMO20110611
-            // it is probably nice that we automagically add the 900913 settings if sphericalMercator=true
+            //smo 20110614 the maxExtent is set here with OpenLayers.Bounds 
             if (options.sphericalMercator===true) {
                 $.extend(true, o, {
-                    maxExtent: [-128 * 156543.0339, -128 * 156543.0339, 128 * 156543.0339, 128 * 156543.0339],
+                    maxExtent: new OpenLayers.Bounds(
+                        -128 * 156543.0339, -128 * 156543.0339,
+                        128 * 156543.0339, 128 * 156543.0339),
                     maxResolution: 156543.0339,
                     numZoomLevels: 19,
                     projection: 'EPSG:900913',
