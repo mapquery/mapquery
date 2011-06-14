@@ -442,10 +442,13 @@ $.fn.mapQuery.defaults = {
             allOverlays: true,
             controls: [
             	// Since OL2.11 the Navigation control includes touch navigation as well
-                new OpenLayers.Control.Navigation({documentDrag: true, dragPanOptions: {
-                    interval: 1,
-                    enableKinetic: true
-                }}),
+                new OpenLayers.Control.Navigation({
+                	documentDrag: true, 
+                	dragPanOptions: {
+                    	interval: 1,
+                    	enableKinetic: true
+                    }
+                }),
                 new OpenLayers.Control.ArgParser(),
                 new OpenLayers.Control.Attribution()
             ],
