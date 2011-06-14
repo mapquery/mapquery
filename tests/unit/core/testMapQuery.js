@@ -231,9 +231,12 @@ test("goto works properly (EPSG:900913)", function() {
         // the box given, doesn't match the final one
             console.log(goto.box);
 
-        same(goto.box, [-21.962936669741, 20.514147330259, 37.753491669741,
+        /* same(goto.box, [-21.962936669741, 20.514147330259, 37.753491669741,
                         80.230575669741],
-             'Setting box only (position is right)');
+             'Setting box only (position is right)'); */
+		equals((goto.box[0].toFixed(8) == -21.96293667) && (goto.box[1].toFixed(8) == 20.51414733) && (goto.box[2].toFixed(8) == 37.75349167) && (goto.box[3].toFixed(8) == 80.23057567), true,
+			'Setting box only (position is right)');
+			 
         same(goto.zoom, 18,
              'Setting box only (zoom is right)');
 
@@ -251,10 +254,9 @@ test("goto works properly (EPSG:900913)", function() {
         // The extend will be fit in to the nearest zoom level, hence
         // the box given, doesn't match the final one
         console.log(goto.box);
-        same(goto.box, [-21.962936669741, 20.514147330259, 37.753491669741,
-                        80.230575669741],
-             'Setting box only (position is right)');
-        same(goto.zoom, 18,
+    	equals((goto.box[0].toFixed(8) == -21.96293667) && (goto.box[1].toFixed(8) == 20.51414733) && (goto.box[2].toFixed(8) == 37.75349167) && (goto.box[3].toFixed(8) == 80.23057567), true,
+			'Setting box only (position is right)');
+        equals(goto.zoom, 18,
              'Setting box only (zoom is right)');
     }
 });
