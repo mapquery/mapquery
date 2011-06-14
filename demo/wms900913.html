@@ -3,23 +3,23 @@
 <head>
   <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0;">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <title>MapQuery WMS example</title>
+  <title>MapQuery WMS Spherical mercator example</title>
+  <link rel='StyleSheet' type='text/css' href='style/style.css'/>
   <script src="../lib/openlayers/OpenLayers.js" type="text/javascript"></script>
   <script src="../lib/jquery/jquery-1.4.4.js" type="text/javascript"></script>
   <script src="../src/jquery.mapquery.core.js" type="text/javascript"></script>
   <script type="text/javascript">
     $(document).ready(function() {
-    $('#map').mapQuery({layers:[{type:'wms',url:'http://mapserver.edugis.nl/cgi-bin/mapserv?map=maps/edugis/cache/population.map',layers:'Bevolkingsdichtheid_2010'}]}); //initialise mapquery with an OSM layer
+	//initialise mapquery with a WMS layer    	
+    $('#map').mapQuery({ //since no projection or maxExtent are set, the map defaults to spherical mercator 
+    	layers:[{
+    		type:'wms',
+    		url:'http://t1.edugis.nl/tiles/tilecache.py?map=maps/edugis/cache/population.map', //note: this is actually a tileservice and only works with the spherical mercator tileschema
+    		layers:'Bevolkingsdichtheid_2010'}]
+    	}); 
+	$('#map').mapQuery().data('mapQuery').goto({position:[5,52],zoom:3}); //for some reason the WMS doesn't show data at the highest zoomlevel so we zoom in a bit and focus on europe
     });
   </script>
-  <style type="text/css">
-.map {
-  height:512px;
-  width:512px;
-  float:left;
-  clear:left;
-}
- </style>
 </head>
 <body>
   <div id="map" class="map"></div>

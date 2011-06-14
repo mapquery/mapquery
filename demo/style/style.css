@@ -1,0 +1,7 @@
+.map {
+  height:512px;
+  width:512px;
+  float:left;
+  clear:left;
+  border:solid 1px black;
+}

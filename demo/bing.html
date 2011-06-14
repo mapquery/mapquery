@@ -4,6 +4,7 @@
   <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0;">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <title>MapQuery Bing Maps example</title>
+  <link rel='StyleSheet' type='text/css' href='style/style.css'/>
   <script src="../lib/openlayers/OpenLayers.js" type="text/javascript"></script>
   <script src="../lib/jquery/jquery-1.4.4.js" type="text/javascript"></script>
   <script src="../src/jquery.mapquery.core.js" type="text/javascript"></script>
@@ -11,17 +12,14 @@
   <script type="text/javascript">
     $(document).ready(function() {
 	//initialise mapquery with an Bing Aerial layer
-    $('#map').mapQuery({layers:[{type:'bing',view:'satellite',key:'ArAGGPJ16xm0RXRbw27PvYc9Tfuj1k1dUr_gfA5j8QBD6yAYMlsAtF6YkVyiiLGn'}]}); 
+    $('#map').mapQuery({
+    	layers:[{
+    		type:'bing',		//create a bing maps layer
+    		view:'satellite',	//use the bing satellite (aerial) layer, instead of bing road (default)
+    		key:'ArAGGPJ16xm0RXRbw27PvYc9Tfuj1k1dUr_gfA5j8QBD6yAYMlsAtF6YkVyiiLGn' //Bing Maps API key for your application. Get you own at http://bingmapsportal.com/ ; this one is for the mapquery project
+    	}); 
     });
   </script>
-  <style type="text/css">
-.map {
-  height:512px;
-  width:512px;
-  float:left;
-  clear:left;
-}
- </style>
 </head>
 <body>
   <div id="map" class="map"></div>
