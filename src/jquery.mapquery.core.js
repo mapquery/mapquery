@@ -1,13 +1,22 @@
 (function ($) {
 var Map = function(element, options) {
     var self = this;
+	//If there are a maxExtent and a projection other than Spherical Mercator automagically set maxResolution if it is not set
+	if(!options.maxResolution&&options.maxExtent&&options.projection){
+		options.maxResolution = (options.maxExtent[2]-options.maxExtent[0])/256;
+	}
     this.options = $.extend({}, new $.fn.mapQuery.defaults.map(), options);
 
     this.element = element;
     // TODO vmx 20110609: do proper options building
+    // TODO smo 20110614: put maxExtent and maxResolution setting in the proper option building routine
     var olMapOptions = $.extend({}, this.options);
     delete olMapOptions.layers;
+    delete olMapOptions.maxExtent;    
+	this.maxExtent = this.options.maxExtent;	
+	olMapOptions.maxExtent = new OpenLayers.Bounds(this.maxExtent[0],this.maxExtent[1],this.maxExtent[2],this.maxExtent[3])
 
+    
     this.olMap = new OpenLayers.Map(this.element[0], olMapOptions);
     this.defaultProjection = new OpenLayers.Projection(
         this.options.defaultProjection);
@@ -461,17 +470,14 @@ $.fn.mapQuery.defaults = {
             sphericalMercator equals true and set the default settings and if sphericalMercator equals false
             we don't set them. As such when a user doesn't want to use sphericalMercator, he doesn't need to 
             unset them?*/
-            sphericalMercator: true
+            
             
             //SMO20110611 do we want to set the map.maxextent within MQ or use the OLmap function? 
-           /* maxExtent: new OpenLayers.Bounds(
-                       -128 * 156543.0339, -128 * 156543.0339,
-                        128 * 156543.0339, 128 * 156543.0339),
+            maxExtent: [-128 * 156543.0339, -128 * 156543.0339, 128 * 156543.0339, 128 * 156543.0339],
             maxResolution: 156543.0339,
             numZoomLevels: 19,
 			projection: 'EPSG:900913',
-            units: 'm',
-            sphericalMercator: true*/
+            units: 'm'            
         };
     },
     layer: {
@@ -481,14 +487,17 @@ $.fn.mapQuery.defaults = {
         },
         bing: {
             transitionEffect: 'resize',
-            view: 'road'
+            view: 'road',
+            sphericalMercator: true
         },
         google: {
             transitionEffect: 'resize',
-            view: 'road'
+            view: 'road',
+            sphericalMercator: true
         },
         osm: {
-            transitionEffect: 'resize'
+            transitionEffect: 'resize',
+            sphericalMercator: true
         },
         raster: {
             // options for raster layers
