@@ -5,6 +5,9 @@
   clear:left;
   border:solid 1px black;
 }
+.olControlAttribution {
+    bottom:0.5em !important;
+}
 .zoom {
   position: absolute;
   z-index: 100000;
