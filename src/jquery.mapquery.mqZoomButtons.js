@@ -13,6 +13,7 @@ $.widget("mapQuery.mqZoomButtons", {
         var self = this;
         var element = this.element;
         
+        //get the mapquery object
         if (this.options.jquery === $().jquery) {
             map = this.options.data('mapQuery');
             this.options = {};
@@ -20,6 +21,7 @@ $.widget("mapQuery.mqZoomButtons", {
         else {
             map = this.options.map.data('mapQuery');
         }
+        
         $.tmpl('mqZoomButtons').appendTo(element);
         $(".mq-zoombuttons-plus").click(function(){
             //get the latest numzoomlevels and zoom from the map, in case something has changed in the mean time
@@ -28,8 +30,7 @@ $.widget("mapQuery.mqZoomButtons", {
             if(zoom<numzoomlevels){ map.goto({zoom:zoom+1});}
         });
         $(".mq-zoombuttons-minus").click(function(){
-            //get the latest numzoomlevels and zoom from the map, in case something has changed in the mean time
-            numzoomlevels = map.options.numZoomLevels;
+            //get the latest zoom from the map, in case something has changed in the mean time
             zoom = map.goto().zoom;
             if(zoom>0){map.goto({zoom:zoom-1})}
         });
