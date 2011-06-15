@@ -1,10 +1,10 @@
 (function($) {
 $.template('mqLayerControl',
-    '<li class="mq-layercontrol ui-widget ui-helper-clearfix ">'+
-    '<span class="label"><div class="ui-icon ui-icon-arrowthick-2-n-s"></div>${label} (${position})</span>' +
-    '<button>Delete</button>' +
-    '<input type="checkbox" class="mq-layercontrol-visibility" id="${id}-visibility" checked="checked" />'+
-    '<label for="${id}-visibility">Visible</label>'+
+    '<li class="mq-layercontrol ui-widget-content ui-helper-clearfix ui-corner-all">'+
+    '<span><div class="ui-icon ui-icon-arrowthick-2-n-s"></div><div class="mq-layercontrol-label">${label}</div>' +
+    '<button class="mq-layercontrol-delete">Delete</button>' +
+    '<input type="checkbox" class="mq-layercontrol-visibility" id="${id}-visibility" checked="${visible}" />'+
+    '<label for="${id}-visibility">Visible</label></span>'+
     '</li>');
         
 $.widget("mapQuery.mqLayerControl", {
@@ -20,7 +20,7 @@ $.widget("mapQuery.mqLayerControl", {
         else {
             map = this.options.map.data('mapQuery');
         }
-        element.append('<ul></ul>');
+        element.append('<ul class=" ui-widget"></ul>');
         var ulElement = element.children('ul');
         $.each(map.layers().reverse(), function() {
             self._add(ulElement, this);
@@ -28,6 +28,8 @@ $.widget("mapQuery.mqLayerControl", {
         
         element.find('button').button();
         ulElement.sortable({
+            axis:'y',
+            containment: 'parent',
             update: function(event, ui) {
                 var layerNodes = ui.item.siblings().andSelf();
                 var num = layerNodes.length-1;
@@ -37,7 +39,7 @@ $.widget("mapQuery.mqLayerControl", {
                     var label = $('span.label', this);
                     var icon = label.children();
                     layer.position(pos);
-                    label.text(layer.label + ' (' + pos + ')')
+                    label.text(layer.label)
                         .prepend(icon);
                 });
             }
@@ -64,7 +66,8 @@ $.widget("mapQuery.mqLayerControl", {
         $.tmpl('mqLayerControl', {
             id: layer.id,
             label: layer.label,
-            position: layer.position()
+            position: layer.position(),
+            visible: layer.visible()
         })
             // save layer layer ID in the DOM, so we can easily
             // hide/show/delete the layer with live events

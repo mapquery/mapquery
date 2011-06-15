@@ -20,4 +20,31 @@
 }
 #layercontrol {
     float:right;
+    width: 320px;
+    border:solid 1px black;
+    padding: 0px;
+    background: #ececec;
+}
+#layercontrol ul{
+    padding: 0px;
+    margin: 5px;
+}
+.mq-layercontrol {
+    font-size:0.6em;
+    margin: 2px;
+    padding:2px;
+}
+.mq-layercontrol .ui-icon {
+    margin-bottom:-2px;
+    display:inline-block;
+}
+.mq-layercontrol-label {
+    width:160px;   
+    display:inline-block;
+}
+.mq-layercontrol-visibility {
+    text-align: right;
+}
+.mq-layercontrol-delete {
+    
 }
