@@ -5,3 +5,16 @@
   clear:left;
   border:solid 1px black;
 }
+.zoom {
+  position: absolute;
+  z-index: 100000;
+  margin: 5px;
+  cursor: pointer;
+}
+.zoom .ui-icon {
+  margin: 0 4px;
+}
+.zoom .ui-corner-all{
+  margin: 2px;
+  padding: 4px 0;
+}
