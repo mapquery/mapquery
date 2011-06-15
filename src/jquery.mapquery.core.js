@@ -125,7 +125,7 @@ Map.prototype = {
             if (!mapProjection.equals(epsg4326)) {
                 position.transform(mapProjection, epsg4326);
             }
-            console.log('extent: ' + box.transform(mapProjection,epsg4326));
+            box.transform(mapProjection,epsg4326);
             box = box!==null ? box.toArray() : [];
             return {
                 position: [position.lon, position.lat],
