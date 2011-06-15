@@ -1,12 +1,12 @@
 (function ($) {
 var Map = function(element, options) {
     var self = this;
-	//If there are a maxExtent and a projection other than Spherical Mercator automagically set maxResolution if it is not set
-	// TODO smo 20110614: put maxExtent and maxResolution setting in the proper option building routine
-	if(options){
-	if(!options.maxResolution&&options.maxExtent&&options.projection){
-		options.maxResolution = (options.maxExtent[2]-options.maxExtent[0])/256;
-	}};
+    //If there are a maxExtent and a projection other than Spherical Mercator automagically set maxResolution if it is not set
+    // TODO smo 20110614: put maxExtent and maxResolution setting in the proper option building routine
+    if(options){
+    if(!options.maxResolution&&options.maxExtent&&options.projection){
+        options.maxResolution = (options.maxExtent[2]-options.maxExtent[0])/256;
+    }};
     this.options = $.extend({}, new $.fn.mapQuery.defaults.map(), options);
 
     this.element = element;
@@ -15,11 +15,11 @@ var Map = function(element, options) {
     var olMapOptions = $.extend({}, this.options);
     delete olMapOptions.layers;
     delete olMapOptions.maxExtent;    
-	this.maxExtent = this.options.maxExtent;	
-	olMapOptions.maxExtent = new OpenLayers.Bounds(this.maxExtent[0],this.maxExtent[1],this.maxExtent[2],this.maxExtent[3])
-	OpenLayers.IMAGE_RELOAD_ATTEMPTS = 3; 
-	OpenLayers.Util.onImageLoadErrorColor = "transparent"; 
-	
+    this.maxExtent = this.options.maxExtent;    
+    olMapOptions.maxExtent = new OpenLayers.Bounds(this.maxExtent[0],this.maxExtent[1],this.maxExtent[2],this.maxExtent[3])
+    OpenLayers.IMAGE_RELOAD_ATTEMPTS = 3; 
+    OpenLayers.Util.onImageLoadErrorColor = "transparent"; 
+    
     this.olMap = new OpenLayers.Map(this.element[0], olMapOptions);
 
 
@@ -136,10 +136,10 @@ Map.prototype = {
 
         // Zoom to the extent of the box
         if (options.box!==undefined) {
-        	var mapProjection = this.olMap.getProjectionObject();
-        	var box = new OpenLayers.Bounds(options.box[0], options.box[1],options.box[2], options.box[3]);
+            var mapProjection = this.olMap.getProjectionObject();
+            var box = new OpenLayers.Bounds(options.box[0], options.box[1],options.box[2], options.box[3]);
             if (!mapProjection.equals(epsg4326)) {
-            	box.transform(epsg4326,mapProjection);
+                box.transform(epsg4326,mapProjection);
             };
             this.olMap.zoomToExtent(box);
               
@@ -230,19 +230,19 @@ var Layer = function(map, id, options) {
 
 $.extend(Layer, {
     types: {
-    	bing: function(options) {
+        bing: function(options) {
             var o = $.fn.mapQuery.defaults.layer.all;
             $.extend(true, o, $.fn.mapQuery.defaults.layer.bing);
             $.extend(true, o, options);
-			var view = o.view;
-			switch(view){
-				case 'road':
-					view = 'Road'; break;
-				case 'hybrid':
-					view = 'AerialWithLabels'; break;
-				case 'satellite':
-					view = 'Aerial'; break;
-			}
+            var view = o.view;
+            switch(view){
+                case 'road':
+                    view = 'Road'; break;
+                case 'hybrid':
+                    view = 'AerialWithLabels'; break;
+                case 'satellite':
+                    view = 'Aerial'; break;
+            }
             return {
                 layer: new OpenLayers.Layer.Bing({type:view,key:o.key}),
                 options: o
@@ -263,17 +263,17 @@ $.extend(Layer, {
             var o = $.fn.mapQuery.defaults.layer.all;
             $.extend(true, o, $.fn.mapQuery.defaults.layer.google);
             $.extend(true, o, options);
-			var view = o.view;
-			switch(view){
-				case 'road':
-					view = google.maps.MapTypeId.ROADMAP; break;
-				case 'terrain':
-					view = google.maps.MapTypeId.TERRAIN; break;
-				case 'hybrid':
-					view = google.maps.MapTypeId.HYBRID; break;
-				case 'satellite':
-					view = google.maps.MapTypeId.SATELLITE; break;
-			}
+            var view = o.view;
+            switch(view){
+                case 'road':
+                    view = google.maps.MapTypeId.ROADMAP; break;
+                case 'terrain':
+                    view = google.maps.MapTypeId.TERRAIN; break;
+                case 'hybrid':
+                    view = google.maps.MapTypeId.HYBRID; break;
+                case 'satellite':
+                    view = google.maps.MapTypeId.SATELLITE; break;
+            }
             return {
                 layer: new OpenLayers.Layer.GoogleNG({type:view}),
                 options: o
@@ -417,8 +417,8 @@ Layer.prototype = {
         return this;
     },
     visible: function(vis) {
-    	if (vis===undefined) {
-        	return this.olLayer.getVisibility();
+        if (vis===undefined) {
+            return this.olLayer.getVisibility();
         }
         else {
             this.olLayer.setVisibility(vis);
@@ -453,12 +453,12 @@ $.fn.mapQuery.defaults = {
             // long run            
             allOverlays: true,
             controls: [
-            	// Since OL2.11 the Navigation control includes touch navigation as well
+                // Since OL2.11 the Navigation control includes touch navigation as well
                 new OpenLayers.Control.Navigation({
-                	documentDrag: true, 
-                	dragPanOptions: {
-                    	interval: 1,
-                    	enableKinetic: true
+                    documentDrag: true, 
+                    dragPanOptions: {
+                        interval: 1,
+                        enableKinetic: true
                     }
                 }),
                 new OpenLayers.Control.ArgParser(),
@@ -468,14 +468,14 @@ $.fn.mapQuery.defaults = {
             maxExtent: [-128 * 156543.0339, -128 * 156543.0339, 128 * 156543.0339, 128 * 156543.0339],
             maxResolution: 156543.0339,
             numZoomLevels: 19,
-			projection: 'EPSG:900913',
+            projection: 'EPSG:900913',
             units: 'm'            
         };
     },
     layer: {
         all: {
-        	zoomToMaxExtent: true, 			//needed for at least spherical mercator, osm, google and bing
-        	isBaseLayer: false,
+            zoomToMaxExtent: true,             //needed for at least spherical mercator, osm, google and bing
+            isBaseLayer: false,
             displayOutsideMaxExtent: false  //in general it is kinda pointless to load tiles outside a maxextent
         },
         bing: {
@@ -488,7 +488,7 @@ $.fn.mapQuery.defaults = {
             view: 'road',
             sphericalMercator: true
         },
-        osm: {        	
+        osm: {            
             transitionEffect: 'resize',
             sphericalMercator: true
         },

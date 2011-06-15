@@ -14,19 +14,19 @@
     $(document).ready(function() {
     Proj4js.defs["EPSG:28992"] = "+title=Amersfoort / RD New +proj=sterea +lat_0=52.15616055555555 +lon_0=5.38763888888889 +k=0.9999079 +x_0=155000 +y_0=463000 +ellps=bessel +units=m +no_defs"; //TODO: smo 20110614 do this automatically? 
 
-   	//initialise mapquery with a non-spherical mercator WMS 
+       //initialise mapquery with a non-spherical mercator WMS 
     var map = $('#map').mapQuery({
-    	maxExtent:[-819200,-819200,819200,819200],  // Set the max extent of the map, this will be used to define the tileschema of the map, use .goto() to zoom in to a specific area at startup
-    	maxResolution:2048,							// since this is a weird tileschema we need to define maxResolution, instead of automagically guessing it
-    	tileSize: new OpenLayers.Size(400,400), 	// it uses non standard tilesizes, so we need to set it. Note this is currently no supported in mapquery, so we need to set it directly in openlayers
-    	projection:'EPSG:28992',    	
-    	layers:[{
-	   		type:'wms',
-    		url:'http://r1.edugis.nl/tiles/tilecache.py?map=maps/edugis/cache/base.map',
-    		layers:'topografie'
-    		}]
-    	}).data('mapQuery'); 						// we directly get the mapQuery map object to be able to set the initial extent 
-    map.goto({box:[5,52,6,54]}); 					// we zoom to a area defined as a box in wgs84 (long/lat) 
+        maxExtent:[-819200,-819200,819200,819200],  // Set the max extent of the map, this will be used to define the tileschema of the map, use .goto() to zoom in to a specific area at startup
+        maxResolution:2048,                            // since this is a weird tileschema we need to define maxResolution, instead of automagically guessing it
+        tileSize: new OpenLayers.Size(400,400),     // it uses non standard tilesizes, so we need to set it. Note this is currently no supported in mapquery, so we need to set it directly in openlayers
+        projection:'EPSG:28992',        
+        layers:[{
+               type:'wms',
+            url:'http://r1.edugis.nl/tiles/tilecache.py?map=maps/edugis/cache/base.map',
+            layers:'topografie'
+            }]
+        }).data('mapQuery');                         // we directly get the mapQuery map object to be able to set the initial extent 
+    map.goto({box:[5,52,6,54]});                     // we zoom to a area defined as a box in wgs84 (long/lat) 
     });
   </script>
 </head>

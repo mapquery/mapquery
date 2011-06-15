@@ -234,9 +234,9 @@ test("goto works properly (EPSG:900913)", function() {
         /* same(goto.box, [-21.962936669741, 20.514147330259, 37.753491669741,
                         80.230575669741],
              'Setting box only (position is right)'); */
-		equals((goto.position[0] == 7.8952775000002) && (goto.position[1] == 50.414584408364), true,
-			'Setting box only (position is right)');
-			 
+        equals((goto.position[0] == 7.8952775000002) && (goto.position[1] == 50.414584408364), true,
+            'Setting box only (position is right)');
+             
         same(goto.zoom, 4,
              'Setting box only (zoom is right)');
 
@@ -254,8 +254,8 @@ test("goto works properly (EPSG:900913)", function() {
         // The extend will be fit in to the nearest zoom level, hence
         // the box given, doesn't match the final one
         console.log(goto.box);
-    	equals((goto.position[0] == 7.8952775000002) && (goto.position[1] == 50.414584408364), true,
-			'Setting box only (position is right)');
+        equals((goto.position[0] == 7.8952775000002) && (goto.position[1] == 50.414584408364), true,
+            'Setting box only (position is right)');
         equals(goto.zoom, 4,
              'Setting box only (zoom is right)');
     }
