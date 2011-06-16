@@ -1,8 +1,9 @@
 (function($) {
 $.template('mqMousePosition',
     '<div class="mq-mouseposition ui-widget ui-helper-clearfix ">'+
-    '<div class="ui-widget-content ui-helper-clearfix ui-corner-all ui-corner-all"><div id="mq-mouseposition-projection"></div><div id="mq-mouseposition-x"></div><div id="mq-mouseposition-y"></div></div>'+
-    '</div>');
+    '<span class="ui-widget-content ui-helper-clearfix ui-corner-all ui-corner-all">'+
+    '<div id="mq-mouseposition-x" class="mq-mouseposition-coordinate"></div><div id="mq-mouseposition-y" class="mq-mouseposition-coordinate"></div>'+
+    '</div></span>');
         
 $.widget("mapQuery.mqMousePosition", {
     _create: function() {
