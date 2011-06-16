@@ -1,9 +1,8 @@
 .map {
   height:512px;
   width:512px;
-  float:left;
-  clear:left;
   border:solid 1px black;
+  display: inline-block;
 }
 .olControlAttribution {
     bottom:0.5em !important;
@@ -28,12 +27,14 @@
     padding: 0px;
     background: #ececec;
 }
+.mq-widget {
+    font-size:0.6em;
+}
 #layercontrol ul{
     padding: 0px;
     margin: 5px;
 }
-.mq-layercontrol {
-    font-size:0.6em;
+.mq-layercontrol {    
     margin: 2px;
     padding:2px;
 }
@@ -50,4 +51,8 @@
 }
 .mq-layercontrol-delete {
     
+}
+.mq-mouseposition {
+    display: block;
+    width: 200px;
 }

@@ -11,7 +11,7 @@ var Map = function(element, options) {
 
     this.element = element;
     // TODO vmx 20110609: do proper options building
-    
+    // TODO SMO 20110616: make sure that all projection strings are uppercase
     var olMapOptions = $.extend({}, this.options);
     delete olMapOptions.layers;
     delete olMapOptions.maxExtent;    
