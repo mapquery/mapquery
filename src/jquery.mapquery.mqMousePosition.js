@@ -45,8 +45,8 @@ $.widget("mapQuery.mqMousePosition", {
         }
         var pos = map.olMap.getLonLatFromLayerPx(new OpenLayers.Pixel(x,y));
         pos=pos.transform(new OpenLayers.Projection(mapProjection),new OpenLayers.Projection(displayProjection));        
-        $("#mq-mouseposition-x", this.domElement).html('x: '+pos.lon);
-        $("#mq-mouseposition-y", this.domElement).html('y: "+pos.lat);
+        $("#mq-mouseposition-x", element).html('x: '+pos.lon);
+        $("#mq-mouseposition-y", element).html('y: '+pos.lat);
     }
 });
 })(jQuery);
