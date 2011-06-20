@@ -1,6 +1,6 @@
 (function($) {
 $.template('mqOverviewMap',
-    '<div id="${id}" class="mq-overviewmap ui-widget ui-helper-clearfix ">'+
+    '<div id="${id}" class="mq-overviewmap ui-widget ">'+
     '</div>');
         
 $.widget("mapQuery.mqOverviewMap", {
