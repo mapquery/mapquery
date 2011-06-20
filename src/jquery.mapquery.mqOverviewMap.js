@@ -23,6 +23,7 @@ $.widget("mapQuery.mqOverviewMap", {
             id: id}).appendTo(element);
                     
         var dialogElement = $(".mq-overviewmap").dialog({
+            dialogClass: 'mq-overviewmap-dialog',
             autoOpen: true,
             title: 'Overview', //TODO smo20110620 make this configurable and/or i18n
             position: ['right','bottom'], //TODO smo20110620 make this configurable
