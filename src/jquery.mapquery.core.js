@@ -12,15 +12,16 @@ var Map = function(element, options) {
     this.element = element;
     // TODO vmx 20110609: do proper options building
     // TODO SMO 20110616: make sure that all projection strings are uppercase
-    var olMapOptions = $.extend({}, this.options);
-    delete olMapOptions.layers;
-    delete olMapOptions.maxExtent;    
+    // smo 20110620: you need the exact map options in the overviewmap widget as such we need to preserve them
+    this.olMapOptions = $.extend({}, this.options);
+    delete this.olMapOptions.layers;
+    delete this.olMapOptions.maxExtent;    
     this.maxExtent = this.options.maxExtent;    
-    olMapOptions.maxExtent = new OpenLayers.Bounds(this.maxExtent[0],this.maxExtent[1],this.maxExtent[2],this.maxExtent[3])
+    this.olMapOptions.maxExtent = new OpenLayers.Bounds(this.maxExtent[0],this.maxExtent[1],this.maxExtent[2],this.maxExtent[3])
     OpenLayers.IMAGE_RELOAD_ATTEMPTS = 3; 
     OpenLayers.Util.onImageLoadErrorColor = "transparent"; 
     
-    this.olMap = new OpenLayers.Map(this.element[0], olMapOptions);
+    this.olMap = new OpenLayers.Map(this.element[0], this.olMapOptions);
 
 
     // Keep IDs of vector layer for select feature control

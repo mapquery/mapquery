@@ -60,3 +60,6 @@
     display: inline-block;  
     margin:2px;       
 }
+.mq-overviewmap .ui-dialog-content {
+    padding: 0.4em;
+}
