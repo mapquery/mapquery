@@ -20,7 +20,7 @@
   margin: 2px;
   padding: 4px 0;
 }
-#layercontrol {
+#layercontrol{
     float:right;
     width: 320px;
     border:solid 1px black;
@@ -63,3 +63,6 @@
 .mq-overviewmap-dialog .ui-dialog-content{
     padding: 0.4em;
 }
+ #layermanager{
+     width: 300px;
+ }

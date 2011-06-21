@@ -5,7 +5,7 @@ $.template('mqLayerManager',
 
 $.template('mqLayerManagerElement',
     '<div class="mq-layermanager-element">'+
-    '<div class="mq-layermanager-element-header"><div class="mq-layermanager-label">${label}</div></div>'+
+    '<div class="mq-layermanager-element-header"><div class="mq-layermanager-label">${label}</div><span class="ui-icon ui-icon-closethick">&nbsp;</span></div>'+
     '<div class="mq-layermanager-element-content">'+
         '<div class="mq-layermanager-element-visibility">'+
             '<input type="checkbox" class="mq-layermanager-visibility" id="${id}-visibility" checked="${visible}" />'+
@@ -32,7 +32,22 @@ $.widget("mapQuery.mqLayerManager", {
         }
         
         var lmElement = $.tmpl('mqLayerManager').appendTo(element);
+        element.find('.ui-icon-closethick').button();
         
+        lmElement.sortable({
+            axis:'y',
+            containment: 'parent',
+            update: function(event, ui) {
+                var layerNodes = ui.item.siblings().andSelf();
+                var num = layerNodes.length-1;
+                layerNodes.each(function(i) {
+                    var layer = $(this).data('layer');
+                    var pos = num-i;                   
+                    layer.position(pos);                   
+                });
+            }
+        });
+
         
         $.each(map.layers().reverse(), function(){
            self._add(lmElement, this); 
@@ -46,6 +61,13 @@ $.widget("mapQuery.mqLayerManager", {
             //checkbox.siblings('.mq-layermanager-slider').slider('value',50) ;
         });
         
+         element.delegate('.ui-icon-closethick', 'click', function() {
+            var control = $(this).parents('.mq-layermanager-element');
+            control.data('layer').remove();
+            control.fadeOut(function() {
+                $(this).remove();
+            });
+        });
 
     },
     
@@ -72,10 +94,6 @@ $.widget("mapQuery.mqLayerManager", {
            change: function(event, ui) {
            }
        });
-    },
-    
-    _removeLayer: function() {
-        
     }
 });
 })(jQuery);
