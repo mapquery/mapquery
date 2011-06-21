@@ -16,13 +16,19 @@ var Map = function(element, options) {
     this.olMapOptions = $.extend({}, this.options);
     delete this.olMapOptions.layers;
     delete this.olMapOptions.maxExtent;    
+    delete this.olMapOptions.zoomToMaxExtent;
     this.maxExtent = this.options.maxExtent;    
     this.olMapOptions.maxExtent = new OpenLayers.Bounds(this.maxExtent[0],this.maxExtent[1],this.maxExtent[2],this.maxExtent[3])
+    
+    
     OpenLayers.IMAGE_RELOAD_ATTEMPTS = 3; 
     OpenLayers.Util.onImageLoadErrorColor = "transparent"; 
     
+    // create the OpenLayers Map
     this.olMap = new OpenLayers.Map(this.element[0], this.olMapOptions);
-
+    
+    //OpenLayers doesn't want to return a maxExtent when there is no baselayer set (eg on an empty map, so we create a fake baselayer
+    this.olMap.addLayer(new OpenLayers.Layer('fake', {baseLayer: true}));    
 
     // Keep IDs of vector layer for select feature control
     this.vectorLayers = [];
@@ -47,7 +53,12 @@ var Map = function(element, options) {
     // Add layers to the map
     if (this.options.layers!==undefined) {
         this.layers(this.options.layers);
-    }
+    };
+    
+    // zoom to the maxExtent of the map
+    if (this.options.zoomToMaxExtent) {        
+        this.olMap.zoomToMaxExtent();
+    };
 };
 
 Map.prototype = {
@@ -224,9 +235,6 @@ var Layer = function(map, id, options) {
     this.olLayer.events.on(events);
 
     this.map.olMap.addLayer(this.olLayer);
-    if (options.zoomToMaxExtent) {
-        this.map.olMap.zoomToMaxExtent();
-    }
 };
 
 $.extend(Layer, {
@@ -482,12 +490,12 @@ $.fn.mapQuery.defaults = {
             maxResolution: 156543.0339,
             numZoomLevels: 19,
             projection: 'EPSG:900913',
+            zoomToMaxExtent: true,            
             units: 'm'            
         };
     },
     layer: {
-        all: {
-            zoomToMaxExtent: true,             //needed for at least spherical mercator, osm, google and bing
+        all: {            
             isBaseLayer: false,
             displayOutsideMaxExtent: false  //in general it is kinda pointless to load tiles outside a maxextent
         },

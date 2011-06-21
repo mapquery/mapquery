@@ -38,7 +38,9 @@ $.widget("mapQuery.mqOverviewMap", {
         var mapOptions = map.olMapOptions;
         //remove the controls, otherwise you end up with recursing events
         delete mapOptions.controls;                           
-        var overview = new OpenLayers.Control.OverviewMap( {div: document.getElementById(id),size:overviewmapsize,mapOptions:mapOptions});
+        // use the lowest layer of the map as overviewmap
+        // TODO: make the layer configurable
+        var overview = new OpenLayers.Control.OverviewMap( {div: document.getElementById(id),size:overviewmapsize,mapOptions:mapOptions,layers:[map.layers().reverse()[0].olLayer.clone()]});
         map.olMap.addControl(overview);
         
         // remove OpenLayers blue border around overviewmap
