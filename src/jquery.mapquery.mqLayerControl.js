@@ -69,7 +69,7 @@ $.widget("mapQuery.mqLayerControl", {
             position: layer.position(),
             visible: layer.visible()
         })
-            // save layer layer ID in the DOM, so we can easily
+            // save layer layer in the DOM, so we can easily
             // hide/show/delete the layer with live events
             .data('layer', layer)
             .prependTo(element);
