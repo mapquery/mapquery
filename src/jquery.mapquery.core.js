@@ -428,7 +428,10 @@ Layer.prototype = {
     },
     opacity: function(opac) {
          if (opac===undefined) {
-            return this.olLayer.opacity;
+            // this.olLayer.opacity can be null if never set so return the visibility
+            var value;
+            this.olLayer.opacity ? value= this.olLayer.opacity : value = this.olLayer.getVisibility();
+            return value;
         }
         else {
             this.olLayer.setOpacity(opac);
