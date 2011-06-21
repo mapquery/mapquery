@@ -426,6 +426,15 @@ Layer.prototype = {
             return this;
         }
     },
+    opacity: function(opac) {
+         if (opac===undefined) {
+            return this.olLayer.opacity;
+        }
+        else {
+            this.olLayer.setOpacity(opac);
+            return this;
+        }
+    },
     // every event gets the layer passed in
     bind: function() {
         this.events.bind.apply(this.events, arguments);
