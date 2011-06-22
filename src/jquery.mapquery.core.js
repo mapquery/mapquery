@@ -1,5 +1,7 @@
 (function ($) {
-var Map = function(element, options) {
+$.MapQuery = $.MapQuery || {};
+
+$.MapQuery.Map = function(element, options) {
     var self = this;
     //If there are a maxExtent and a projection other than Spherical Mercator automagically set maxResolution if it is not set
     // TODO smo 20110614: put maxExtent and maxResolution setting in the proper option building routine
@@ -61,7 +63,7 @@ var Map = function(element, options) {
     };
 };
 
-Map.prototype = {
+$.MapQuery.Map.prototype = {
     layers: function(options) {
         //var o = $.extend({}, options);
         var self = this;
@@ -99,7 +101,7 @@ Map.prototype = {
     },
     _addLayer: function(options) {
         var id = this._createId();
-        var layer = new Layer(this, id, options);
+        var layer = new $.MapQuery.Layer(this, id, options);
         this.layersList[id] = layer;
         if (layer.isVector) {
             this.vectorLayers.push(id);
@@ -203,7 +205,7 @@ Map.prototype = {
     }
 };
 
-var Layer = function(map, id, options) {
+$.MapQuery.Layer = function(map, id, options) {
     var self = this;
     // apply default options that are not specific to a layer
 
@@ -223,7 +225,8 @@ var Layer = function(map, id, options) {
     // create the actual layer based on the options
     // Returns layer and final options for the layer (for later re-use,
     // e.g. zoomToMaxExtent).
-    var res = Layer.types[options.type.toLowerCase()].call(this, options);
+    var res = $.MapQuery.Layer.types[options.type.toLowerCase()].call(
+        this, options);
     this.olLayer = res.layer;
     options = res.options;
 
@@ -239,7 +242,7 @@ var Layer = function(map, id, options) {
     this.map.olMap.addLayer(this.olLayer);
 };
 
-$.extend(Layer, {
+$.extend($.MapQuery.Layer, {
     types: {
         bing: function(options) {
             var o = $.fn.mapQuery.defaults.layer.all;
@@ -396,7 +399,7 @@ $.extend(Layer, {
     }
 });
 
-Layer.prototype = {
+$.MapQuery.Layer.prototype = {
     down: function(delta) {
         delta = delta || 1;
         this.map.olMap.raiseLayer(this.olLayer, -delta);
@@ -460,7 +463,7 @@ $.fn.mapQuery = function(options) {
     return this.each(function() {
         var instance = $.data(this, 'mapQuery');
         if (!instance) {
-            $.data(this, 'mapQuery', new Map($(this), options));
+            $.data(this, 'mapQuery', new $.MapQuery.Map($(this), options));
         }
     });
 };
@@ -532,7 +535,6 @@ $.fn.mapQuery.defaults = {
 
 // Some utility functions
 
-$.MapQuery = {};
 $.MapQuery.util = {};
 // http://blog.stevenlevithan.com/archives/parseuri (2010-12-18)
 // parseUri 1.2.2
