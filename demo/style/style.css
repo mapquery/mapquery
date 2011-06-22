@@ -66,3 +66,19 @@
  #layermanager{
      width: 300px;
  }
+
+#featureinfo {
+    display: inline-block;
+    height: 256px;
+    position: relative;
+    vertical-align: top;
+    width: 256px;
+}
+#featureinfo p {
+    font-size: 1.5em;
+    margin-left: 1em;
+}
+
+#popup {
+  position:absolute;
+}
