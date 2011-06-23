@@ -61,13 +61,18 @@ $.widget("mapQuery.mqLayerManager", {
             //checkbox.siblings('.mq-layermanager-slider').slider('value',50) ;
         });
         
-         element.delegate('.ui-icon-closethick', 'click', function() {
+        element.delegate('.ui-icon-closethick', 'click', function() {
             var control = $(this).parents('.mq-layermanager-element');
             control.data('layer').remove();
             control.fadeOut(function() {
                 $(this).remove();
             });
         });
+        
+        //binding events
+        map.bind("mqAddLayer",
+            {widget:self,map:map,control:lmElement},
+            self._onLayerAdd);
 
     },
     
@@ -81,7 +86,7 @@ $.widget("mapQuery.mqLayerManager", {
             // save layer layer in the DOM, so we can easily
             // hide/show/delete the layer with live events
             .data('layer', layer)
-            .appendTo(element);
+            .prependTo(element);
             
        $(".mq-layermanager-slider", layerElement).slider({
            max: 100,
@@ -94,6 +99,9 @@ $.widget("mapQuery.mqLayerManager", {
            change: function(event, ui) {
            }
        });
+    },
+    _onLayerAdd: function(evt, layer) {
+        evt.data.widget._add(evt.data.control,layer);
     }
 });
 })(jQuery);

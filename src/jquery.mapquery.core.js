@@ -105,6 +105,7 @@ Map.prototype = {
             this.vectorLayers.push(id);
         }
         this._updateSelectFeatureControl(this.vectorLayers);
+        this.events.trigger('mqAddLayer',layer);
         return layer;
     },
     // Creates a new unique ID for a layer
@@ -118,6 +119,7 @@ Map.prototype = {
         });
         this._updateSelectFeatureControl(this.vectorLayers);
         delete this.layersList[id];
+        this.events.trigger('mqRemoveLayer',id);
         // XXX vmx: shouldn't the layer be destroyed() properly?
         return this;
     },
