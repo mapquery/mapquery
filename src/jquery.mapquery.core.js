@@ -128,7 +128,7 @@ Map.prototype = {
 
         // Determine source projection
         var sourceProjection = null;
-        if(options.projection) {
+        if(options && options.projection) {
             sourceProjection = options.projection.CLASS_NAME === 'OpenLayers.Projection' ? options.projection : new OpenLayers.Projection(options.projection);
         } else {
             var displayProjection = this.olMap.displayProjection;
@@ -253,9 +253,9 @@ var Layer = function(map, id, options) {
 $.extend(Layer, {
     types: {
         bing: function(options) {
-            var o = $.fn.mapQuery.defaults.layer.all;
-            $.extend(true, o, $.fn.mapQuery.defaults.layer.bing);
-            $.extend(true, o, options);
+            var o = $.extend(true, {}, $.fn.mapQuery.defaults.layer.all,
+                $.fn.mapQuery.defaults.layer.bing,
+                options);
             var view = o.view;
             switch(view){
                 case 'road':
@@ -273,18 +273,18 @@ $.extend(Layer, {
         //Not sure this one is worth pursuing works with ecwp:// & jpip:// urls
         //See ../lib/NCSOpenLayersECWP.js
         ecwp: function(options) {
-            var o = $.fn.mapQuery.defaults.layer.all;
-            $.extend(true, o, $.fn.mapQuery.defaults.layer.raster);
-            $.extend(true, o, options);
+            var o = $.extend(true, {}, $.fn.mapQuery.defaults.layer.all,
+                    $.fn.mapQuery.defaults.layer.raster,
+                    options);
             return {
                 layer: new OpenLayers.Layer.ECWP(o.label, o.url, o),
                 options: o
             };
         },
         google: function(options) {
-            var o = $.fn.mapQuery.defaults.layer.all;
-            $.extend(true, o, $.fn.mapQuery.defaults.layer.google);
-            $.extend(true, o, options);
+            var o = $.extend(true, {}, $.fn.mapQuery.defaults.layer.all,
+                    $.fn.mapQuery.defaults.layer.google,
+                    options);
             var view = o.view;
             switch(view){
                 case 'road':
@@ -301,10 +301,20 @@ $.extend(Layer, {
                 options: o
             };
         },
+        vector: function(options) {
+            var o = $.extend(true, {}, $.fn.mapQuery.defaults.layer.all,
+                    $.fn.mapQuery.defaults.layer.vector,
+                    options);
+            this.isVector = true;
+            return {
+                layer: new OpenLayers.Layer.Vector(o.label),
+                options: o
+            };
+        },
         json: function(options) {
-            var o = $.fn.mapQuery.defaults.layer.all;
-            $.extend(true, o, $.fn.mapQuery.defaults.layer.vector);
-            $.extend(true, o, options);
+            var o = $.extend(true, {}, $,fn,mapQuery.defaults.layer.all,
+                    $.fn.mapQuery.defaults.layer.vector,
+                    options);
             this.isVector = true;
             var strategies = [];
             for (var i in o.strategies) {
@@ -339,18 +349,18 @@ $.extend(Layer, {
             };
         },
         osm: function(options) {
-            var o = $.fn.mapQuery.defaults.layer.all;
-            $.extend(true, o, $.fn.mapQuery.defaults.layer.osm);
-            $.extend(true, o, options);
+            var o = $.extend(true, {}, $.fn.mapQuery.defaults.layer.all,
+                $.fn.mapQuery.defaults.layer.osm,
+                options);
             return {
                 layer: new OpenLayers.Layer.OSM(options),
                 options: o
             };
         },
         wms: function(options) {
-            var o = $.fn.mapQuery.defaults.layer.all;
-            $.extend(true, o, $.fn.mapQuery.defaults.layer.raster);
-            $.extend(true, o, options);
+            var o = $.extend(true, {}, $.fn.mapQuery.defaults.layer.all,
+                    $.fn.mapQuery.defaults.layer.raster,
+                    options);
             var params = {
                 layers: o.layers,
                 transparent: o.transparent,
@@ -363,8 +373,8 @@ $.extend(Layer, {
             };
         },
         wmts: function(options) {
-            var o = $.fn.mapQuery.defaults.layer.all;
-            $.extend(true, o, $.fn.mapQuery.defaults.layer.wmts);
+            var o = $.extend(true, {}, $.fn.mapQuery.defaults.layer.all,
+                    $.fn.mapQuery.defaults.layer.wmts);
             //smo 20110614 the maxExtent is set here with OpenLayers.Bounds 
             if (options.sphericalMercator===true) {
                 $.extend(true, o, {
