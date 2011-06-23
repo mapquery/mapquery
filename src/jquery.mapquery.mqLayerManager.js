@@ -100,6 +100,7 @@ $.widget("mapQuery.mqLayerManager", {
            }
        });
     },
+    
     _onLayerAdd: function(evt, layer) {
         evt.data.widget._add(evt.data.control,layer);
     },
@@ -112,9 +113,8 @@ $.widget("mapQuery.mqLayerManager", {
          control.fadeOut(function() {
             $(this).remove();
          });
-
-         
     },
+    
     _onLayerRemove: function(evt, id) {
         evt.data.widget._remove(id,true);
     }

@@ -1,6 +1,6 @@
 (function($) {
 $.template('mqLayerControl',
-    '<li class="mq-layercontrol ui-widget-content ui-helper-clearfix ui-corner-all">'+
+    '<li id="mq-layercontrol-${id}" class="mq-layercontrol ui-widget-content ui-helper-clearfix ui-corner-all">'+
     '<span><div class="ui-icon ui-icon-arrowthick-2-n-s"></div><div class="mq-layercontrol-label">${label}</div>' +
     '<button class="mq-layercontrol-delete">Delete</button>' +
     '<input type="checkbox" class="mq-layercontrol-visibility" id="${id}-visibility" checked="${visible}" />'+
@@ -54,11 +54,17 @@ $.widget("mapQuery.mqLayerControl", {
 
         element.delegate('button', 'click', function() {
             var control = $(this).parents('li');
-            control.data('layer').remove();
-            control.fadeOut(function() {
-                $(this).remove();
-            });
+            self._remove(control.data('layer').id);            
         });
+        
+         //binding events
+        map.bind("mqAddLayer",
+            {widget:self,map:map,control:ulElement},
+            self._onLayerAdd);
+
+        map.bind("mqRemoveLayer",
+            {widget:self},
+            self._onLayerRemove);
     },
     _add: function(element, layer) {
         //$.tmpl('mqLayerControl', layer)
@@ -73,6 +79,25 @@ $.widget("mapQuery.mqLayerControl", {
             // hide/show/delete the layer with live events
             .data('layer', layer)
             .prependTo(element);
+    },
+
+    _onLayerAdd: function(evt, layer) {
+        evt.data.widget._add(evt.data.control,layer);
+    },
+
+    // if _remove is called from the mqRemoveLayer event it means that the layer is already removed, so set removed to true
+    _remove: function(id, removed) {
+         var controlId = "#mq-layercontrol-"+id;
+         var control = $(controlId);
+         removed ? true : control.data('layer').remove();
+         control.fadeOut(function() {
+            $(this).remove();
+         });
+    },
+    
+    _onLayerRemove: function(evt, id) {
+        evt.data.widget._remove(id,true);
     }
+
 });
 })(jQuery);

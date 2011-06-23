@@ -6,13 +6,14 @@
   <title>MapQuery widget example</title>
   <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/themes/base/jquery-ui.css" type="text/css" media="all" />
   <link rel='StyleSheet' type='text/css' href='style/style.css'/>
-  <script src="../lib/openlayers/OpenLayers.js" type="text/javascript"></script>
+  <script src="http://localhost/2010/OpenLayers/lib/OpenLayers.js" type="text/javascript"></script>
   <script src="../lib/jquery/jquery-1.4.4.js" type="text/javascript"></script>
   <script src="../lib/jquery/ui/jquery-ui.js" type="text/javascript"></script>
   <script src="../lib/jquery/jquery.tmpl.js" type="text/javascript"></script>
   <script src="../src/jquery.mapquery.core.js" type="text/javascript"></script>
   <script src="../src/jquery.mapquery.mqZoomButtons.js" type="text/javascript"></script>
   <script src="../src/jquery.mapquery.mqLayerControl.js" type="text/javascript"></script>
+  <script src="../src/jquery.mapquery.mqLayerManager.js" type="text/javascript"></script>
   <script src="../src/jquery.mapquery.mqMousePosition.js" type="text/javascript"></script>
   <script src="../src/jquery.mapquery.mqOverviewMap.js" type="text/javascript"></script>
   <script type="text/javascript">
@@ -33,7 +34,19 @@
     $('#layercontrol').mqLayerControl($('#map'));
     $('#mouseposition').mqMousePosition($('#map'));
     $('#overviewmap').mqOverviewMap($('#map'));
+    $('#layermanager').mqLayerManager($('#map'));
+
+    $("p").click(function() {
+        jQuery('#map').data("mapQuery").layers({
+            type:'bing',        //create a bing maps layer
+            label: 'bing',
+            view:'satellite',    //use the bing satellite (aerial) layer, instead of bing road (default)
+            key:'ArAGGPJ16xm0RXRbw27PvYc9Tfuj1k1dUr_gfA5j8QBD6yAYMlsAtF6YkVyiiLGn' //Bing Maps API key for your application. Get you own at http://bingmapsportal.com/ ; this one is for the mapquery project
+        });
+    });    
     });
+    
+
   </script>
 </head>
 <body>
@@ -41,5 +54,7 @@
     <div id="layercontrol" class="mq-widget"></div>
     <div id="mouseposition" class="mq-widget"></div>
     <div id="overviewmap"  class="mq-widget"></div>
+    <div id="layermanager"  class="mq-widget"></div>
+    <p id="click">click</p>
 </body>
 </html>
