@@ -128,16 +128,16 @@ Map.prototype = {
 
         // Determine source projection
         var sourceProjection = null;
-        var displayProjection = this.olMap.displayProjection;
-        if(!displayProjection) {
-            // source == target
-            sourceProjection = this.olMap.getProjectionObject();
-        } else if(displayProjection.CLASS_NAME === 'OpenLayers.Projection') {
-            // source == display
-            sourceProjection = displayProjection;
+        if(options.projection) {
+            sourceProjection = options.projection.CLASS_NAME === 'OpenLayers.Projection' ? options.projection : new OpenLayers.Projection(options.projection);
         } else {
-            // source == display, try to build it
-            sourceProjection = new OpenLayers.Projection(displayProjection);
+            var displayProjection = this.olMap.displayProjection;
+            if(!displayProjection) {
+                // source == target
+                sourceProjection = new OpenLayers.Projection('EPSG:4326');
+            } else {
+                sourceProjection = displayProjection.CLASS_NAME === 'OpenLayers.Projection' ? displayProjection : new OpenLayers.Projection(displayProjection);
+            }
         }
 
         // Get the current position
