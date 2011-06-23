@@ -110,4 +110,68 @@ asyncTest("Hide popup when moved outside of map (and show it again)", 2, functio
     });
 });
 
+asyncTest("Unselect feature when popup is closed", 2, function() {
+    var map = $('#map4').mapQuery({
+        layers: {
+            type: 'JSON',
+            label: 'Polygons',
+            url: '../../../demo/data/poly.json'
+        },
+        maxExtent: [0, -90, 160, 90]
+    });
+    var popup = $('#popup4').mqPopup({
+        map: map,
+        contents: function(feature) {
+            return '<p>' + feature.data.id + '</p>';
+        }
+    });
+
+    var mq = map.data('mapQuery');
+    mq.layers()[0].bind('loadend', function(evt, data) {
+        var layer = data.object;
+        var feature = data.object.features[0];
+        layer.events.triggerEvent('featureselected', {feature: feature});
+        start();
+        ok($('#popup4').is(':visible')===true, 'Popup is visible');
+
+        $('#popup4 a.ui-dialog-titlebar-close').trigger('click');
+        ok($('#popup4').is(':visible')===false, 'Popup is hidden');
+
+        mq.destroy();
+        popup.empty();
+    });
+});
+
+asyncTest("Close popup when feature gets unselected", 2, function() {
+    var map = $('#map4').mapQuery({
+        layers: {
+            type: 'JSON',
+            label: 'Polygons',
+            url: '../../../demo/data/poly.json'
+        },
+        maxExtent: [0, -90, 160, 90]
+    });
+    var popup = $('#popup5').mqPopup({
+        map: map,
+        contents: function(feature) {
+            return '<p>' + feature.data.id + '</p>';
+        }
+    });
+
+    var mq = map.data('mapQuery');
+    mq.layers()[0].bind('loadend', function(evt, data) {
+        var layer = data.object;
+        var feature = data.object.features[0];
+        layer.events.triggerEvent('featureselected', {feature: feature});
+        start();
+        ok($('#popup5').is(':visible')===true, 'Popup is visible');
+
+        layer.events.triggerEvent('featureunselected', {feature: feature});
+        ok($('#popup5').is(':visible')===false, 'Popup is hidden');
+
+        mq.destroy();
+        popup.empty();
+    });
+});
+
 })(jQuery);
