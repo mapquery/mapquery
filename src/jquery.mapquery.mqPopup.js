@@ -1,7 +1,7 @@
 (function($) {
 $.template('mqPopup',
     '<div class="mq-popup ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix">' +
-    '<span id="ui-dialog-title-dialog" class="ui-dialog-title">${title}</span>' +
+    '<span class="ui-dialog-title">${title}</span>' +
     '<a class="ui-dialog-titlebar-close ui-corner-all" href="#"><span class="ui-icon ui-icon-closethick">close</span></a>' +
     '</div>' +
     '<div" class="ui-dialog-content ui-widget-content">{{html contents}}</div>');
@@ -35,14 +35,17 @@ $.widget("mapQuery.mqPopup", {
             layer.bind("featureselected",
                 {widget: self, map: map, layer: layer},
                 self._onFeatureselected);
+            layer.bind("featureunselected",
+                {widget: self},
+                self._onFeatureunselected);
         });
         this.element.addClass('ui-dialog ui-widget ui-widget-content ' +
-                              'ui-corner-all ui-draggable ui-resizable');
+                              'ui-corner-all');
         map.bind("move", {widget: self, map: map}, self._onMove);
     },
     _destroy: function() {
         this.element.removeClass('ui-dialog ui-widget ui-widget-content ' +
-                                 'ui-corner-all ui-draggable ui-resizable')
+                                 'ui-corner-all')
             .empty();
     },
     _onFeatureselected: function(evt, data) {
@@ -66,8 +69,9 @@ $.widget("mapQuery.mqPopup", {
             title: self.options.title,
             contents: contents
         })).find('a.ui-dialog-titlebar-close').bind('click', function() {
-            element.hide();//empty();
+            element.hide();
             self.lonLat = null;
+            layer.unselectFeature(data.feature);
         });
 
         // if the popup is outside of the view, pan in
@@ -75,6 +79,11 @@ $.widget("mapQuery.mqPopup", {
             (pixels[0] + element.outerWidth()) - self.options.padding;
         var yoffset = element.outerHeight() - pixels[1] + self.options.padding;
         map.pan(xoffset < 0 ? -xoffset : 0, yoffset > 0 ? -yoffset : 0);
+    },
+    _onFeatureunselected: function(evt, data) {
+        var self = evt.data.widget;
+        self.element.hide();
+        self.lonLat = null;
     },
     _onMove: function(evt, data) {
         var self = evt.data.widget;

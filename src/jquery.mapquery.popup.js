@@ -21,6 +21,9 @@ $.extend(MQ.Map.prototype, {
 $.extend(MQ.Layer.prototype, {
     zIndex: function() {
         return this.olLayer.getZIndex();
+    },
+    unselectFeature: function(feature) {
+        this.map.selectFeatureControl.unselect(feature);
     }
 });
 $.extend(MQ, {
