@@ -118,8 +118,8 @@ Map.prototype = {
             return elem != id;
         });
         this._updateSelectFeatureControl(this.vectorLayers);
-        delete this.layersList[id];
         this.events.trigger('mqRemoveLayer',id);
+        delete this.layersList[id];        
         // XXX vmx: shouldn't the layer be destroyed() properly?
         return this;
     },
