@@ -4,7 +4,7 @@ $.template('mqLayerManager',
     '</div>');
 
 $.template('mqLayerManagerElement',
-    '<div class="mq-layermanager-element">'+
+    '<div class="mq-layermanager-element" id="mq-layermanager-element-${id}">'+
     '<div class="mq-layermanager-element-header"><div class="mq-layermanager-label">${label}</div><span class="ui-icon ui-icon-closethick">&nbsp;</span></div>'+
     '<div class="mq-layermanager-element-content">'+
         '<div class="mq-layermanager-element-visibility">'+
@@ -62,11 +62,8 @@ $.widget("mapQuery.mqLayerManager", {
         });
         
         element.delegate('.ui-icon-closethick', 'click', function() {
-            var control = $(this).parents('.mq-layermanager-element');
-            control.data('layer').remove();
-            control.fadeOut(function() {
-                $(this).remove();
-            });
+            var control = $(this).parents('.mq-layermanager-element');            
+            self._remove(control.data('layer').id);
         });
         
         //binding events
@@ -74,6 +71,9 @@ $.widget("mapQuery.mqLayerManager", {
             {widget:self,map:map,control:lmElement},
             self._onLayerAdd);
 
+        map.bind("mqRemoveLayer",
+            {widget:self},
+            self._onLayerRemove);
     },
     
     _add: function(element, layer) {
@@ -102,6 +102,22 @@ $.widget("mapQuery.mqLayerManager", {
     },
     _onLayerAdd: function(evt, layer) {
         evt.data.widget._add(evt.data.control,layer);
+    },
+    
+    // if _remove is called from the mqRemoveLayer event it means that the layer is already removed, so set removed to true
+    _remove: function(id, removed) {
+         var controlId = "#mq-layermanager-element-"+id;
+         var control = $(controlId);
+         removed ? true : control.data('layer').remove();
+         control.fadeOut(function() {
+            $(this).remove();
+         });
+
+         
+    },
+    _onLayerRemove: function(evt, id) {
+        evt.data.widget._remove(id,true);
     }
+    
 });
 })(jQuery);
