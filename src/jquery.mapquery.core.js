@@ -125,7 +125,21 @@ Map.prototype = {
     // vmx 20110609 Still true?
     goto: function (options) {
         var position;
-        var epsg4326 = new OpenLayers.Projection('EPSG:4326');
+
+        // Determine source projection
+        var sourceProjection = null;
+        var displayProjection = this.olMap.displayProjection;
+        if(!displayProjection) {
+            // source == target
+            sourceProjection = this.olMap.getProjectionObject();
+        } else if(displayProjection.CLASS_NAME === 'OpenLayers.Projection') {
+            // source == display
+            sourceProjection = displayProjection;
+        } else {
+            // source == display, try to build it
+            sourceProjection = new OpenLayers.Projection(displayProjection);
+        }
+
         // Get the current position
         if (arguments.length===0) {
             position = this.olMap.getCenter();
@@ -134,10 +148,10 @@ Map.prototype = {
             var mapProjection = this.olMap.getProjectionObject();
             
 
-            if (!mapProjection.equals(epsg4326)) {
-                position.transform(mapProjection, epsg4326);
+            if (!mapProjection.equals(sourceProjection)) {
+                position.transform(mapProjection, sourceProjection);
             }
-            box.transform(mapProjection,epsg4326);
+            box.transform(mapProjection,sourceProjection);
             box = box!==null ? box.toArray() : [];
             return {
                 position: [position.lon, position.lat],
@@ -150,8 +164,8 @@ Map.prototype = {
         if (options.box!==undefined) {
             var mapProjection = this.olMap.getProjectionObject();
             var box = new OpenLayers.Bounds(options.box[0], options.box[1],options.box[2], options.box[3]);
-            if (!mapProjection.equals(epsg4326)) {
-                box.transform(epsg4326,mapProjection);
+            if (!mapProjection.equals(sourceProjection)) {
+                box.transform(sourceProjection,mapProjection);
             };
             this.olMap.zoomToExtent(box);
               
@@ -165,9 +179,8 @@ Map.prototype = {
             position = new OpenLayers.LonLat(options.position[0],
                                              options.position[1]);
             var mapProjection = this.olMap.getProjectionObject();
-            var epsg4326 = new OpenLayers.Projection('EPSG:4326');
-            if (!mapProjection.equals(epsg4326)) {
-                position.transform(epsg4326, mapProjection);
+            if (!mapProjection.equals(sourceProjection)) {
+                position.transform(sourceProjection, mapProjection);
             }
             // options.zoom might be undefined, so we are good to
             // pass it on
@@ -340,14 +353,15 @@ $.extend(Layer, {
             $.extend(true, o, options);
             var params = {
                 layers: o.layers,
-                transparent: o.transparent
+                transparent: o.transparent,
+                format: o.format
             };
             //SMO20110611: TODO WMS requires a label, autogenerate one if not provided
             return {
                 layer: new OpenLayers.Layer.WMS(o.label, o.url, params),
                 options: o
             };
-        },       
+        },
         wmts: function(options) {
             var o = $.fn.mapQuery.defaults.layer.all;
             $.extend(true, o, $.fn.mapQuery.defaults.layer.wmts);
