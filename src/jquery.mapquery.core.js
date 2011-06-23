@@ -315,7 +315,6 @@ $.extend(Layer, {
                 }
             }
             var params = {
-                maxExtent: new OpenLayers.Bounds.fromArray(o.maxExtent),
                 protocol: new OpenLayers.Protocol.HTTP({
                     url: o.url,
                     format: new OpenLayers.Format.GeoJSON()
