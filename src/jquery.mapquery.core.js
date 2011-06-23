@@ -235,6 +235,7 @@ $.MapQuery.Layer = function(map, id, options) {
     $.each(this.olLayer.EVENT_TYPES, function(i, evt) {
         events[evt] = function() {
             self.events.trigger(evt, arguments);
+            self.map.events.trigger(evt, arguments);
         };
     });
     this.olLayer.events.on(events);

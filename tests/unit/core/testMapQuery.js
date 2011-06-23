@@ -236,7 +236,7 @@ test("goto works properly (EPSG:900913)", function() {
              'Setting box only (position is right)'); */
         equals((goto.position[0] == 7.8952775000002) && (goto.position[1] == 50.414584408364), true,
             'Setting box only (position is right)');
-             
+
         same(goto.zoom, 4,
              'Setting box only (zoom is right)');
 
@@ -261,4 +261,31 @@ test("goto works properly (EPSG:900913)", function() {
     }
 });
 
+asyncTest("Layer events are bound to the map object as well", 2, function() {
+    var mq = $('#map_events').mapQuery({
+        layers: {
+            type: 'JSON',
+            label: 'Polygons',
+            url: '../../../demo/data/poly.json'
+        }
+    }).data('mapQuery');
+
+    var layer = mq.layers()[0];
+    layer.bind('loadend', function(evt, data) {
+        var olLayer = data.object;
+        var feature = data.object.features[0];
+
+        layer.bind('featureselected', function() {
+            start();
+            ok(true, 'Feature selected event was fired on the Layer object');
+            stop();
+        });
+        mq.bind('featureselected', function() {
+            start();
+            ok(true, 'Feature selected event was fired on the Map object');
+            stop();
+        });
+        olLayer.events.triggerEvent('featureselected', {feature: feature});
+    });
+});
 })(jQuery);
