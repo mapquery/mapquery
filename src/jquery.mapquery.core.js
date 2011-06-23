@@ -412,7 +412,7 @@ Layer.prototype = {
         this.map.olMap.removeLayer(this.olLayer);
         // remove references to this layer that are stored in the
         // map object
-        return this.map._removeLayer();
+        return this.map._removeLayer(this.id);
     },
     position: function(pos) {
         if (pos===undefined) {
