@@ -1,7 +1,7 @@
 (function($) {
 $.template('mqFeatureInfo',
     '<div class="mq-featureinfo ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix">' +
-    '<span id="ui-dialog-title-dialog" class="ui-dialog-title">${title}</span>' +
+    '<span class="ui-dialog-title">${title}</span>' +
     '</div>' +
     '<div" class="ui-dialog-content ui-widget-content">{{html contents}}</div>');
 $.widget("mapQuery.mqFeatureInfo", {
@@ -28,6 +28,8 @@ $.widget("mapQuery.mqFeatureInfo", {
             var layer = this;
             layer.bind("featureselected", {widget: self},
                        self._onFeatureselected);
+            layer.bind("featureunselected", {widget: self},
+                       self._onFeatureunselected);
         });
         this.element.addClass('ui-dialog ui-widget ui-widget-content ' +
                               'ui-corner-all');
@@ -47,6 +49,10 @@ $.widget("mapQuery.mqFeatureInfo", {
             title: self.options.title,
             contents: contents
         }));
+    },
+    _onFeatureunselected: function(evt, data) {
+        var self = evt.data.widget;
+        self.element.empty();
     }
 });
 })(jQuery);
