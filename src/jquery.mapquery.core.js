@@ -419,10 +419,10 @@ $.MapQuery.Layer.prototype = {
     },
     position: function(pos) {
         if (pos===undefined) {
-            return this.map.olMap.getLayerIndex(this.olLayer);
+            return this.map.olMap.getLayerIndex(this.olLayer)-1;
         }
         else {
-            return this.map.olMap.setLayerIndex(this.olLayer, pos);
+            return this.map.olMap.setLayerIndex(this.olLayer, pos+1);
         }
     },
     up: function(delta) {
