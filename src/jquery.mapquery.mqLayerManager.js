@@ -66,7 +66,7 @@ $.widget("mapQuery.mqLayerManager", {
             for (i=0;i<newNodes.length;i++) {
                 layerNodes[i] = newNodes[i];
             };
-            //$(this).children().replaceWith(layerNodes.html());
+            //TODO: actually refresh the widget
         });
         element.delegate('.mq-layermanager-visibility', 'change', function() {
             var checkbox = $(this);
