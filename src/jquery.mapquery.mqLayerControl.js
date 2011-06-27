@@ -29,7 +29,7 @@ $.widget("mapQuery.mqLayerControl", {
         element.find('button').button();
         ulElement.sortable({
             axis:'y',
-            containment: 'parent',
+
             update: function(event, ui) {
                 var layerNodes = ui.item.siblings().andSelf();
                 var num = layerNodes.length-1;
