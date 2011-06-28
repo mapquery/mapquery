@@ -228,7 +228,7 @@ $.MapQuery.Layer = function(map, id, options) {
     var res = $.MapQuery.Layer.types[options.type.toLowerCase()].call(
         this, options);
     this.olLayer = res.layer;
-    options = res.options;
+    this.options = res.options;
 
     // create triggers for all OpenLayers layer events
     var events = {};
