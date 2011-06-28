@@ -53,7 +53,8 @@ $.widget("mapQuery.mqLayerManager", {
            self._add(lmElement, this); 
         });
         lmElement.bind( "sortupdate", function(event, ui) {
-            var layerNodes = $(this).children();
+            var self= this;
+            var layerNodes = $(this).contents();
             var num = layerNodes.length-1;
             //clone layernodes, put layernode in clone[pos] ???
             var newNodes=[];
@@ -64,8 +65,10 @@ $.widget("mapQuery.mqLayerManager", {
                 newNodes[pos] = this;
             });
             for (i=0;i<newNodes.length;i++) {
-                layerNodes[i] = newNodes[i];
+                lmElement.append(newNodes[i])
             };
+            var j=0;
+            
             //TODO: actually refresh the widget
         });
         element.delegate('.mq-layermanager-visibility', 'change', function() {
