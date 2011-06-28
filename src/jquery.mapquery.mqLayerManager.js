@@ -52,7 +52,7 @@ $.widget("mapQuery.mqLayerManager", {
         $.each(map.layers().reverse(), function(){
            self._add(lmElement, this); 
         });
-        lmElement.bind( "sortupdate", function(event, ui) {
+        lmElement.bind( "sortevent", function(event, ui) {
             var self= this;
             var layerNodes = $(this).contents();
             var num = layerNodes.length-1;
@@ -61,7 +61,7 @@ $.widget("mapQuery.mqLayerManager", {
             newNodes.length=layerNodes.length;
             layerNodes.each(function(i) {
                 var layer = $(this).data('layer');
-                var pos = num-layer.position();                   
+                var pos = num-layer.position(); 
                 newNodes[pos] = this;
             });
             for (i=0;i<newNodes.length;i++) {
@@ -99,6 +99,10 @@ $.widget("mapQuery.mqLayerManager", {
         map.bind("changelayer",
             {widget:self,map:map,control:lmElement},
             self._onLayerChange);
+    },
+    
+    _update: function() {
+        
     },
     
     _add: function(element, layer) {
@@ -155,9 +159,6 @@ $.widget("mapQuery.mqLayerManager", {
         if(value!==undefined) {
             layer.position(value);
         }
-        //set the widget content
-        value = layer.position();
-        widget.element.find(".mq-layermanager").trigger("sortupdate");
     },
     
     _visible: function(widget, layer, value) {
@@ -191,7 +192,7 @@ $.widget("mapQuery.mqLayerManager", {
                 evt.data.widget._opacity(evt.data.widget,layer);
             break;
             case 'order':
-                evt.data.widget._position(evt.data.widget,layer);
+                evt.data.widget.element.find(".mq-layermanager").trigger("sortevent");
             break;
             case 'visibility':
                 evt.data.widget._visible(evt.data.widget,layer);
