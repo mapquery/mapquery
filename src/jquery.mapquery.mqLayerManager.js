@@ -13,7 +13,7 @@ $.template('mqLayerManagerElement',
         '</div>'+
     '</div>'+
     '</div>');
-            
+
 $.widget("mapQuery.mqLayerManager", {
     _create: function() {
         var map;
@@ -21,7 +21,7 @@ $.widget("mapQuery.mqLayerManager", {
         var numzoomlevels;
         var self = this;
         var element = this.element;
-        
+
         //get the mapquery object
         if (this.options.jquery === $().jquery) {
             map = this.options.data('mapQuery');
@@ -30,10 +30,10 @@ $.widget("mapQuery.mqLayerManager", {
         else {
             map = this.options.map.data('mapQuery');
         }
-        
+
         var lmElement = $.tmpl('mqLayerManager').appendTo(element);
         element.find('.ui-icon-closethick').button();
-        
+
         lmElement.sortable({
             axis:'y',
             containment: 'parent',
@@ -43,69 +43,71 @@ $.widget("mapQuery.mqLayerManager", {
                 var num = layerNodes.length-1;
                 layerNodes.each(function(i) {
                     var layer = $(this).data('layer');
-                    var pos = num-i;                   
-                    self._position(self, layer, pos);                   
+                    var pos = num-i;
+                    self._position(layer, pos);
                 });
             }
         });
-        
+
+        //these layers are already added to the map as such won't trigger and event, 
+        //we call the draw function directly
         $.each(map.layers().reverse(), function(){
-           self._add(lmElement, this); 
+           self._layerAdded(lmElement, this); 
         });
-        lmElement.bind( "sortevent", function(event, ui) {
-            var self= this;
-            var layerNodes = $(this).contents();
-            var num = layerNodes.length-1;
-            //clone layernodes, put layernode in clone[pos] ???
-            var newNodes=[];
-            newNodes.length=layerNodes.length;
-            layerNodes.each(function(i) {
-                var layer = $(this).data('layer');
-                var pos = num-layer.position(); 
-                newNodes[pos] = this;
-            });
-            for (i=0;i<newNodes.length;i++) {
-                lmElement.append(newNodes[i])
-            };
-            var j=0;
-            
-            //TODO: actually refresh the widget
-        });
+
         element.delegate('.mq-layermanager-visibility', 'change', function() {
             var checkbox = $(this);
             var element = checkbox.parents('.mq-layermanager-element')
             var layer = element.data('layer');
             var self = element.data('self');
-            self._visible(element,layer,checkbox.attr('checked'));
-            //checkbox.attr('checked') ? layer.visible(true) : layer.visible(false);
-            //checkbox.attr('checked') ? checkbox.siblings('.mq-layermanager-slider').slider('value',(layer.opacity()*100)) : checkbox.siblings('.mq-layermanager-slider').slider('value',0) ;
-            //checkbox.siblings('.mq-layermanager-slider').slider('value',50) ;
-        });
-        
+            self._visible(layer,checkbox.attr('checked'));
+         });
+
         element.delegate('.ui-icon-closethick', 'click', function() {
-            var control = $(this).parents('.mq-layermanager-element');            
-            self._remove(control.data('layer').id);
+            var control = $(this).parents('.mq-layermanager-element');
+            self._remove(control.data('layer'));
         });
-        
+
         //binding events
         map.bind("mqAddLayer",
-            {widget:self,map:map,control:lmElement},
+            {widget:self,control:lmElement},
             self._onLayerAdd);
 
         map.bind("mqRemoveLayer",
-            {widget:self},
+            {widget:self,control:lmElement},
             self._onLayerRemove);
-            
+
         map.bind("changelayer",
             {widget:self,map:map,control:lmElement},
             self._onLayerChange);
     },
-    
-    _update: function() {
-        
+
+    //functions that actually change things on the map
+    //call these from within the widget to do stuff on the map
+    //their actions will trigger events on the map and in return
+    //will trigger the _layer* functions
+    _add: function(map,layer) {
+        map.layers(layer);
+    },
+
+    _remove: function(layer) {
+        layer.remove();
+    },
+
+    _position: function(layer, pos) {
+        layer.position(pos);
+    },
+
+    _visible: function(layer, vis) {
+        layer.visible(vis);
     },
     
-    _add: function(element, layer) {
+    _opacity: function(layer,opac) {
+        layer.opacity(opac);
+    },
+
+    //functions that change the widget
+    _layerAdded: function(widget, layer) {
         var self = this;
         var layerElement = $.tmpl('mqLayerManagerElement',{
             id: layer.id,
@@ -117,8 +119,8 @@ $.widget("mapQuery.mqLayerManager", {
             // hide/show/delete the layer with live events
             .data('layer', layer)
             .data('self',self)
-            .prependTo(element);
-            
+            .prependTo(widget);
+
        $(".mq-layermanager-slider", layerElement).slider({
            max: 100,
            step: 1,
@@ -126,79 +128,83 @@ $.widget("mapQuery.mqLayerManager", {
            slide: function(event, ui) {
                var layer = layerElement.data('layer');
                var self =  layerElement.data('self');
-               self._opacity(layerElement.parent(),layer,ui.value/100);
-               //layer.opacity(ui.value/100);
-           },
-           change: function(event, ui) {
+               self._opacity(layer,ui.value/100);
            }
        });
     },
-    
-    _onLayerAdd: function(evt, layer) {
-        evt.data.widget._add(evt.data.control,layer);
-    },
-    
-    // if _remove is called from the mqRemoveLayer event it means that the layer is already removed, so set removed to true
-    _remove: function(id, removed) {
-         var controlId = "#mq-layermanager-element-"+id;
-         var control = $(controlId);
-         removed ? true : control.data('layer').remove();
-         control.fadeOut(function() {
-            $(this).remove();
-         });
-    },
-    
-    _onLayerRemove: function(evt, id) {
-        evt.data.widget._remove(id,true);
-    },
-    
 
-    _position: function(widget, layer, value) {
-        // if it is a direct call, it gets a value and sets the layer
-        // otherwise it is a map event, no need to change the layer
-        if(value!==undefined) {
-            layer.position(value);
-        }
+    _layerRemoved: function(widget, id) {
+        var control = $("#mq-layermanager-element-"+id);
+        control.fadeOut(function() {
+            $(this).remove();
+        });
     },
-    
-    _visible: function(widget, layer, value) {
-        // if it is a direct call, it gets a value and sets the layer
-        // otherwise it is a map event, no need to change the layer
-        if(value!==undefined) {
-            layer.visible(value);
-        }
-        //set the widget content
-        value = layer.visible();
+
+    _layerPosition: function(widget, layer) {
+        var layerNodes = widget.element.find('.mq-layermanager-element');
+        var num = layerNodes.length-1;
+        var tmpNodes = [];
+        tmpNodes.length = layerNodes.length;
+        layerNodes.each(function() {
+            var layer = $(this).data('layer');
+            var pos = num-layer.position();
+            tmpNodes[pos]= this;
+        });
+        for (i=0;i<tmpNodes.length;i++) {
+            layerNodes.parent().append(tmpNodes[i]);
+        };
     },
-    
-    _opacity: function(widget, layer, value) {
-        // if it is a direct call, it gets a value and sets the layer
-        // otherwise it is a map event, no need to change the layer
-        if(value!==undefined) {
-            layer.opacity(value);
-        }
-        //set the widget content
-        value = layer.opacity();
+
+    _layerVisible: function(widget, layer) {
+        var layerElement = widget.element.find('#mq-layermanager-element-'+layer.id);
+        var checkbox = layerElement.find('.mq-layermanager-visibility');
+        checkbox[0].checked = layer.visible();
+        
+        //update the opacity slider as well
+        var slider = layerElement.find('.mq-layermanager-slider');        
+        layer.visible()?slider.slider('value',layer.opacity()*100): slider.slider('value',0); //change the slider element as well
     },
+
+    _layerOpacity: function(widget, layer) {
+        var layerElement = widget.element.find('#mq-layermanager-element-'+layer.id);
+        var slider = layerElement.find('.mq-layermanager-slider');       
+        slider.slider('value',layer.opacity()*100);
+        //update the visible checkbox
+        var checkbox = layerElement.find('.mq-layermanager-visibility');
+        if(layer.opacity()<=0.01) { //TODO: find out why opacity is 0.01 and not 0
+            widget._visible(layer,false); //if opacity is 0, visible is false
+        }
+        else { widget._visible(layer,true)}; //if the opacity is >0 visible is true
+    },
+
+    //functions bind to the map events
+    _onLayerAdd: function(evt, layer) {
+        evt.data.widget._layerAdded(evt.data.control,layer);
+    },
+
+    _onLayerRemove: function(evt, id) {
+        evt.data.widget._layerRemoved(evt.data.control,id);
+    },
+
     _onLayerChange: function(evt, data) {
         var layer;
-        var property = {};        
+        //since we don't know which layer we get we've to loop through 
+        //the openlayers.layer.ids to find the correct one
         $.each(evt.data.map.layers(), function(){
            if(this.olLayer.id == data.layer.id) layer=this; 
         });
         //(name, order, opacity, params, visibility or attribution)
          switch(data.property) {
             case 'opacity':
-                evt.data.widget._opacity(evt.data.widget,layer);
+                evt.data.widget._layerOpacity(evt.data.widget,layer);
             break;
             case 'order':
-                evt.data.widget.element.find(".mq-layermanager").trigger("sortevent");
+                evt.data.widget._layerPosition(evt.data.widget,layer);
             break;
             case 'visibility':
-                evt.data.widget._visible(evt.data.widget,layer);
+                evt.data.widget._layerVisible(evt.data.widget,layer);
             break;
         }
     }
-    
 });
 })(jQuery);
