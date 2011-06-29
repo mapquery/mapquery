@@ -53,7 +53,10 @@ $.widget("mapQuery.mqOverviewMap", {
         // remove OpenLayers blue border around overviewmap
         $('.olControlOverviewMapElement', dialogElement).removeClass ('olControlOverviewMapElement');
         
-        $('.mq-overviewmap-toggle').click(function(){$('#'+id).dialog('open')});
+        $('.mq-overviewmap-toggle').click(function() {
+        	$('#'+id).dialog('open') //TODO: turn this into a proper toggle function
+        	
+    	});
     }
     
     //TODO: you cannot reopen this thing 
