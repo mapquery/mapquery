@@ -11,6 +11,14 @@ $.template('mqLayerManagerElement',
             '<input type="checkbox" class="mq-layermanager-visibility" id="${id}-visibility" checked="${visible}" />'+
             '<div class="mq-layermanager-slider"></div>'+
         '</div>'+
+        '<div class="mq-layermanager-element-legend">'+
+            '{{if imgUrl}}'+
+                '<img src="${imgUrl}"/>'+
+            '{{/if}}'+
+            '{{if errMsg}}'+
+                '${errMsg}'+
+            '{{/if}}'+
+        '</div>'+
     '</div>'+
     '</div>');
 
@@ -108,12 +116,14 @@ $.widget("mapQuery.mqLayerManager", {
 
     //functions that change the widget
     _layerAdded: function(widget, layer) {
+        
         var self = this;
         var layerElement = $.tmpl('mqLayerManagerElement',{
             id: layer.id,
             label: layer.label,
             position: layer.position(),
-            visible: layer.visible()
+            visible: layer.visible(),
+            imgUrl: layer.legend().url
         })
             // save layer layer in the DOM, so we can easily
             // hide/show/delete the layer with live events
