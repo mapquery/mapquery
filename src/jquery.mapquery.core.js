@@ -228,7 +228,7 @@ $.MapQuery.Layer = function(map, id, options) {
     var res = $.MapQuery.Layer.types[options.type.toLowerCase()].call(
         this, options);
     this.olLayer = res.layer;
-    options = res.options;
+    this.options = res.options;
 
     // create triggers for all OpenLayers layer events
     var events = {};
@@ -502,7 +502,7 @@ $.fn.mapQuery.defaults = {
     layer: {
         all: {            
             isBaseLayer: false,
-            displayOutsideMaxExtent: false  //in general it is kinda pointless to load tiles outside a maxextent
+            displayOutsideMaxExtent: false  //in general it is kinda pointless to load tiles outside a maxextent           
         },
         bing: {
             transitionEffect: 'resize',
