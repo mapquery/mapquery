@@ -443,7 +443,7 @@ $.MapQuery.Layer.prototype = {
     },
     position: function(pos) {
         if (pos===undefined) {
-            return this.map.olMap.getLayerIndex(this.olLayer-1);
+            return this.map.olMap.getLayerIndex(this.olLayer)-1;
         }
         else {
             return this.map.olMap.setLayerIndex(this.olLayer, pos+1);

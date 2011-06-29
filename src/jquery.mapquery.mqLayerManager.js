@@ -8,7 +8,7 @@ $.template('mqLayerManagerElement',
     '<div class="mq-layermanager-element-header"><div class="mq-layermanager-label">${label}</div><span class="ui-icon ui-icon-closethick">&nbsp;</span></div>'+
     '<div class="mq-layermanager-element-content">'+
         '<div class="mq-layermanager-element-visibility">'+
-            '<input type="checkbox" class="mq-layermanager-visibility" id="${id}-visibility" checked="${visible}" />'+
+            '<input type="checkbox" class="mq-layermanager-visibility" id="${id}-visibility" {{if visible}}checked="${visible}"{{/if}} />'+
             '<div class="mq-layermanager-slider"></div>'+
         '</div>'+
         '<div class="mq-layermanager-element-legend">'+
@@ -88,6 +88,10 @@ $.widget("mapQuery.mqLayerManager", {
         map.bind("changelayer",
             {widget:self,map:map,control:lmElement},
             self._onLayerChange);
+
+        map.bind("moveend",
+            {widget:self,map:map,control:lmElement},
+            self._onMoveEnd);
     },
 
     //functions that actually change things on the map
@@ -115,15 +119,33 @@ $.widget("mapQuery.mqLayerManager", {
     },
 
     //functions that change the widget
-    _layerAdded: function(widget, layer) {
-        
+    _layerAdded: function(widget, layer) { 
         var self = this;
+        var error = layer.legend().msg;
+        var url;
+        switch(error){
+            case '':
+                url =layer.legend().url;
+                (url=='')?error='No legend for this layer':false; 
+                break;
+            case 'E_ZOOMOUT':
+                error = 'Please zoom out to see this layer';
+                break;
+            case 'E_ZOOMIN':
+                error = 'Please zoom in to see this layer';
+                break;
+            case 'E_OUTSIDEBOX':
+                error = 'This layer is outside the current view';
+                break;
+        };
+            
         var layerElement = $.tmpl('mqLayerManagerElement',{
             id: layer.id,
             label: layer.label,
             position: layer.position(),
             visible: layer.visible(),
-            imgUrl: layer.legend().url
+            imgUrl: url,
+            errMsg: error
         })
             // save layer layer in the DOM, so we can easily
             // hide/show/delete the layer with live events
@@ -134,7 +156,7 @@ $.widget("mapQuery.mqLayerManager", {
        $(".mq-layermanager-slider", layerElement).slider({
            max: 100,
            step: 1,
-           value: 100,
+           value: layer.visible()?layer.opacity()*100:0,
            slide: function(event, ui) {
                var layer = layerElement.data('layer');
                var self =  layerElement.data('self');
@@ -186,6 +208,13 @@ $.widget("mapQuery.mqLayerManager", {
         }
         else { widget._visible(layer,true)}; //if the opacity is >0 visible is true
     },
+    
+    _moveEnd: function (widget,lmElement,map) {
+        lmElement.empty();
+        $.each(map.layers().reverse(), function(){
+           widget._layerAdded(lmElement, this); 
+        });
+    },
 
     //functions bind to the map events
     _onLayerAdd: function(evt, layer) {
@@ -215,6 +244,9 @@ $.widget("mapQuery.mqLayerManager", {
                 evt.data.widget._layerVisible(evt.data.widget,layer);
             break;
         }
+    },
+    _onMoveEnd: function(evt) {
+        evt.data.widget._moveEnd(evt.data.widget,evt.data.control,evt.data.map);
     }
 });
 })(jQuery);
