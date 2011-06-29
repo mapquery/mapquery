@@ -24,11 +24,13 @@
         layers:[{         //add layers to your map; you need to define at least one to be able to see anything on the map
             type:'osm',  //add a layer of the type osm (OpenStreetMap)
             label:'OpenStreetMap',
-            minZoom:5,
+            
             legend:{url:'http://www.openstreetmap.org/images/osm_logo.png'}
             },{
             type:'wms',
+            minZoom:2,
             label:'Population density 2010',
+            legend:{url:'http://mapserver.edugis.nl/cgi-bin/mapserv?map=maps/edugis/cache/population.map&version=1.1.1&service=WMS&request=GetLegendGraphic&layer=Bevolkingsdichtheid_2010&format=image/png'},
             url:'http://t1.edugis.nl/tiles/tilecache.py?map=maps/edugis/cache/population.map', //note: this is actually a tileservice and only works with the spherical mercator tileschema
             layers:'Bevolkingsdichtheid_2010'}]
         }); //initialise mapquery with an OSM layer

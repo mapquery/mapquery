@@ -1,5 +1,5 @@
 .map {
-  height:512px;
+  height:112px;
   width:512px;
   border:solid 1px black;
   display: inline-block;
@@ -80,5 +80,37 @@
 }
 
 #popup {
-  position:absolute;
+    position:absolute;
+}
+.mq-layermanager-element {
+    display: block;
+    padding: 2px;
+    margin: 2px;
+}
+.mq-layermanager-label {
+    float: left;
+    margin: 0.5em 16px 0.5em 0.5em;
+}
+.ui-dialog-titlebar-close{
+    height: 18px;    
+    padding: 1px;
+    float:right;
+    width: 19px;
+}
+.mq-layermanager-element-header {
+    cursor: move;
+}
+
+.mq-layermanager-element-visibility{
+    display: block;
+}
+.mq-layermanager-element-vischeckbox{
+    float: left;
+    width: 19px;
+    height: 19px;
+}
+.mq-layermanager-element-slider-container {
+    display: block;
+    margin: 0px 5px 0px 30px;
+    padding: 10px;
 }

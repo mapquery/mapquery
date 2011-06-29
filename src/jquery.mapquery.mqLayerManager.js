@@ -1,15 +1,16 @@
 (function($) {
 $.template('mqLayerManager',
-    '<div class="mq-layermanager ui-widget ui-helper-clearfix ">'+
+    '<div class="mq-layermanager ui-widget-content  ">'+
     '</div>');
 
 $.template('mqLayerManagerElement',
-    '<div class="mq-layermanager-element" id="mq-layermanager-element-${id}">'+
-    '<div class="mq-layermanager-element-header"><div class="mq-layermanager-label">${label}</div><span class="ui-icon ui-icon-closethick">&nbsp;</span></div>'+
+    '<div class="mq-layermanager-element ui-widget-content ui-corner-all" id="mq-layermanager-element-${id}">'+
+    '<div class="mq-layermanager-element-header ui-dialog-titlebar  ui-widget-header  ui-corner-all  ui-helper-clearfix"><span class="mq-layermanager-label ui-dialog-title">${label}</span>'+
+    '<a class="ui-dialog-titlebar-close ui-corner-all" href="#" role="button"><span class="ui-icon ui-icon-closethick">close</span></a></div>'+
     '<div class="mq-layermanager-element-content">'+
         '<div class="mq-layermanager-element-visibility">'+
-            '<input type="checkbox" class="mq-layermanager-visibility" id="${id}-visibility" {{if visible}}checked="${visible}"{{/if}} />'+
-            '<div class="mq-layermanager-slider"></div>'+
+            '<input type="checkbox" class="mq-layermanager-element-vischeckbox" id="${id}-visibility" {{if visible}}checked="${visible}"{{/if}} />'+
+            '<div class="mq-layermanager-element-slider-container"><div class="mq-layermanager-element-slider"></div></div>'+
         '</div>'+
         '<div class="mq-layermanager-element-legend">'+
             '{{if imgUrl}}'+
@@ -23,6 +24,13 @@ $.template('mqLayerManagerElement',
     '</div>');
 
 $.widget("mapQuery.mqLayerManager", {
+    options: {
+        // The MapQuery instance
+        map: undefined,
+
+        // Title that will be displayed at the top of the popup
+        title: "Layer Manager"
+    },
     _create: function() {
         var map;
         var zoom;
@@ -38,14 +46,16 @@ $.widget("mapQuery.mqLayerManager", {
         else {
             map = this.options.map.data('mapQuery');
         }
-
+        
+        this.element.addClass('ui-widget  ui-helper-clearfix ' +
+                              'ui-corner-all');
+                              
         var lmElement = $.tmpl('mqLayerManager').appendTo(element);
         element.find('.ui-icon-closethick').button();
 
         lmElement.sortable({
             axis:'y',
-            containment: 'parent',
-            //placeholder: "ui-state-highlight",
+            handle: '.mq-layermanager-element-header',
             update: function(event, ui) {
                 var layerNodes = ui.item.siblings().andSelf();
                 var num = layerNodes.length-1;
@@ -63,7 +73,7 @@ $.widget("mapQuery.mqLayerManager", {
            self._layerAdded(lmElement, this); 
         });
 
-        element.delegate('.mq-layermanager-visibility', 'change', function() {
+        element.delegate('.mq-layermanager-element-vischeckbox', 'change', function() {
             var checkbox = $(this);
             var element = checkbox.parents('.mq-layermanager-element')
             var layer = element.data('layer');
@@ -93,7 +103,11 @@ $.widget("mapQuery.mqLayerManager", {
             {widget:self,map:map,control:lmElement},
             self._onMoveEnd);
     },
-
+    _destroy: function() {
+        this.element.removeClass(' ui-widget ui-helper-clearfix ' +
+                                 'ui-corner-all')
+            .empty();
+    },
     //functions that actually change things on the map
     //call these from within the widget to do stuff on the map
     //their actions will trigger events on the map and in return
@@ -154,7 +168,7 @@ $.widget("mapQuery.mqLayerManager", {
             .data('self',self)
             .prependTo(widget);
 
-       $(".mq-layermanager-slider", layerElement).slider({
+       $(".mq-layermanager-element-slider", layerElement).slider({
            max: 100,
            step: 1,
            value: layer.visible()?layer.opacity()*100:0,
@@ -162,6 +176,17 @@ $.widget("mapQuery.mqLayerManager", {
                var layer = layerElement.data('layer');
                var self =  layerElement.data('self');
                self._opacity(layer,ui.value/100);
+           },
+           //using the slide event to check for the checkbox often gives errors.
+           change: function(event, ui) {
+               var layer = layerElement.data('layer');
+               var self =  layerElement.data('self');               
+               if(ui.value>0) {
+                   layer.visible()?true:layer.visible(true);
+               }
+               if(ui.value<0.01) {
+                   layer.visible()?layer.visible(false):false;
+               }
            }
        });
     },
@@ -190,10 +215,10 @@ $.widget("mapQuery.mqLayerManager", {
 
     _layerVisible: function(widget, layer) {
         var layerElement = widget.element.find('#mq-layermanager-element-'+layer.id);
-        var checkbox = layerElement.find('.mq-layermanager-visibility');
+        var checkbox = layerElement.find('.mq-layermanager-element-vischeckbox');
         checkbox[0].checked = layer.visible();
         //update the opacity slider as well
-        var slider = layerElement.find('.mq-layermanager-slider');        
+        var slider = layerElement.find('.mq-layermanager-element-slider');        
         layer.visible()?slider.slider('value',layer.opacity()*100): slider.slider('value',0); 
         //update legend image
         layerElement.find('.mq-layermanager-element-legend img').css({visibility:layer.visible()?true:'hidden'});
@@ -201,7 +226,7 @@ $.widget("mapQuery.mqLayerManager", {
 
     _layerOpacity: function(widget, layer) {
         var layerElement = widget.element.find('#mq-layermanager-element-'+layer.id);
-        var slider = layerElement.find('.mq-layermanager-slider');       
+        var slider = layerElement.find('.mq-layermanager-element-slider');       
         slider.slider('value',layer.opacity()*100);
         //update legend image
         layerElement.find('.mq-layermanager-element-legend img').css({opacity:layer.opacity()});  
