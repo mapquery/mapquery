@@ -1,9 +1,16 @@
 (function($) {
 $.template('mqOverviewMap',
-    '<div id="${id}" class="mq-overviewmap ui-widget ">'+
+    '<div class="mq-overviewmap-toggle ui-icon-extlink">bla</div><div id="${id}" class="mq-overviewmap ui-widget ">'+
     '</div>');
         
 $.widget("mapQuery.mqOverviewMap", {
+	 options: {
+        // The MapQuery instance
+        map: undefined,
+
+        // Title that will be displayed at the top of the overview window
+        title: "Overview map"
+    },
     _create: function() {
         var map;
         var self = this;
@@ -22,7 +29,7 @@ $.widget("mapQuery.mqOverviewMap", {
         $.tmpl('mqOverviewMap',{
             id: id}).appendTo(element);
                     
-        var dialogElement = $(".mq-overviewmap").dialog({
+        var dialogElement = $('#'+id).dialog({
             dialogClass: 'mq-overviewmap-dialog',
             autoOpen: true,
             title: 'Overview', //TODO smo20110620 make this configurable and/or i18n
@@ -45,6 +52,8 @@ $.widget("mapQuery.mqOverviewMap", {
         
         // remove OpenLayers blue border around overviewmap
         $('.olControlOverviewMapElement', dialogElement).removeClass ('olControlOverviewMapElement');
+        
+        $('.mq-overviewmap-toggle').click(function(){$('#'+id).dialog('open')});
     }
     
     //TODO: you cannot reopen this thing 
