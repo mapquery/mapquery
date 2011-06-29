@@ -129,7 +129,21 @@ $.MapQuery.Map.prototype = {
     // vmx 20110609 Still true?
     goto: function (options) {
         var position;
-        var epsg4326 = new OpenLayers.Projection('EPSG:4326');
+
+        // Determine source projection
+        var sourceProjection = null;
+        if(options && options.projection) {
+            sourceProjection = options.projection.CLASS_NAME === 'OpenLayers.Projection' ? options.projection : new OpenLayers.Projection(options.projection);
+        } else {
+            var displayProjection = this.olMap.displayProjection;
+            if(!displayProjection) {
+                // source == target
+                sourceProjection = new OpenLayers.Projection('EPSG:4326');
+            } else {
+                sourceProjection = displayProjection.CLASS_NAME === 'OpenLayers.Projection' ? displayProjection : new OpenLayers.Projection(displayProjection);
+            }
+        }
+
         // Get the current position
         if (arguments.length===0) {
             position = this.olMap.getCenter();
@@ -138,10 +152,10 @@ $.MapQuery.Map.prototype = {
             var mapProjection = this.olMap.getProjectionObject();
             
 
-            if (!mapProjection.equals(epsg4326)) {
-                position.transform(mapProjection, epsg4326);
+            if (!mapProjection.equals(sourceProjection)) {
+                position.transform(mapProjection, sourceProjection);
             }
-            box.transform(mapProjection,epsg4326);
+            box.transform(mapProjection,sourceProjection);
             box = box!==null ? box.toArray() : [];
             return {
                 position: [position.lon, position.lat],
@@ -154,8 +168,8 @@ $.MapQuery.Map.prototype = {
         if (options.box!==undefined) {
             var mapProjection = this.olMap.getProjectionObject();
             var box = new OpenLayers.Bounds(options.box[0], options.box[1],options.box[2], options.box[3]);
-            if (!mapProjection.equals(epsg4326)) {
-                box.transform(epsg4326,mapProjection);
+            if (!mapProjection.equals(sourceProjection)) {
+                box.transform(sourceProjection,mapProjection);
             };
             this.olMap.zoomToExtent(box);
               
@@ -169,9 +183,8 @@ $.MapQuery.Map.prototype = {
             position = new OpenLayers.LonLat(options.position[0],
                                              options.position[1]);
             var mapProjection = this.olMap.getProjectionObject();
-            var epsg4326 = new OpenLayers.Projection('EPSG:4326');
-            if (!mapProjection.equals(epsg4326)) {
-                position.transform(epsg4326, mapProjection);
+            if (!mapProjection.equals(sourceProjection)) {
+                position.transform(sourceProjection, mapProjection);
             }
             // options.zoom might be undefined, so we are good to
             // pass it on
@@ -246,9 +259,9 @@ $.MapQuery.Layer = function(map, id, options) {
 $.extend($.MapQuery.Layer, {
     types: {
         bing: function(options) {
-            var o = $.fn.mapQuery.defaults.layer.all;
-            $.extend(true, o, $.fn.mapQuery.defaults.layer.bing);
-            $.extend(true, o, options);
+            var o = $.extend(true, {}, $.fn.mapQuery.defaults.layer.all,
+                $.fn.mapQuery.defaults.layer.bing,
+                options);
             var view = o.view;
             switch(view){
                 case 'road':
@@ -266,18 +279,18 @@ $.extend($.MapQuery.Layer, {
         //Not sure this one is worth pursuing works with ecwp:// & jpip:// urls
         //See ../lib/NCSOpenLayersECWP.js
         ecwp: function(options) {
-            var o = $.fn.mapQuery.defaults.layer.all;
-            $.extend(true, o, $.fn.mapQuery.defaults.layer.raster);
-            $.extend(true, o, options);
+            var o = $.extend(true, {}, $.fn.mapQuery.defaults.layer.all,
+                    $.fn.mapQuery.defaults.layer.raster,
+                    options);
             return {
                 layer: new OpenLayers.Layer.ECWP(o.label, o.url, o),
                 options: o
             };
         },
         google: function(options) {
-            var o = $.fn.mapQuery.defaults.layer.all;
-            $.extend(true, o, $.fn.mapQuery.defaults.layer.google);
-            $.extend(true, o, options);
+            var o = $.extend(true, {}, $.fn.mapQuery.defaults.layer.all,
+                    $.fn.mapQuery.defaults.layer.google,
+                    options);
             var view = o.view;
             switch(view){
                 case 'road':
@@ -294,10 +307,20 @@ $.extend($.MapQuery.Layer, {
                 options: o
             };
         },
+        vector: function(options) {
+            var o = $.extend(true, {}, $.fn.mapQuery.defaults.layer.all,
+                    $.fn.mapQuery.defaults.layer.vector,
+                    options);
+            this.isVector = true;
+            return {
+                layer: new OpenLayers.Layer.Vector(o.label),
+                options: o
+            };
+        },
         json: function(options) {
-            var o = $.fn.mapQuery.defaults.layer.all;
-            $.extend(true, o, $.fn.mapQuery.defaults.layer.vector);
-            $.extend(true, o, options);
+            var o = $.extend(true, {}, $,fn,mapQuery.defaults.layer.all,
+                    $.fn.mapQuery.defaults.layer.vector,
+                    options);
             this.isVector = true;
             var strategies = [];
             for (var i in o.strategies) {
@@ -331,31 +354,32 @@ $.extend($.MapQuery.Layer, {
             };
         },
         osm: function(options) {
-            var o = $.fn.mapQuery.defaults.layer.all;
-            $.extend(true, o, $.fn.mapQuery.defaults.layer.osm);
-            $.extend(true, o, options);
+            var o = $.extend(true, {}, $.fn.mapQuery.defaults.layer.all,
+                $.fn.mapQuery.defaults.layer.osm,
+                options);
             return {
                 layer: new OpenLayers.Layer.OSM(options),
                 options: o
             };
         },
         wms: function(options) {
-            var o = $.fn.mapQuery.defaults.layer.all;
-            $.extend(true, o, $.fn.mapQuery.defaults.layer.raster);
-            $.extend(true, o, options);
+            var o = $.extend(true, {}, $.fn.mapQuery.defaults.layer.all,
+                    $.fn.mapQuery.defaults.layer.raster,
+                    options);
             var params = {
                 layers: o.layers,
-                transparent: o.transparent
+                transparent: o.transparent,
+                format: o.format
             };
             //SMO20110611: TODO WMS requires a label, autogenerate one if not provided
             return {
                 layer: new OpenLayers.Layer.WMS(o.label, o.url, params),
                 options: o
             };
-        },       
+        },
         wmts: function(options) {
-            var o = $.fn.mapQuery.defaults.layer.all;
-            $.extend(true, o, $.fn.mapQuery.defaults.layer.wmts);
+            var o = $.extend(true, {}, $.fn.mapQuery.defaults.layer.all,
+                    $.fn.mapQuery.defaults.layer.wmts);
             //smo 20110614 the maxExtent is set here with OpenLayers.Bounds 
             if (options.sphericalMercator===true) {
                 $.extend(true, o, {
@@ -419,10 +443,10 @@ $.MapQuery.Layer.prototype = {
     },
     position: function(pos) {
         if (pos===undefined) {
-            return this.map.olMap.getLayerIndex(this.olLayer)-1;
+            return this.map.olMap.getLayerIndex(this.olLayer);
         }
         else {
-            return this.map.olMap.setLayerIndex(this.olLayer, pos+1);
+            return this.map.olMap.setLayerIndex(this.olLayer, pos);
         }
     },
     up: function(delta) {
@@ -502,7 +526,7 @@ $.fn.mapQuery.defaults = {
     layer: {
         all: {            
             isBaseLayer: false,
-            displayOutsideMaxExtent: false  //in general it is kinda pointless to load tiles outside a maxextent           
+            displayOutsideMaxExtent: false  //in general it is kinda pointless to load tiles outside a maxextent
         },
         bing: {
             transitionEffect: 'resize',
