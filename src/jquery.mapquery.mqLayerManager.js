@@ -13,7 +13,7 @@ $.template('mqLayerManagerElement',
         '</div>'+
         '<div class="mq-layermanager-element-legend">'+
             '{{if imgUrl}}'+
-                '<img src="${imgUrl}"/>'+
+                '<img src="${imgUrl}" style="opacity:${opacity}"/>'+
             '{{/if}}'+
             '{{if errMsg}}'+
                 '${errMsg}'+
@@ -145,6 +145,7 @@ $.widget("mapQuery.mqLayerManager", {
             position: layer.position(),
             visible: layer.visible(),
             imgUrl: url,
+            opacity: layer.visible()?layer.opacity():0,
             errMsg: error
         })
             // save layer layer in the DOM, so we can easily
@@ -191,22 +192,19 @@ $.widget("mapQuery.mqLayerManager", {
         var layerElement = widget.element.find('#mq-layermanager-element-'+layer.id);
         var checkbox = layerElement.find('.mq-layermanager-visibility');
         checkbox[0].checked = layer.visible();
-        
         //update the opacity slider as well
         var slider = layerElement.find('.mq-layermanager-slider');        
-        layer.visible()?slider.slider('value',layer.opacity()*100): slider.slider('value',0); //change the slider element as well
+        layer.visible()?slider.slider('value',layer.opacity()*100): slider.slider('value',0); 
+        //update legend image
+        layerElement.find('.mq-layermanager-element-legend img').css({visibility:layer.visible()?true:'hidden'});
     },
 
     _layerOpacity: function(widget, layer) {
         var layerElement = widget.element.find('#mq-layermanager-element-'+layer.id);
         var slider = layerElement.find('.mq-layermanager-slider');       
         slider.slider('value',layer.opacity()*100);
-        //update the visible checkbox
-        var checkbox = layerElement.find('.mq-layermanager-visibility');
-        if(layer.opacity()<=0.01) { //TODO: find out why opacity is 0.01 and not 0
-            widget._visible(layer,false); //if opacity is 0, visible is false
-        }
-        else { widget._visible(layer,true)}; //if the opacity is >0 visible is true
+        //update legend image
+        layerElement.find('.mq-layermanager-element-legend img').css({opacity:layer.opacity()});  
     },
     
     _moveEnd: function (widget,lmElement,map) {
