@@ -46,5 +46,7 @@ $.widget("mapQuery.mqOverviewMap", {
         // remove OpenLayers blue border around overviewmap
         $('.olControlOverviewMapElement', dialogElement).removeClass ('olControlOverviewMapElement');
     }
+    
+    //TODO: you cannot reopen this thing 
 });
 })(jQuery);
