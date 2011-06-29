@@ -318,7 +318,7 @@ $.extend($.MapQuery.Layer, {
             };
         },
         json: function(options) {
-            var o = $.extend(true, {}, $,fn,mapQuery.defaults.layer.all,
+            var o = $.extend(true, {}, $.fn.mapQuery.defaults.layer.all,
                     $.fn.mapQuery.defaults.layer.vector,
                     options);
             this.isVector = true;
@@ -443,10 +443,10 @@ $.MapQuery.Layer.prototype = {
     },
     position: function(pos) {
         if (pos===undefined) {
-            return this.map.olMap.getLayerIndex(this.olLayer);
+            return this.map.olMap.getLayerIndex(this.olLayer)-1;
         }
         else {
-            return this.map.olMap.setLayerIndex(this.olLayer, pos);
+            return this.map.olMap.setLayerIndex(this.olLayer, pos+1);
         }
     },
     up: function(delta) {
