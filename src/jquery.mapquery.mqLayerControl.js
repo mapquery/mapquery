@@ -72,7 +72,7 @@ $.widget("mapQuery.mqLayerControl", {
             self._onLayerRemove);
     },
     _destroy: function() {
-        this.element.removeClass(' ui-widget ui-helper-clearfix ' +
+        this.element.removeClass('ui-widget ui-helper-clearfix ' +
                                  'ui-corner-all')
             .empty();
     },
