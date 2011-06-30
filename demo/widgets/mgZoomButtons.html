@@ -19,7 +19,10 @@
             type:'osm'  //add a layer of the type osm (OpenStreetMap)
             }]
         });
-    $('.zoom').mqZoomButtons($('#map')); //add the zoom buttons to the application and pass the map
+    $('.zoom').mqZoomButtons({
+        map:$('#map'), //pass in the map
+        home: true //enable the optional home button
+        }); //add the zoom buttons to the application
     });
   </script>
 </head>
