@@ -4,7 +4,7 @@ $.template('mqOverviewMap',
     '</div>');
         
 $.widget("mapQuery.mqOverviewMap", {
-	 options: {
+    options: {
         // The MapQuery instance
         map: undefined,
 

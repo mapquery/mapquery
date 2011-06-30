@@ -6,6 +6,11 @@ $.template('mqMousePosition',
     '</div></span>');
         
 $.widget("mapQuery.mqMousePosition", {
+    options: {
+        // The MapQuery instance
+        map: undefined,
+
+    },
     _create: function() {
         var map;       
 

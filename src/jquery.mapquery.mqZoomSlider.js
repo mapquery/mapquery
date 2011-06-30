@@ -5,6 +5,11 @@ $.template('mqZoomSlider',
     '</div>');
         
 $.widget("mapQuery.mqZoomSlider", {
+    options: {
+        // The MapQuery instance
+        map: undefined,
+
+    },
     _create: function() {
         var map;
         var zoom;

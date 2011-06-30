@@ -8,6 +8,11 @@ $.template('mqLayerControl',
     '</li>');
         
 $.widget("mapQuery.mqLayerControl", {
+    options: {
+        // The MapQuery instance
+        map: undefined,
+
+    },
     _create: function() {
         var map;
         var self = this;
