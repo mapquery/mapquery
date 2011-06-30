@@ -97,6 +97,13 @@
 #popup {
     position:absolute;
 }
+#layermanager {
+     display: inline-block;
+    height: 256px;
+    position: relative;
+    vertical-align: top;
+    width: 256px;
+}
 .mq-layermanager-element {
     display: block;
     padding: 2px;
