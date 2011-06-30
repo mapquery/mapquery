@@ -16,15 +16,18 @@
     $(document).ready(function() {
     $('#map').mapQuery({
         layers:[{         //add layers to your map; you need to define at least one to be able to see anything on the map
-            type:'osm'  //add a layer of the type osm (OpenStreetMap)
+            type:'osm'    //add a layer of the type osm (OpenStreetMap)
             }]
         });
-    $('#overview').mqOverviewMap($('#map'));
+    $('#overview').mqOverviewMap({
+        map: $('#map') //pass in the map
+        });            //add the overviewmap to the application
     });
   </script>
 </head>
 <body>
   <div id="map" class="map"></div>
   <div id="overview" class="mq-widget"></div>
+
 </body>
 </html>
