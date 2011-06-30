@@ -8,6 +8,11 @@ $.template('mqLayerControl',
     '</li>');
         
 $.widget("mapQuery.mqLayerControl", {
+    options: {
+        // The MapQuery instance
+        map: undefined,
+
+    },
     _create: function() {
         var map;
         var self = this;
@@ -29,7 +34,7 @@ $.widget("mapQuery.mqLayerControl", {
         element.find('button').button();
         ulElement.sortable({
             axis:'y',
-            containment: 'parent',
+
             update: function(event, ui) {
                 var layerNodes = ui.item.siblings().andSelf();
                 var num = layerNodes.length-1;
@@ -65,6 +70,11 @@ $.widget("mapQuery.mqLayerControl", {
         map.bind("mqRemoveLayer",
             {widget:self},
             self._onLayerRemove);
+    },
+    _destroy: function() {
+        this.element.removeClass('ui-widget ui-helper-clearfix ' +
+                                 'ui-corner-all')
+            .empty();
     },
     _add: function(element, layer) {
         //$.tmpl('mqLayerControl', layer)

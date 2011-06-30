@@ -19,7 +19,7 @@ $.MapQuery.Map = function(element, options) {
     delete this.olMapOptions.layers;
     delete this.olMapOptions.maxExtent;    
     delete this.olMapOptions.zoomToMaxExtent;
-    this.maxExtent = this.options.maxExtent;    
+    this.maxExtent = this.options.maxExtent;    //TODO SMO20110630 the maxExtent is in mapprojection, decide whether or not we need to change it to displayProjection
     this.olMapOptions.maxExtent = new OpenLayers.Bounds(this.maxExtent[0],this.maxExtent[1],this.maxExtent[2],this.maxExtent[3])
     
     
@@ -519,6 +519,7 @@ $.fn.mapQuery.defaults = {
             maxResolution: 156543.0339,
             numZoomLevels: 19,
             projection: 'EPSG:900913',
+            displayProjection: 'EPSG:4326',
             zoomToMaxExtent: true,            
             units: 'm'            
         };

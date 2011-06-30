@@ -60,12 +60,27 @@
     display: inline-block;  
     margin:2px;       
 }
+
 .mq-overviewmap-dialog .ui-dialog-content{
     padding: 0.4em;
+ 
 }
- #layermanager{
+.mq-overviewmap-button {
+  margin: 2px;
+  padding: 4px ;
+   cursor: pointer;
+    margin: 5px;
+ 
+    z-index: 999;
+       bottom: 0;
+    float: right;
+    position: absolute;
+    right: 0;
+}
+
+#layermanager{
      width: 300px;
- }
+}
 
 #featureinfo {
     display: inline-block;
@@ -80,5 +95,52 @@
 }
 
 #popup {
-  position:absolute;
+    position:absolute;
+}
+#layermanager {
+     display: inline-block;
+    height: 256px;
+    position: relative;
+    vertical-align: top;
+    width: 256px;
+}
+.mq-layermanager-element {
+    display: block;
+    padding: 2px;
+    margin: 2px;
+}
+.mq-layermanager-label {
+    float: left;
+    margin: 0.5em 16px 0.5em 0.5em;
+}
+.ui-dialog-titlebar-close{
+    height: 18px;    
+    padding: 1px;
+    float:right;
+    width: 19px;
+}
+.mq-layermanager-element-header {
+    cursor: move;
+}
+
+.mq-layermanager-element-visibility{
+    display: block;
+}
+.mq-layermanager-element-vischeckbox{
+    float: left;
+    width: 19px;
+    height: 19px;
+}
+.mq-layermanager-element-slider-container {
+    display: block;
+    margin: 0px 5px 0px 30px;
+    padding: 10px;
+}
+
+.mq-zoomslider {
+    position: absolute;
+    float: left;
+    margin: 10px;
+    z-index: 10000;
+   
 }
