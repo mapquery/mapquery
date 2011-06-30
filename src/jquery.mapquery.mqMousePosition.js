@@ -6,12 +6,28 @@ $.template('mqMousePosition',
     '</div></span>');
         
 $.widget("mapQuery.mqMousePosition", {
+    options: {
+        // The MapQuery instance
+        map: undefined,
+        
+        // The number of decimals for the coordinates
+        // default: 2
+        precision: 2,
+        
+        // The label of the x-value
+        // default: 'x'
+        x: 'x',
+        // The label of the y-value
+        // default: 'y'
+        y: 'y'
+
+    },
     _create: function() {
         var map;       
-
         var self = this;
         var element = this.element;
         var mousepos;
+        
         //get the mapquery object
         if (this.options.jquery === $().jquery) {
             map = this.options.data('mapQuery');
@@ -31,23 +47,28 @@ $.widget("mapQuery.mqMousePosition", {
         }).appendTo(element);
        
     },
-    _onMouseMove: function(evt, data) {
-        var self = evt.data.widget;
-        var element = self.element;
-        
+    _destroy: function() {
+        this.element.removeClass(' ui-widget ui-helper-clearfix ' +
+                                 'ui-corner-all')
+            .empty();
+    },
+    _mouseMoved: function(data, element, map) {
         var x = data.layerX;
         var y = data.layerY;
-        var map = evt.data.map;
         var mapProjection = map.options.projection;
         var displayProjection = map.options.projection;
         //if the coordinates should be displayed in something else, set them via the map displayProjection option
-        if(map.options.displayProjection) {
-            displayProjection = map.options.displayProjection; 
-        }
         var pos = map.olMap.getLonLatFromLayerPx(new OpenLayers.Pixel(x,y));
-        pos=pos.transform(new OpenLayers.Projection(mapProjection),new OpenLayers.Projection(displayProjection));        
-        $("#mq-mouseposition-x", element).html('x: '+pos.lon);
-        $("#mq-mouseposition-y", element).html('y: '+pos.lat);
+        if(map.options.displayProjection) {
+            displayProjection = map.options.displayProjection;
+            pos=pos.transform(new OpenLayers.Projection(mapProjection),new OpenLayers.Projection(displayProjection)); 
+        };
+        $("#mq-mouseposition-x", element).html(this.options.x+': '+pos.lon.toFixed(this.options.precision));
+        $("#mq-mouseposition-y", element).html(this.options.y+': '+pos.lat.toFixed(this.options.precision));
+    },
+    
+    _onMouseMove: function(evt, data) {
+        evt.data.widget._mouseMoved(data,evt.data.control,evt.data.map);
     }
 });
 })(jQuery);

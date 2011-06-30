@@ -18,8 +18,17 @@ $.widget("mapQuery.mqFeatureInfo", {
         title: "Feature information"
     },
     _create: function() {
-        var map = this.options.map.data('mapQuery');
+        var map;
         var self = this;
+        var element = this.element;
+        
+        if (this.options.jquery === $().jquery) {
+            map = this.options.data('mapQuery');
+            this.options = {};
+        }
+        else {
+            map = this.options.map.data('mapQuery');
+        }
         var layers = $.map(map.layers(), function(layer) {
             return layer.isVector ? layer : null;
         });
