@@ -519,6 +519,7 @@ $.fn.mapQuery.defaults = {
             maxResolution: 156543.0339,
             numZoomLevels: 19,
             projection: 'EPSG:900913',
+            displayProjection: 'EPSG:4326',
             zoomToMaxExtent: true,            
             units: 'm'            
         };
