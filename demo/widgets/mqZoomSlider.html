@@ -11,7 +11,7 @@
   <script src="../../lib/jquery/jquery.tmpl.js" type="text/javascript"></script>
   <script src="../../lib/jquery/ui/jquery-ui.js" type="text/javascript"></script>
   <script src="../../src/jquery.mapquery.core.js" type="text/javascript"></script>
-  <script src="../../src/jquery.mapquery.mqMousePosition.js" type="text/javascript"></script>
+  <script src="../../src/jquery.mapquery.mqZoomSlider.js" type="text/javascript"></script>
   <script type="text/javascript">
     $(document).ready(function() {
     $('#map').mapQuery({
@@ -19,12 +19,14 @@
             type:'osm'  //add a layer of the type osm (OpenStreetMap)
             }]
         });
-    $('#mouseposition').mqMousePosition($('#map'));
+    $('#zoomslider').mqZoomSlider({
+        map:$('#map')
+        });
     });
   </script>
 </head>
 <body>
   <div id="map" class="map"></div>
-  <div id="mouseposition" class="mq-widget"></div>
+  <div id="zoomslider" class="mq-widget"></div>
 </body>
 </html>
