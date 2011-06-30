@@ -12,8 +12,8 @@ $.widget("mapQuery.mqMousePosition", {
         
         // The number of decimals for the coordinates
         // default: 2
-        precision: 2,
-        
+        precision: 2,  //TODO: JCB20110630 use dynamic precision based on the pixel resolution, no need to configure precision
+      
         // The label of the x-value
         // default: 'x'
         x: 'x',
