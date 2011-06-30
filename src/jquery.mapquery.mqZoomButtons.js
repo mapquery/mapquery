@@ -51,6 +51,11 @@ $.widget("mapQuery.mqZoomButtons", {
             zoom = map.goto().zoom;
             if(zoom>0){map.goto({zoom:zoom-1})}
         });
+    },
+    _destroy: function() {
+        this.element.removeClass(' ui-widget ui-helper-clearfix ' +
+                                 'ui-corner-all')
+            .empty();
     }
 });
 })(jQuery);

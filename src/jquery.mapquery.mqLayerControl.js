@@ -71,6 +71,11 @@ $.widget("mapQuery.mqLayerControl", {
             {widget:self},
             self._onLayerRemove);
     },
+    _destroy: function() {
+        this.element.removeClass(' ui-widget ui-helper-clearfix ' +
+                                 'ui-corner-all')
+            .empty();
+    },
     _add: function(element, layer) {
         //$.tmpl('mqLayerControl', layer)
         // We don't need to pass in the whole layer object

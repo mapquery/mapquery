@@ -47,7 +47,11 @@ $.widget("mapQuery.mqMousePosition", {
         }).appendTo(element);
        
     },
-    
+    _destroy: function() {
+        this.element.removeClass(' ui-widget ui-helper-clearfix ' +
+                                 'ui-corner-all')
+            .empty();
+    },
     _mouseMoved: function(data, element, map) {
         var x = data.layerX;
         var y = data.layerY;

@@ -31,6 +31,7 @@ $.widget("mapQuery.mqZoomSlider", {
         numzoomlevels = map.options.numZoomLevels;
         $(".mq-zoomslider-slider", element).slider({
            max: numzoomlevels,
+           orientation: 'vertical',
            step: 1,
            value: map.goto().zoom,
            slide: function(event, ui) {
@@ -42,6 +43,11 @@ $.widget("mapQuery.mqZoomSlider", {
             {widget:self,map:map,control:element},
             self._onZoomEnd);
        
+    },
+    _destroy: function() {
+        this.element.removeClass(' ui-widget ui-helper-clearfix ' +
+                                 'ui-corner-all')
+            .empty();
     },
     _zoomEnd: function (element,map) {
         var slider = element.find('.mq-zoomslider-slider');             
