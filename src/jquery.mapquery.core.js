@@ -318,7 +318,7 @@ $.extend($.MapQuery.Layer, {
             };
         },
         json: function(options) {
-            var o = $.extend(true, {}, $,fn,mapQuery.defaults.layer.all,
+            var o = $.extend(true, {}, $.fn.mapQuery.defaults.layer.all,
                     $.fn.mapQuery.defaults.layer.vector,
                     options);
             this.isVector = true;
