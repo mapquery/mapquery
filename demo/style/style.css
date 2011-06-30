@@ -2,7 +2,7 @@
   height:512px;
   width:512px;
   border:solid 1px black;
-  display: block;
+  display: inline-block;
 }
 .olControlAttribution {
     bottom:0.5em !important;
