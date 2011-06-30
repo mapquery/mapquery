@@ -1,6 +1,9 @@
 (function($) {
 $.template('mqOverviewMap',
-    '<div class="mq-overviewmap-toggle ui-icon-extlink">bla</div><div id="${id}" class="mq-overviewmap ui-widget ">'+
+    '<div class="mq-overviewmap-button ui-state-default ui-corner-all">'+
+        '<div class="mq-overviewmap-close ui-icon ui-icon-arrowthick-1-se "></div>'+
+    '</div>'+
+    '<div id="${id}" class="mq-overviewmap ui-widget ">'+
     '</div>');
         
 $.widget("mapQuery.mqOverviewMap", {
@@ -9,7 +12,14 @@ $.widget("mapQuery.mqOverviewMap", {
         map: undefined,
 
         // Title that will be displayed at the top of the overview window
-        title: "Overview map"
+        title: "Overview map",
+        
+        //the position of the overview map, default right bottom of the window
+        position: ['right','bottom'],
+        
+        //initial size of the overviewmap
+        width: 300,
+        height: 200
     },
     _create: function() {
         var map;
@@ -25,18 +35,24 @@ $.widget("mapQuery.mqOverviewMap", {
         else {
             map = this.options.map.data('mapQuery');
         }
-        
+        this.element.addClass('ui-widget  ui-helper-clearfix ' +
+                              'ui-corner-all');
+                              
         $.tmpl('mqOverviewMap',{
             id: id}).appendTo(element);
                     
         var dialogElement = $('#'+id).dialog({
             dialogClass: 'mq-overviewmap-dialog',
             autoOpen: true,
-            title: 'Overview', //TODO smo20110620 make this configurable and/or i18n
-            position: ['right','bottom'], //TODO smo20110620 make this configurable
-            
+            width: this.options.width,
+            height: this.options.height,
+            title: this.options.title, 
+            position: this.options.position,
             resizeStop: function (event, ui) { 
                 $('.olMap', this).width($(this).width()); $('.olMap', this).height($(this).height());     
+            },
+            close:function(event,ui){
+                 $('.mq-overviewmap-close').removeClass('mq-overviewmap-close ui-icon-arrowthick-1-se').addClass('mq-overviewmap-open ui-icon-arrowthick-1-nw');
             }
             
         });
@@ -52,13 +68,16 @@ $.widget("mapQuery.mqOverviewMap", {
         
         // remove OpenLayers blue border around overviewmap
         $('.olControlOverviewMapElement', dialogElement).removeClass ('olControlOverviewMapElement');
-        
-        $('.mq-overviewmap-toggle').click(function() {
-        	$('#'+id).dialog('open') //TODO: turn this into a proper toggle function
-        	
+
+        element.delegate('.mq-overviewmap-close', 'click', function() {
+            $(this).removeClass('mq-overviewmap-close ui-icon-arrowthick-1-se').addClass('mq-overviewmap-open ui-icon-arrowthick-1-nw');
+            $('#'+id).dialog('close');            
+        });
+        element.delegate('.mq-overviewmap-open', 'click', function() {
+            $(this).removeClass('mq-overviewmap-open ui-icon-arrowthick-1-nw').addClass('mq-overviewmap-close ui-icon-arrowthick-1-se');
+        	$('#'+id).dialog('open');        	
     	});
     }
-    
-    //TODO: you cannot reopen this thing 
+
 });
 })(jQuery);
