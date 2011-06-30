@@ -2,7 +2,7 @@
   height:512px;
   width:512px;
   border:solid 1px black;
-  display: inline-block;
+  display: block;
 }
 .olControlAttribution {
     bottom:0.5em !important;
@@ -60,12 +60,27 @@
     display: inline-block;  
     margin:2px;       
 }
+
 .mq-overviewmap-dialog .ui-dialog-content{
     padding: 0.4em;
+ 
 }
- #layermanager{
+.mq-overviewmap-button {
+  margin: 2px;
+  padding: 4px ;
+   cursor: pointer;
+    margin: 5px;
+ 
+    z-index: 999;
+       bottom: 0;
+    float: right;
+    position: absolute;
+    right: 0;
+}
+
+#layermanager{
      width: 300px;
- }
+}
 
 #featureinfo {
     display: inline-block;
@@ -113,4 +128,12 @@
     display: block;
     margin: 0px 5px 0px 30px;
     padding: 10px;
+}
+
+.mq-zoomslider {
+    position: absolute;
+    float: left;
+    margin: 10px;
+    z-index: 10000;
+   
 }
