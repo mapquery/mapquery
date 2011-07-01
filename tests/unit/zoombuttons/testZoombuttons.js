@@ -11,7 +11,7 @@ test("ZoomButtons are shown", 2, function() {
         }]
     });
     var mq = map.data('mapQuery');
-    var zoombuttons = $('#zoombutton').mqZoomButtons($('#map1'));
+    var zoombuttons = $('#zoombutton').mqZoomButtons({map:'#map1'});
     equals($('#zoombutton').find('.mq-zoombuttons-plus').length, 1, 'zoombuttons contains plus icon');
     equals($('#zoombutton').find('.mq-zoombuttons-minus').length, 1, 'zoombuttons contains minus icon');
 
