@@ -26,7 +26,7 @@ $(document).ready(function() {
         maxExtent: [0, -90, 160, 90]
     });
     $('#popup').mqPopup({
-        map: $('#map'),
+        map: '#map',
         contents: function(feature) {
             return '<p>' + feature.data.id + '</p>';
         }

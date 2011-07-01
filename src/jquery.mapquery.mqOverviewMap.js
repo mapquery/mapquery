@@ -28,13 +28,8 @@ $.widget("mapQuery.mqOverviewMap", {
         var id = 'mqOverviewMap-dialog'; //TODO smo20110620 make this configurable
         
         //get the mapquery object
-        if (this.options.jquery === $().jquery) {
-            map = this.options.data('mapQuery');
-            this.options = {};
-        }
-        else {
-            map = this.options.map.data('mapQuery');
-        }
+        map = $(this.options.map).data('mapQuery');
+        
         this.element.addClass('ui-widget  ui-helper-clearfix ' +
                               'ui-corner-all');
                               

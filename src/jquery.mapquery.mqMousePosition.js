@@ -29,13 +29,7 @@ $.widget("mapQuery.mqMousePosition", {
         var mousepos;
         
         //get the mapquery object
-        if (this.options.jquery === $().jquery) {
-            map = this.options.data('mapQuery');
-            this.options = {};
-        }
-        else {
-            map = this.options.map.data('mapQuery');
-        }
+        map = $(this.options.map).data('mapQuery');
         
         map.bind("mousemove",
             {widget:self,map:map},

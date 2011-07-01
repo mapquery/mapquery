@@ -18,13 +18,9 @@ $.widget("mapQuery.mqLayerControl", {
         var self = this;
         var element = this.element;
         
-        if (this.options.jquery === $().jquery) {
-            map = this.options.data('mapQuery');
-            this.options = {};
-        }
-        else {
-            map = this.options.map.data('mapQuery');
-        }
+        //get the mapquery object
+        map = $(this.options.map).data('mapQuery');
+        
         element.append('<ul class=" ui-widget"></ul>');
         var ulElement = element.children('ul');
         $.each(map.layers().reverse(), function() {

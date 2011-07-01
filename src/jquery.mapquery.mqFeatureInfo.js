@@ -22,13 +22,9 @@ $.widget("mapQuery.mqFeatureInfo", {
         var self = this;
         var element = this.element;
         
-        if (this.options.jquery === $().jquery) {
-            map = this.options.data('mapQuery');
-            this.options = {};
-        }
-        else {
-            map = this.options.map.data('mapQuery');
-        }
+        //get the mapquery object
+        map = $(this.options.map).data('mapQuery');
+        
         var layers = $.map(map.layers(), function(layer) {
             return layer.isVector ? layer : null;
         });

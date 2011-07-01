@@ -18,13 +18,7 @@ $.widget("mapQuery.mqZoomSlider", {
         var element = this.element;
         
         //get the mapquery object
-        if (this.options.jquery === $().jquery) {
-            map = this.options.data('mapQuery');
-            this.options = {};
-        }
-        else {
-            map = this.options.map.data('mapQuery');
-        }
+        map = $(this.options.map).data('mapQuery');
         
         $.tmpl('mqZoomSlider').appendTo(element);
         

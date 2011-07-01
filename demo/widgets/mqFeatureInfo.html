@@ -27,7 +27,7 @@ $(document).ready(function() {
     //map.data('mapQuery').goto({zoom:2});
     //add a widget to the application and pass the map
     $('#featureinfo').mqFeatureInfo({
-        map: $('#map'),
+        map: '#map',
         contents: function(feature) {
             return '<p>' + feature.data.id + '</p>';
         }
