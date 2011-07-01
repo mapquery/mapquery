@@ -31,6 +31,9 @@ $.widget("mapQuery.mqZoomSlider", {
            value: numzoomlevels - map.goto().zoom,
            slide: function(event, ui) {
                map.goto({zoom:numzoomlevels-ui.value});
+           },
+           change: function(event, ui) {
+               map.goto({zoom:numzoomlevels-ui.value});
            }
        });
        map.bind("zoomend",
