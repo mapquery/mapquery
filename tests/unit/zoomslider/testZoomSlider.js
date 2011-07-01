@@ -1,5 +1,5 @@
 /*
- * Popup unit tests
+ * Zoomslider unit tests
  */
 (function($) {
 module('zoomslider');

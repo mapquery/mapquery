@@ -1,5 +1,5 @@
 /*
- * Popup unit tests
+ * Zoombutton unit tests
  */
 (function($) {
 module('zoombuttons');
@@ -31,6 +31,8 @@ test("ZoomButtons work", 2, function() {
     $(".mq-zoombuttons-minus").trigger('click');
 	goto = mq.goto();
     equals(goto.zoom, 1, 'Zoomed out');
+    
+   
 });
 
 })(jQuery);
