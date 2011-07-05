@@ -23,12 +23,13 @@ If you want to create a new widget for MapQuery, here are some notes:
 
  - Don't indent after the (function($) { })(jQuery) closure:
 
-    (function($) {
-    $.widget("mapQuery.mqLayerControl", {
-        _create: ...
-    }
-    });
-    })(jQuery);
+```javascript
+(function($) {
+$.widget("mapQuery.mqLayerControl", {
+    _create: ...
+});
+})(jQuery);
+```
 
  - Name your widget in the constructor mapQuery.mq<anameyoulike>:
 
@@ -50,3 +51,9 @@ Data
 
 The bundled tiles were generated from the Natural Earth dataset.
 http://www.naturalearthdata.com/downloads/10m-raster-data/10m-natural-earth-1/
+
+
+License
+-------
+
+MapQuery is licensed under the MIT License.
