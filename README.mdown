@@ -23,12 +23,12 @@ If you want to create a new widget for MapQuery, here are some notes:
 
  - Don't indent after the (function($) { })(jQuery) closure:
 
-    (function($) {
-    $.widget("mapQuery.mqLayerControl", {
-        _create: ...
-    }
-    });
-    })(jQuery);
+     (function($) {
+     $.widget("mapQuery.mqLayerControl", {
+         _create: ...
+     }
+     });
+     })(jQuery);
 
  - Name your widget in the constructor mapQuery.mq<anameyoulike>:
 
