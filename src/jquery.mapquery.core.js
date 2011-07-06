@@ -256,6 +256,75 @@ $.MapQuery.Layer = function(map, id, options) {
     this.map.olMap.addLayer(this.olLayer);
 };
 
+$.MapQuery.Layer.prototype = {
+    down: function(delta) {
+        delta = delta || 1;
+        this.map.olMap.raiseLayer(this.olLayer, -delta);
+        return this;
+    },
+    // NOTE vmx: this would be pretty cool, but it's not easily possible
+    // you could use $.each($.geojq.layer())) instead, this is for pure
+    // convenience.
+    each: function () {},
+    // will return the map object
+    remove: function() {
+        this.map.olMap.removeLayer(this.olLayer);
+        // remove references to this layer that are stored in the
+        // map object
+        return this.map._removeLayer(this.id);
+    },
+    position: function(pos) {
+        if (pos===undefined) {
+            return this.map.olMap.getLayerIndex(this.olLayer)-1;
+        }
+        else {
+            return this.map.olMap.setLayerIndex(this.olLayer, pos+1);
+        }
+    },
+    up: function(delta) {
+        delta = delta || 1;
+        this.map.olMap.raiseLayer(this.olLayer, delta);
+        return this;
+    },
+    visible: function(vis) {
+        if (vis===undefined) {
+            return this.olLayer.getVisibility();
+        }
+        else {
+            this.olLayer.setVisibility(vis);
+            return this;
+        }
+    },
+    opacity: function(opac) {
+         if (opac===undefined) {
+            // this.olLayer.opacity can be null if never set so return the visibility
+            var value;
+            this.olLayer.opacity ? value= this.olLayer.opacity : value = this.olLayer.getVisibility();
+            return value;
+        }
+        else {
+            this.olLayer.setOpacity(opac);
+            return this;
+        }
+    },
+    // every event gets the layer passed in
+    bind: function() {
+        this.events.bind.apply(this.events, arguments);
+    },
+    one: function() {
+        this.events.one.apply(this.events, arguments);
+    }
+};
+
+$.fn.mapQuery = function(options) {
+    return this.each(function() {
+        var instance = $.data(this, 'mapQuery');
+        if (!instance) {
+            $.data(this, 'mapQuery', new $.MapQuery.Map($(this), options));
+        }
+    });
+};
+
 $.extend($.MapQuery.Layer, {
     types: {
         bing: function(options) {
@@ -423,75 +492,6 @@ $.extend($.MapQuery.Layer, {
         } 
     }
 });
-
-$.MapQuery.Layer.prototype = {
-    down: function(delta) {
-        delta = delta || 1;
-        this.map.olMap.raiseLayer(this.olLayer, -delta);
-        return this;
-    },
-    // NOTE vmx: this would be pretty cool, but it's not easily possible
-    // you could use $.each($.geojq.layer())) instead, this is for pure
-    // convenience.
-    each: function () {},
-    // will return the map object
-    remove: function() {
-        this.map.olMap.removeLayer(this.olLayer);
-        // remove references to this layer that are stored in the
-        // map object
-        return this.map._removeLayer(this.id);
-    },
-    position: function(pos) {
-        if (pos===undefined) {
-            return this.map.olMap.getLayerIndex(this.olLayer)-1;
-        }
-        else {
-            return this.map.olMap.setLayerIndex(this.olLayer, pos+1);
-        }
-    },
-    up: function(delta) {
-        delta = delta || 1;
-        this.map.olMap.raiseLayer(this.olLayer, delta);
-        return this;
-    },
-    visible: function(vis) {
-        if (vis===undefined) {
-            return this.olLayer.getVisibility();
-        }
-        else {
-            this.olLayer.setVisibility(vis);
-            return this;
-        }
-    },
-    opacity: function(opac) {
-         if (opac===undefined) {
-            // this.olLayer.opacity can be null if never set so return the visibility
-            var value;
-            this.olLayer.opacity ? value= this.olLayer.opacity : value = this.olLayer.getVisibility();
-            return value;
-        }
-        else {
-            this.olLayer.setOpacity(opac);
-            return this;
-        }
-    },
-    // every event gets the layer passed in
-    bind: function() {
-        this.events.bind.apply(this.events, arguments);
-    },
-    one: function() {
-        this.events.one.apply(this.events, arguments);
-    }
-};
-
-$.fn.mapQuery = function(options) {
-    return this.each(function() {
-        var instance = $.data(this, 'mapQuery');
-        if (!instance) {
-            $.data(this, 'mapQuery', new $.MapQuery.Map($(this), options));
-        }
-    });
-};
 
 // default options for the map and layers
 $.fn.mapQuery.defaults = {
