@@ -4,6 +4,7 @@
 ### *$('selector')*.`mapQuery(options)`
 _version added 0.1_
 
+
 **Description**: initialise MapQuery and associate it with the matched element 
 
    
