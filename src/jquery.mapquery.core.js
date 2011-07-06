@@ -24,6 +24,14 @@ the 'mapQuery' data object.
 (function ($) {
 $.MapQuery = $.MapQuery || {};
 
+/**
+
+---
+
+##MapQuery.Map
+
+
+ */
 $.MapQuery.Map = function(element, options) {
     var self = this;
     //If there are a maxExtent and a projection other than Spherical Mercator automagically set maxResolution if it is not set
