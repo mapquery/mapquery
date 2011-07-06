@@ -84,11 +84,17 @@
 
 #featureinfo {
     display: inline-block;
-    height: 256px;
+    min-height: 100px;
+    height: auto;
     position: relative;
     vertical-align: top;
     width: 256px;
 }
+
+#featureinfo h1 {
+    margin-left: 0.5em;
+}
+
 #featureinfo p {
     font-size: 1.5em;
     margin-left: 1em;

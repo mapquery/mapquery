@@ -1,0 +1,61 @@
+<!doctype html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0;">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>MapQuery Geocouch example</title>
+  <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/themes/base/jquery-ui.css" type="text/css" media="all" />
+  <link rel='StyleSheet' type='text/css' href='style/style.css'/>
+  <script src="../lib/openlayers/OpenLayers.js" type="text/javascript"></script>
+  <script src="../lib/jquery/jquery-1.4.4.js" type="text/javascript"></script>
+  <script src="../lib/jquery/ui/jquery-ui.js" type="text/javascript"></script>
+  <script src="../lib/jquery/jquery.tmpl.js" type="text/javascript"></script>
+  <script src="../src/jquery.mapquery.core.js" type="text/javascript"></script>
+  <script src="../src/jquery.mapquery.mqFeatureInfo.js" type="text/javascript"></script>
+  
+  <script type="text/javascript">
+    $(document).ready(function() {
+        // multiple layers with json not working  also no data arrives from couchdb -> geocouch does not send back formatted json data
+        
+    //initialise mapquery with an Bing Aerial layer
+    var map = $('#map').mapQuery({
+        projection:'EPSG:4326', //Projection of your map (WGS84 in this case)
+        layers:[/*{         //add layers to your map; you need to define at least one to be able to see anything on the map
+                type:'osm',  //add a layer of the type osm (OpenStreetMap)
+                label:'OpenStreetMap'
+            },{
+                type:'bing',        //create a bing maps layer
+                view:'hybrid',    //use the bing satellite (aerial) layer, instead of bing road (default)
+                label: 'Hybrid Bing Map',
+                key:'ArAGGPJ16xm0RXRbw27PvYc9Tfuj1k1dUr_gfA5j8QBD6yAYMlsAtF6YkVyiiLGn' //Bing Maps API key for your application. Get you own at http://bingmapsportal.com/ ; this one is for the mapquery project
+            },*/{
+                type: 'JSON',
+                url: 'data/reservate.json',
+                //url: 'http://localhost:5984/ethiopia_reservate/_design/geo/_list/geojson/all?type=geojson',
+                label: 'reservate'
+            }],
+        maxExtent: [32, 3, 45, 13]
+        });
+    //map.data('mapQuery').goto({position:[40,10]});  // NOT WORKING
+    //map.data('mapQuery').goto({zoom:5});            // NOT WORKING
+    /*$('#layercontrol').mqLayerControl($('#map'));
+    $('#mouseposition').mqMousePosition($('#map'));
+    $('#layermanager').mqLayerManager($('#map'));*/
+    $('#featureinfo').mqFeatureInfo({
+        map: $('#map'),
+        contents: function(feature) {
+            var html = '<h1>' + feature.data.properties.GISNAME + '</h2>';
+            if (feature.data.properties.Species) {
+                html += '<p>Species: ' + feature.data.properties.Species + '</p>';
+            }
+            return html;
+        }
+    });
+    });
+  </script>
+</head>
+<body>
+  <div id="map" class="map"></div>
+  <div id="featureinfo" class="mq-widget"></div> 
+</body>
+</html>
