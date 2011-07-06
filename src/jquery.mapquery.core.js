@@ -1,3 +1,26 @@
+/**
+# MapQuery.Core
+
+### *$('selector')*.`mapQuery(options)`
+_version added 0.1_
+
+**Description**: initialise MapQuery and associate it with the matched element 
+
+   
+**options**  an object of key-value pairs with options for the map.  
+
+> returns: jQuery
+
+
+We can initialise MapQuery without any options, or for instance pass in a layers object. 
+The mapQuery function returns a jQuery object, to access the mapQuery object retrieve
+the 'mapQuery' data object.
+
+     var map = $('#map').mapQuery();
+     var map = $('#map').mapQuery({layers:[{type:'osm'}]);
+    
+     var mq = map.data('mapQuery');
+ */ 
 (function ($) {
 $.MapQuery = $.MapQuery || {};
 
