@@ -1,13 +1,13 @@
 /**
-# MapQuery.Core
+# MapQuery.Core.js
+The main MapQuery file. It contains the MapQuery constructor, the MapQuery.Map 
+constructor and the MapQuery.Layer constructor.
 
-### *$('selector')*.`mapQuery(options)`
+
+### *$('selector')*.`mapQuery([options])`
 _version added 0.1_
+####**Description**: initialise MapQuery and associate it with the matched element 
 
-
-**Description**: initialise MapQuery and associate it with the matched element 
-
-   
 **options**  an object of key-value pairs with options for the map.  
 
 > returns: jQuery
@@ -29,9 +29,11 @@ $.MapQuery = $.MapQuery || {};
 
 ---
 
-##MapQuery.Map
+#MapQuery.Map
 
-
+The MapQuery.Map object. It is automatically constructed from the options 
+given in the mapQuery() constructor. The Map object is refered to as `map` in 
+the documentation.
  */
 $.MapQuery.Map = function(element, options) {
     var self = this;
@@ -96,6 +98,26 @@ $.MapQuery.Map = function(element, options) {
 };
 
 $.MapQuery.Map.prototype = {
+ /**
+###*map*.`layers([options])`
+_version added 0.1_
+####**Description**: get/set the layers of the map
+
+**options** an object of key-value pairs with options to create one or more layers  
+ 
+>returns: [layer]  
+
+
+The `.layers()` method allows us to attach layers to a mapQuery object. It takes 
+an options object with layer options. To add multiple layers, create an array of layer 
+options objects. If an options object is given, it will return the resulting layer(s).  
+We can also use it to retrieve all layers currently attached to the map. 
+
+
+     var osm = map.layers({type:'osm'});
+     var layers = map.layers();
+
+     */    
     layers: function(options) {
         //var o = $.extend({}, options);
         var self = this;
@@ -157,8 +179,34 @@ $.MapQuery.Map.prototype = {
         // XXX vmx: shouldn't the layer be destroyed() properly?
         return this;
     },
-    //This WILL NOT work without a baseLayer or allOverlays == true
-    // vmx 20110609 Still true?
+/**
+ ###*map*.`goto(options)`
+_version added 0.1_
+####**Description**: get/set the extent, zoom and position of the map
+    
+**position** the position as [x,y] in displayProjection (default EPSG:4326) to center the map at     
+**zoom** the zoomlevel as integer to zoom the map to    
+**box** an array with the lower left x, lower left y, upper right x, upper right y to zoom the map to, 
+this will take precedent when conflicting with any of the above values      
+**projection** the projection the coordinates are in, default is the displayProjection    
+
+>returns {position: [x,y], zoom: z<int>, box: [llx,lly,urx,ury]}  
+
+
+The `.goto()` method allows us to move to map to a specific zoom level, specific 
+position or a specific extent. We can specify the projection of the coordinates
+to override the displayProjection. For instance you want to show the coordinates
+in 4326, but you have a dataset in EPSG:28992 (dutch projection).  
+We can also retrieve the current zoomlevel, position and extent from the map. 
+The coordinates are returned in displayProjection.
+ 
+
+     var goto = map.goto();
+     map.goto({zoom:4});
+     map.goto({position:[5,52]});
+     map.goto(box:[-180,-90,180,90]);
+     map.goto({position:[125000,485000],projection:'EPSG:28992'});
+ */ 
     goto: function (options) {
         var position;
 
@@ -249,8 +297,18 @@ $.MapQuery.Map.prototype = {
         this.element.removeData('mapQuery');
     }
 };
+/**
 
+---
+
+#MapQuery.Layer
+
+The MapQuery.Layer object. It is constructed with layer options object in the
+`map.layers()` function or by passing a `layer:{options}` object in the `mapQuery()` 
+constructor. The Layer object is refered to as `layer` in the documentation.
+ */
 $.MapQuery.Layer = function(map, id, options) {
+    
     var self = this;
     // apply default options that are not specific to a layer
 
@@ -289,9 +347,33 @@ $.MapQuery.Layer = function(map, id, options) {
 };
 
 $.MapQuery.Layer.prototype = {
+/**
+###*layer*.`down([delta])` 
+_version added 0.1_
+####**Description**: move the layer down in the layer stack of the map
+     
+**delta** the amount of layers the layer has to move down in the layer stack (default 1)  
+ 
+>returns layer (MapQuery.Layer)  
+
+
+The `.down(delta)` method is a shortcut method for `.position(pos)` which makes
+it easier to move a layer down in the layerstack relative to its current position.
+It takes an integer and will try to move to layer down the number of places given.
+If delta is bigger than the current position in the stack, it will put the layer 
+at the bottom.
+
+
+     layer.down();  //will move layer 1 place down
+     layer.down(3); //will move layer 3 places down
+
+ */  
     down: function(delta) {
         delta = delta || 1;
-        this.map.olMap.raiseLayer(this.olLayer, -delta);
+        var pos = this.position();
+        pos = pos - delta;
+        if (pos<0) {pos = 0};
+        this.position(pos);        
         return this;
     },
     // NOTE vmx: this would be pretty cool, but it's not easily possible
@@ -315,7 +397,9 @@ $.MapQuery.Layer.prototype = {
     },
     up: function(delta) {
         delta = delta || 1;
-        this.map.olMap.raiseLayer(this.olLayer, delta);
+        var pos = this.position();
+        pos = pos + delta;
+        this.position(pos);        
         return this;
     },
     visible: function(vis) {
@@ -330,8 +414,7 @@ $.MapQuery.Layer.prototype = {
     opacity: function(opac) {
          if (opac===undefined) {
             // this.olLayer.opacity can be null if never set so return the visibility
-            var value;
-            this.olLayer.opacity ? value= this.olLayer.opacity : value = this.olLayer.getVisibility();
+            var value = this.olLayer.opacity ? this.olLayer.opacity : this.olLayer.getVisibility();
             return value;
         }
         else {
@@ -604,11 +687,11 @@ $.MapQuery.util.parseUri = function (str) {
         uri = {},
         i = 14;
 
-    while (i--) uri[o.key[i]] = m[i] || "";
+    while (i--) {uri[o.key[i]] = m[i] || ""};
 
     uri[o.q.name] = {};
     uri[o.key[12]].replace(o.q.parser, function ($0, $1, $2) {
-        if ($1) uri[o.q.name][$1] = $2;
+        if ($1) {uri[o.q.name][$1] = $2};
     });
 
     return uri;
