@@ -10,17 +10,17 @@ _version added 0.1_
 
 **options**  an object of key-value pairs with options for the map.  
 
-> returns: jQuery
+> Returns: $('selector') (jQuery object)
 
 
 We can initialise MapQuery without any options, or for instance pass in a layers object. 
 The mapQuery function returns a jQuery object, to access the mapQuery object retrieve
 the 'mapQuery' data object.
 
-     var map = $('#map').mapQuery();
-     var map = $('#map').mapQuery({layers:[{type:'osm'}]);
+     var map = $('#map').mapQuery(); //create an empty map
+     var map = $('#map').mapQuery({layers:[{type:'osm'}]); //create a map with osm
     
-     var mq = map.data('mapQuery');
+     var mq = map.data('mapQuery'); //get the MapQuery object
  */ 
 (function ($) {
 $.MapQuery = $.MapQuery || {};
@@ -32,7 +32,7 @@ $.MapQuery = $.MapQuery || {};
 #MapQuery.Map
 
 The MapQuery.Map object. It is automatically constructed from the options 
-given in the mapQuery() constructor. The Map object is refered to as `map` in 
+given in the `mapQuery([options])` constructor. The Map object is refered to as _map_ in 
 the documentation.
  */
 $.MapQuery.Map = function(element, options) {
@@ -105,7 +105,7 @@ _version added 0.1_
 
 **options** an object of key-value pairs with options to create one or more layers  
  
->returns: [layer]  
+>Returns: [layer] (array of MapQuery.Layer)
 
 
 The `.layers()` method allows us to attach layers to a mapQuery object. It takes 
@@ -114,8 +114,8 @@ options objects. If an options object is given, it will return the resulting lay
 We can also use it to retrieve all layers currently attached to the map. 
 
 
-     var osm = map.layers({type:'osm'});
-     var layers = map.layers();
+     var osm = map.layers({type:'osm'}); //add an osm layer to the map
+     var layers = map.layers(); //get all layers of the map
 
      */    
     layers: function(options) {
@@ -180,7 +180,7 @@ We can also use it to retrieve all layers currently attached to the map.
         return this;
     },
 /**
- ###*map*.`goto(options)`
+ ###*map*.`goto([options])`
 _version added 0.1_
 ####**Description**: get/set the extent, zoom and position of the map
     
@@ -190,7 +190,7 @@ _version added 0.1_
 this will take precedent when conflicting with any of the above values      
 **projection** the projection the coordinates are in, default is the displayProjection    
 
->returns {position: [x,y], zoom: z<int>, box: [llx,lly,urx,ury]}  
+>Returns: {position: [x,y], zoom: z<int>, box: [llx,lly,urx,ury]}  
 
 
 The `.goto()` method allows us to move to map to a specific zoom level, specific 
@@ -201,11 +201,11 @@ We can also retrieve the current zoomlevel, position and extent from the map.
 The coordinates are returned in displayProjection.
  
 
-     var goto = map.goto();
-     map.goto({zoom:4});
-     map.goto({position:[5,52]});
-     map.goto(box:[-180,-90,180,90]);
-     map.goto({position:[125000,485000],projection:'EPSG:28992'});
+     var goto = map.goto(); //get the current zoom, position and extent
+     map.goto({zoom:4}); //zoom to zoomlevel 4
+     map.goto({position:[5,52]}); //pan to point 5,52
+     map.goto(box:[-180,-90,180,90]); //zoom to the box -180,-900,180,90
+     map.goto({position:[125000,485000],projection:'EPSG:28992'}); //pan to point 125000,485000 in dutch projection
  */ 
     goto: function (options) {
         var position;
@@ -304,8 +304,8 @@ The coordinates are returned in displayProjection.
 #MapQuery.Layer
 
 The MapQuery.Layer object. It is constructed with layer options object in the
-`map.layers()` function or by passing a `layer:{options}` object in the `mapQuery()` 
-constructor. The Layer object is refered to as `layer` in the documentation.
+map.`layers([options])` function or by passing a `layer:{options}` object in the `mapQuery()` 
+constructor. The Layer object is refered to as _layer_ in the documentation.
  */
 $.MapQuery.Layer = function(map, id, options) {
     
@@ -354,18 +354,18 @@ _version added 0.1_
      
 **delta** the amount of layers the layer has to move down in the layer stack (default 1)  
   
->returns layer (MapQuery.Layer)  
+>Returns layer (MapQuery.Layer)  
 
 
-The `.down(delta)` method is a shortcut method for `.position(pos)` which makes
+The `.down()` method is a shortcut method for `.position(pos)` which makes
 it easier to move a layer down in the layerstack relative to its current position.
 It takes an integer and will try to move the layer down the number of places given.
 If delta is bigger than the current position in the stack, it will put the layer 
 at the bottom.
 
 
-     layer.down();  //will move layer 1 place down
-     layer.down(3); //will move layer 3 places down
+     layer.down();  //move layer 1 place down
+     layer.down(3); //move layer 3 places down
 
  */  
     down: function(delta) {
@@ -385,13 +385,13 @@ at the bottom.
 _version added 0.1_
 ####**Description**: remove the layer from the map
    
->returns layer (MapQuery.Layer)  
+>Returns: id (string)  
 
 
 The `.remove()` method allows us to remove a layer from the map. 
 It returns an id to allow widgets to remove their references to the destroyed layer.
   
-     var id = layer.remove();
+     var id = layer.remove(); //remove this layer
 
 
  */  
@@ -408,16 +408,17 @@ _version added 0.1_
   
 **position** an integer setting the new position of the layer in the layer stack  
 
->returns position (integer)  
+>Returns: position (integer)  
 
 
 The `.position()` method allows us to change the position of the layer in the layer 
 stack. It will take into account the hidden baselayer that is used by OpenLayers. 
+The lowest layer is position 0.
 If no position is given, it will return the current postion.
  
 
-     var pos =  layer.position();
-     layer.position(2);
+     var pos =  layer.position(); //get position of layer in the layer stack
+     layer.position(2); //put layer on position 2 in the layer stack
 
  */      
     position: function(pos) {
@@ -435,17 +436,17 @@ _version added 0.1_
      
 **delta** the amount of layers the layer has to move up in the layer stack (default 1)  
   
->returns layer (MapQuery.Layer)  
+>Returns: layer (MapQuery.Layer)  
 
 
-The `.up(delta)` method is a shortcut method for `.position(pos)` which makes
+The `.up()` method is a shortcut method for `.position(pos)` which makes
 it easier to move a layer up in the layerstack relative to its current position.
 It takes an integer and will move the layer up the number of places given.
 
 
 
-     layer.up();  //will move layer 1 place up
-     layer.up(3); //will move layer 3 places up
+     layer.up();  //move layer 1 place up
+     layer.up(3); //move layer 3 places up
 */
     up: function(delta) {
         delta = delta || 1;
@@ -461,15 +462,15 @@ _version added 0.1_
   
 **visible** a boolean setting the visibiliyu of the layer  
 
->returns visible (boolean)  
+>Returns: visible (boolean)  
 
 
 The `.visible()` method allows us to change the visibility of the layer. 
 If no visible is given, it will return the current visibility.
  
 
-     var vis =  layer.visible();
-     layer.visible(true);
+     var vis =  layer.visible(); //get the visibility of layer
+     layer.visible(true); //set visibility of layer to true
 
  */    
     visible: function(vis) {
@@ -488,15 +489,15 @@ _version added 0.1_
   
 **position** a float [0-1] setting the opacity of the layer  
 
->returns opacity (float)  
+>Returns: opacity (float)  
 
 
 The `.opacity()` method allows us to change the opacity of the layer. 
 If no opacity is given, it will return the current opacity.
  
 
-     var opac =  layer.opacity();
-     layer.opacity(0.7);
+     var opac =  layer.opacity(); //get opacity of layer
+     layer.opacity(0.7); //set opacity of layer to 0.7
 
  */    
     opacity: function(opac) {
