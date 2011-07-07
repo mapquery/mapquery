@@ -15,32 +15,26 @@
   
   <script type="text/javascript">
     $(document).ready(function() {
-        // multiple layers with json not working  also no data arrives from couchdb -> geocouch does not send back formatted json data
+        // no data arrives from couchdb -> geocouch does not send back formatted json data
         
     //initialise mapquery with an Bing Aerial layer
     var map = $('#map').mapQuery({
+        maxExtent:[-180,-90,180,90], //Since this is a 4326 map, you need to set a different maxExtent
         projection:'EPSG:4326', //Projection of your map (WGS84 in this case)
-        layers:[/*{         //add layers to your map; you need to define at least one to be able to see anything on the map
-                type:'osm',  //add a layer of the type osm (OpenStreetMap)
-                label:'OpenStreetMap'
+        layers:[{ //layers to add to the map
+                type:'wms',
+                url:'http://vmap0.tiles.osgeo.org/wms/vmap0',
+                layers:'basic'
             },{
-                type:'bing',        //create a bing maps layer
-                view:'hybrid',    //use the bing satellite (aerial) layer, instead of bing road (default)
-                label: 'Hybrid Bing Map',
-                key:'ArAGGPJ16xm0RXRbw27PvYc9Tfuj1k1dUr_gfA5j8QBD6yAYMlsAtF6YkVyiiLGn' //Bing Maps API key for your application. Get you own at http://bingmapsportal.com/ ; this one is for the mapquery project
-            },*/{
                 type: 'JSON',
                 url: 'data/reservate.json',
                 //url: 'http://localhost:5984/ethiopia_reservate/_design/geo/_list/geojson/all?type=geojson',
                 label: 'reservate'
-            }],
-        maxExtent: [32, 3, 45, 13]
+            }]       
         });
-    //map.data('mapQuery').goto({position:[40,10]});  // NOT WORKING
-    //map.data('mapQuery').goto({zoom:5});            // NOT WORKING
-    /*$('#layercontrol').mqLayerControl($('#map'));
-    $('#mouseposition').mqMousePosition($('#map'));
-    $('#layermanager').mqLayerManager($('#map'));*/
+    map.data('mapQuery').goto({position:[40,10]}); 
+    map.data('mapQuery').goto({zoom:5});            
+
     $('#featureinfo').mqFeatureInfo({
         map: $('#map'),
         contents: function(feature) {
