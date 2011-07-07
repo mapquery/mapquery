@@ -261,7 +261,40 @@ test("goto works properly (EPSG:900913)", function() {
     }
 });
 
-asyncTest("Layer events are bound to the map object as well", 2, function() {
+asyncTest("GeoJSON layer gets loaded correctly 2", 1, function() {
+    var mq = $('#map_geojson').mapQuery({
+        layers: {
+            type: 'JSON',
+            label: 'Polygons',
+            url: '../../../demo/data/poly.json'
+        }
+    }).data('mapQuery');
+
+    mq.layers()[0].bind('loadend', function(evt, data) {
+        var olLayer = data.object;
+        equals(olLayer.features.length, 2, "Number of features is correct");
+        start();
+    });
+});
+
+asyncTest("GeoJSON layer gets loaded correctly (JSONP)", 1, function() {
+    var mq = $('#map_geojson_jsonp').mapQuery({
+        layers: {
+            type: 'JSON',
+            label: 'Public Schools',
+            url: 'http://max.ic.ht/sf_public_schools/_design/geo/_rewrite/data?bbox=-123,37.72,-121,37.75'
+        }
+    }).data('mapQuery');
+    var layers = mq.layers();
+
+    mq.layers()[0].bind('loadend', function(evt, data) {
+        var olLayer = data.object;
+        equals(olLayer.features.length, 47, "Number of features is correct");
+        start();
+    });
+});
+
+test("Layer events are bound to the map object as well", 2, function() {
     var mq = $('#map_events').mapQuery({
         layers: {
             type: 'JSON',
@@ -274,18 +307,18 @@ asyncTest("Layer events are bound to the map object as well", 2, function() {
     layer.bind('loadend', function(evt, data) {
         var olLayer = data.object;
         var feature = data.object.features[0];
-
-        layer.bind('featureselected', function() {
-            start();
-            ok(true, 'Feature selected event was fired on the Layer object');
-            stop();
-        });
-        mq.bind('featureselected', function() {
-            start();
-            ok(true, 'Feature selected event was fired on the Map object');
-            stop();
-        });
         olLayer.events.triggerEvent('featureselected', {feature: feature});
+    });
+
+    stop();
+    layer.bind('featureselected', function() {
+        ok(true, 'Feature selected event was fired on the Layer object');
+        start();
+    });
+    stop();
+    mq.bind('featureselected', function() {
+        ok(true, 'Feature selected event was fired on the Map object');
+        start();
     });
 });
 })(jQuery);

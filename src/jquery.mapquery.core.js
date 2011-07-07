@@ -624,12 +624,23 @@ $.extend($.MapQuery.Layer, {
                     }
                 }
             }
+            var protocol;
+            // only use JSONP if we use http(s)
+            if (o.url.match(/^https?:\/\//)!==null &&
+                !$.MapQuery.util.sameOrigin(o.url)) {
+                protocol = 'Script';
+            }
+            else {
+                protocol = 'HTTP';
+            }
+
             var params = {
-                protocol: new OpenLayers.Protocol.HTTP({
+                protocol: new OpenLayers.Protocol[protocol]({
                     url: o.url,
                     format: new OpenLayers.Format.GeoJSON()
                 }),
-                strategies: strategies
+                strategies: strategies,
+                projection: o.projection || 'EPSG:4326'
             };
             return {
                 layer: new OpenLayers.Layer.Vector(o.label, params),
@@ -690,7 +701,7 @@ $.extend($.MapQuery.Layer, {
                 var url = $.MapQuery.util.parseUri(params.url);
                 var urlParts = url.path.split('/');
                 var wmtsPath = urlParts.slice(urlParts.length-3);
-                params.url = url.protocol ? url.protocol + '://' : '';
+                params.url = url.protocol ? url.protocol + '//' : '';
                 params.url += url.authority +
                     // remove WMTS version (1.0.0) as well
                     urlParts.slice(0, urlParts.length-4).join('/');
@@ -779,6 +790,8 @@ $.MapQuery.util = {};
 // parseUri 1.2.2
 // (c) Steven Levithan <stevenlevithan.com>
 // MIT License
+// Edited to include the colon in the protocol, just like it is
+// with window.location.protocol
 $.MapQuery.util.parseUri = function (str) {
     var o = $.MapQuery.util.parseUri.options,
         m = o.parser[o.strictMode ? "strict" : "loose"].exec(str),
@@ -804,8 +817,26 @@ $.MapQuery.util.parseUri.options = {
         parser: /(?:^|&)([^&=]*)=?([^&]*)/g
     },
     parser: {
-        strict: /^(?:([^:\/?#]+):)?(?:\/\/((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:\/?#]*)(?::(\d*))?))?((((?:[^?#\/]*\/)*)([^?#]*))(?:\?([^#]*))?(?:#(.*))?)/,
-        loose:  /^(?:(?![^:@]+:[^:@\/]*@)([^:\/?#.]+):)?(?:\/\/)?((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:\/?#]*)(?::(\d*))?)(((\/(?:[^?#](?![^?#\/]*\.[^?#\/.]+(?:[?#]|$)))*\/?)?([^?#\/]*))(?:\?([^#]*))?(?:#(.*))?)/
+        strict: /^(?:([^:\/?#]+:))?(?:\/\/((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:\/?#]*)(?::(\d*))?))?((((?:[^?#\/]*\/)*)([^?#]*))(?:\?([^#]*))?(?:#(.*))?)/,
+        loose:  /^(?:(?![^:@]+:[^:@\/]*@)([^:\/?#.]+:))?(?:\/\/)?((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:\/?#]*)(?::(\d*))?)(((\/(?:[^?#](?![^?#\/]*\.[^?#\/.]+(?:[?#]|$)))*\/?)?([^?#\/]*))(?:\?([^#]*))?(?:#(.*))?)/
         }
+};
+// Checks whether a URL conforms to the same origin policy or not
+$.MapQuery.util.sameOrigin = function(url) {
+    var parsed = $.MapQuery.util.parseUri(url);
+    parsed.protocol = parsed.protocol || 'file:';
+    parsed.port = parsed.port || "80";
+
+    var current = {
+        domain: document.domain,
+        port: window.location.port,
+        protocol: window.location.protocol
+    };
+    current.port = current.port || "80";
+
+    return parsed.protocol===current.protocol &&
+        parsed.port===current.port &&
+        // the current domain is a suffix of the parsed domain
+        parsed.host.match(current.domain + '$')!==null;
 };
 })(jQuery);
