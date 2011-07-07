@@ -353,13 +353,13 @@ _version added 0.1_
 ####**Description**: move the layer down in the layer stack of the map
      
 **delta** the amount of layers the layer has to move down in the layer stack (default 1)  
- 
+  
 >returns layer (MapQuery.Layer)  
 
 
 The `.down(delta)` method is a shortcut method for `.position(pos)` which makes
 it easier to move a layer down in the layerstack relative to its current position.
-It takes an integer and will try to move to layer down the number of places given.
+It takes an integer and will try to move the layer down the number of places given.
 If delta is bigger than the current position in the stack, it will put the layer 
 at the bottom.
 
@@ -380,13 +380,46 @@ at the bottom.
     // you could use $.each($.geojq.layer())) instead, this is for pure
     // convenience.
     each: function () {},
-    // will return the map object
+/**
+###*layer*.`remove()` 
+_version added 0.1_
+####**Description**: remove the layer from the map
+   
+>returns layer (MapQuery.Layer)  
+
+
+The `.remove()` method allows us to remove a layer from the map. 
+It returns an id to allow widgets to remove their references to the destroyed layer.
+  
+     var id = layer.remove();
+
+
+ */  
     remove: function() {
         this.map.olMap.removeLayer(this.olLayer);
         // remove references to this layer that are stored in the
         // map object
         return this.map._removeLayer(this.id);
     },
+/**
+###*layer*.`position([position])`
+_version added 0.1_
+####**Description**: get/set the `position` of the layer in the layer stack of the map
+  
+**position** an integer setting the new position of the layer in the layer stack  
+
+>returns position (integer)  
+
+
+The `.position()` method allows us to change the position of the layer in the layer 
+stack. It will take into account the hidden baselayer that is used by OpenLayers. 
+If no position is given, it will return the current postion.
+ 
+
+     var pos =  layer.position();
+     layer.position(2);
+
+ */      
     position: function(pos) {
         if (pos===undefined) {
             return this.map.olMap.getLayerIndex(this.olLayer)-1;
@@ -395,6 +428,25 @@ at the bottom.
             return this.map.olMap.setLayerIndex(this.olLayer, pos+1);
         }
     },
+/**
+###*layer*.`up([delta])` 
+_version added 0.1_
+####**Description**: move the layer up in the layer stack of the map
+     
+**delta** the amount of layers the layer has to move up in the layer stack (default 1)  
+  
+>returns layer (MapQuery.Layer)  
+
+
+The `.up(delta)` method is a shortcut method for `.position(pos)` which makes
+it easier to move a layer up in the layerstack relative to its current position.
+It takes an integer and will move the layer up the number of places given.
+
+
+
+     layer.up();  //will move layer 1 place up
+     layer.up(3); //will move layer 3 places up
+*/
     up: function(delta) {
         delta = delta || 1;
         var pos = this.position();
@@ -402,6 +454,24 @@ at the bottom.
         this.position(pos);        
         return this;
     },
+/**
+###*layer*.`visible([visible])`
+_version added 0.1_
+####**Description**: get/set the `visible` state of the layer
+  
+**visible** a boolean setting the visibiliyu of the layer  
+
+>returns visible (boolean)  
+
+
+The `.visible()` method allows us to change the visibility of the layer. 
+If no visible is given, it will return the current visibility.
+ 
+
+     var vis =  layer.visible();
+     layer.visible(true);
+
+ */    
     visible: function(vis) {
         if (vis===undefined) {
             return this.olLayer.getVisibility();
@@ -411,6 +481,24 @@ at the bottom.
             return this;
         }
     },
+/**
+###*layer*.`opacity([opacity])`
+_version added 0.1_
+####**Description**: get/set the `opacity` of the layer
+  
+**position** a float [0-1] setting the opacity of the layer  
+
+>returns opacity (float)  
+
+
+The `.opacity()` method allows us to change the opacity of the layer. 
+If no opacity is given, it will return the current opacity.
+ 
+
+     var opac =  layer.opacity();
+     layer.opacity(0.7);
+
+ */    
     opacity: function(opac) {
          if (opac===undefined) {
             // this.olLayer.opacity can be null if never set so return the visibility
