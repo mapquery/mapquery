@@ -1,6 +1,6 @@
 #!/bin/bash 
 cd `dirname $0`/..
-export MAPQUERY_HOME=`pwd`   // where is it?
+export MAPQUERY_HOME=`pwd`
 
 JSLINTBIN=$MAPQUERY_HOME/tests/jslint/jslint4java-1.3.3.jar
 
