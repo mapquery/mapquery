@@ -1,9 +1,9 @@
 /*jslint nomen:false, onevar:false, white: false, regexp: false */
 /*globals $:true, jQuery: true, OpenLayers:true, google: true */
-(function($) {
+(function($){
     $.MapQuery = $.MapQuery || {};
     
-    $.MapQuery.Map = function (element, options) {
+    $.MapQuery.Map = function(element, options){
         var self = this;
         //If there are a maxExtent and a projection other than Spherical Mercator automagically set maxResolution if it is not set
         // TODO smo 20110614: put maxExtent and maxResolution setting in the proper option building routine
@@ -50,8 +50,8 @@
         this.events = $({});
         // create triggers for all OpenLayers map events
         var events = {};
-        $.each(this.olMap.EVENT_TYPES, function (i, evt) {
-            events[evt] = function () {
+        $.each(this.olMap.EVENT_TYPES, function(i, evt){
+            events[evt] = function(){
                 self.events.trigger(evt, arguments);
             };
         });
@@ -69,43 +69,43 @@
     };
     
     $.MapQuery.Map.prototype = {
-        layers: function (options) {
+        layers: function(options){
             //var o = $.extend({}, options);
             var self = this;
             switch (arguments.length) {
-            case 0:
-                return this._allLayers();
-            case 1:
-                if (!$.isArray(options)) {
-                    return this._addLayer(options);
-                }
-                else {
-                    return $.map(options, function (layer) {
-                        return self._addLayer(layer);
-                    });
-                }
-                break;
-            default:
-                throw ('wrong argument number');
+                case 0:
+                    return this._allLayers();
+                case 1:
+                    if (!$.isArray(options)) {
+                        return this._addLayer(options);
+                    }
+                    else {
+                        return $.map(options, function(layer){
+                            return self._addLayer(layer);
+                        });
+                    }
+                    break;
+                default:
+                    throw ('wrong argument number');
             }
         },
         // Returns all layers as an array, sorted by there order in the map. First
         // element in the array is the topmost layer
-        _allLayers: function () {
+        _allLayers: function(){
             var layers = [];
-            $.each(this.layersList, function (id, layer) {
+            $.each(this.layersList, function(id, layer){
                 var item = [layer.position(), layer];
                 layers.push(item);
             });
-            var sorted = layers.sort(function compare(a, b) {
+            var sorted = layers.sort(function compare(a, b){
                 return a[0] - b[0];
             });
-            var result = $.map(sorted, function (item) {
+            var result = $.map(sorted, function(item){
                 return item[1];
             });
             return result.reverse();
         },
-        _addLayer: function (options) {
+        _addLayer: function(options){
             var id = this._createId();
             var layer = new $.MapQuery.Layer(this, id, options);
             this.layersList[id] = layer;
@@ -117,13 +117,13 @@
             return layer;
         },
         // Creates a new unique ID for a layer
-        _createId: function () {
+        _createId: function(){
             this.idCounter += 1;
             return 'mapquery' + this.idCounter;
         },
-        _removeLayer: function (id) {
+        _removeLayer: function(id){
             // remove id from vectorlayer if it is there list
-            this.vectorLayers = $.grep(this.vectorLayers, function (elem) {
+            this.vectorLayers = $.grep(this.vectorLayers, function(elem){
                 return elem !== id;
             });
             this._updateSelectFeatureControl(this.vectorLayers);
@@ -134,7 +134,7 @@
         },
         //This WILL NOT work without a baseLayer or allOverlays == true
         // vmx 20110609 Still true?
-        goto: function (options) {
+        goto: function(options){
             var position, mapProjection, box;
             
             // Determine source projection
@@ -184,48 +184,49 @@
                 
             }
             // Only zoom is given
-            else if (options.position === undefined) {
-                this.olMap.zoomTo(options.zoom);
-            }
-            // Position is given, zoom maybe as well
-            else {
-                position = new OpenLayers.LonLat(options.position[0], options.position[1]);
-                mapProjection = this.olMap.getProjectionObject();
-                if (!mapProjection.equals(sourceProjection)) {
-                    position.transform(sourceProjection, mapProjection);
+            else 
+                if (options.position === undefined) {
+                    this.olMap.zoomTo(options.zoom);
                 }
-                // options.zoom might be undefined, so we are good to
-                // pass it on
-                this.olMap.setCenter(position, options.zoom);
-            }
+                // Position is given, zoom maybe as well
+                else {
+                    position = new OpenLayers.LonLat(options.position[0], options.position[1]);
+                    mapProjection = this.olMap.getProjectionObject();
+                    if (!mapProjection.equals(sourceProjection)) {
+                        position.transform(sourceProjection, mapProjection);
+                    }
+                    // options.zoom might be undefined, so we are good to
+                    // pass it on
+                    this.olMap.setCenter(position, options.zoom);
+                }
         },
-        _updateSelectFeatureControl: function (layerIds) {
+        _updateSelectFeatureControl: function(layerIds){
             var vectorLayers = [];
             var layersList = this.layersList;
             if (this.selectFeatureControl !== null) {
                 this.selectFeatureControl.deactivate();
                 this.selectFeatureControl.destroy();
             }
-            $.each(layerIds, function () {
+            $.each(layerIds, function(){
                 vectorLayers.push(layersList[this].olLayer);
             });
             this.selectFeatureControl = new OpenLayers.Control.SelectFeature(vectorLayers);
             this.olMap.addControl(this.selectFeatureControl);
             this.selectFeatureControl.activate();
         },
-        bind: function () {
+        bind: function(){
             this.events.bind.apply(this.events, arguments);
         },
-        one: function () {
+        one: function(){
             this.events.one.apply(this.events, arguments);
         },
-        destroy: function () {
+        destroy: function(){
             this.olMap.destroy();
             this.element.removeData('mapQuery');
         }
     };
     
-    $.MapQuery.Layer = function (map, id, options) {
+    $.MapQuery.Layer = function(map, id, options){
         var self = this;
         // apply default options that are not specific to a layer
         
@@ -251,8 +252,8 @@
         
         // create triggers for all OpenLayers layer events
         var events = {};
-        $.each(this.olLayer.EVENT_TYPES, function (i, evt) {
-            events[evt] = function () {
+        $.each(this.olLayer.EVENT_TYPES, function(i, evt){
+            events[evt] = function(){
                 self.events.trigger(evt, arguments);
                 self.map.events.trigger(evt, arguments);
             };
@@ -264,19 +265,19 @@
     
     $.extend($.MapQuery.Layer, {
         types: {
-            bing: function (options) {
+            bing: function(options){
                 var o = $.extend(true, {}, $.fn.mapQuery.defaults.layer.all, $.fn.mapQuery.defaults.layer.bing, options);
                 var view = o.view;
                 switch (view) {
-                case 'road':
-                    view = 'Road';
-                    break;
-                case 'hybrid':
-                    view = 'AerialWithLabels';
-                    break;
-                case 'satellite':
-                    view = 'Aerial';
-                    break;
+                    case 'road':
+                        view = 'Road';
+                        break;
+                    case 'hybrid':
+                        view = 'AerialWithLabels';
+                        break;
+                    case 'satellite':
+                        view = 'Aerial';
+                        break;
                 }
                 return {
                     layer: new OpenLayers.Layer.Bing({
@@ -288,14 +289,14 @@
             },
             //Not sure this one is worth pursuing works with ecwp:// & jpip:// urls
             //See ../lib/NCSOpenLayersECWP.js
-            ecwp: function (options) {
+            ecwp: function(options){
                 var o = $.extend(true, {}, $.fn.mapQuery.defaults.layer.all, $.fn.mapQuery.defaults.layer.raster, options);
                 return {
                     layer: new OpenLayers.Layer.ECWP(o.label, o.url, o),
                     options: o
                 };
             },
-            google: function (options) {
+            google: function(options){
                 var o = $.extend(true, {}, $.fn.mapQuery.defaults.layer.all, $.fn.mapQuery.defaults.layer.google, options);
                 var view = o.view;
                 switch (view) {
@@ -319,7 +320,7 @@
                     options: o
                 };
             },
-            vector: function (options) {
+            vector: function(options){
                 var o = $.extend(true, {}, $.fn.mapQuery.defaults.layer.all, $.fn.mapQuery.defaults.layer.vector, options);
                 this.isVector = true;
                 return {
@@ -327,7 +328,7 @@
                     options: o
                 };
             },
-            json: function (options) {
+            json: function(options){
                 var o = $.extend(true, {}, $.fn.mapQuery.defaults.layer.all, $.fn.mapQuery.defaults.layer.vector, options);
                 this.isVector = true;
                 var strategies = [];
@@ -358,10 +359,22 @@
                         }
                     }
                 }
+                var mapProjection = this.map.olMap.getProjectionObject();
+                var projection = o.projection || 'EPSG:4326';
+                var format;
+                if (o.projection !== mapProjection.getCode()) {
+                    format = new OpenLayers.Format.GeoJSON({
+                        internalProjection: mapProjection,
+                        externalProjection: new OpenLayers.Projection(projection)
+                    });
+                }
+                else {
+                    format = new OpenLayers.Format.GeoJSON();
+                }
                 var params = {
-                    protocol: new OpenLayers.Protocol.HTTP({
+                    protocol: new OpenLayers.Protocol.Script({
                         url: o.url,
-                        format: new OpenLayers.Format.GeoJSON()
+                        format: format
                     }),
                     strategies: strategies
                 };
@@ -370,14 +383,14 @@
                     options: o
                 };
             },
-            osm: function (options) {
+            osm: function(options){
                 var o = $.extend(true, {}, $.fn.mapQuery.defaults.layer.all, $.fn.mapQuery.defaults.layer.osm, options);
                 return {
                     layer: new OpenLayers.Layer.OSM(options),
                     options: o
                 };
             },
-            wms: function (options) {
+            wms: function(options){
                 var o = $.extend(true, {}, $.fn.mapQuery.defaults.layer.all, $.fn.mapQuery.defaults.layer.raster, options);
                 var params = {
                     layers: o.layers,
@@ -390,7 +403,7 @@
                     options: o
                 };
             },
-            wmts: function (options) {
+            wmts: function(options){
                 var o = $.extend(true, {}, $.fn.mapQuery.defaults.layer.all, $.fn.mapQuery.defaults.layer.wmts);
                 //smo 20110614 the maxExtent is set here with OpenLayers.Bounds 
                 if (options.sphericalMercator === true) {
@@ -435,7 +448,7 @@
     });
     
     $.MapQuery.Layer.prototype = {
-        down: function (delta) {
+        down: function(delta){
             delta = delta || 1;
             this.map.olMap.raiseLayer(this.olLayer, -delta);
             return this;
@@ -443,16 +456,16 @@
         // NOTE vmx: this would be pretty cool, but it's not easily possible
         // you could use $.each($.geojq.layer())) instead, this is for pure
         // convenience.
-        each: function () {
+        each: function(){
         },
         // will return the map object
-        remove: function () {
+        remove: function(){
             this.map.olMap.removeLayer(this.olLayer);
             // remove references to this layer that are stored in the
             // map object
             return this.map._removeLayer(this.id);
         },
-        position: function (pos) {
+        position: function(pos){
             if (pos === undefined) {
                 return this.map.olMap.getLayerIndex(this.olLayer) - 1;
             }
@@ -460,12 +473,12 @@
                 return this.map.olMap.setLayerIndex(this.olLayer, pos + 1);
             }
         },
-        up: function (delta) {
+        up: function(delta){
             delta = delta || 1;
             this.map.olMap.raiseLayer(this.olLayer, delta);
             return this;
         },
-        visible: function (vis) {
+        visible: function(vis){
             if (vis === undefined) {
                 return this.olLayer.getVisibility();
             }
@@ -474,7 +487,7 @@
                 return this;
             }
         },
-        opacity: function (opac) {
+        opacity: function(opac){
             if (opac === undefined) {
                 // this.olLayer.opacity can be null if never set so return the visibility
                 var value;
@@ -487,16 +500,16 @@
             }
         },
         // every event gets the layer passed in
-        bind: function () {
+        bind: function(){
             this.events.bind.apply(this.events, arguments);
         },
-        one: function () {
+        one: function(){
             this.events.one.apply(this.events, arguments);
         }
     };
     
-    $.fn.mapQuery = function (options) {
-        return this.each(function () {
+    $.fn.mapQuery = function(options){
+        return this.each(function(){
             var instance = $.data(this, 'mapQuery');
             if (!instance) {
                 $.data(this, 'mapQuery', new $.MapQuery.Map($(this), options));
@@ -508,13 +521,13 @@
     $.fn.mapQuery.defaults = {
         // The controls for the map are per instance, therefore it need to
         // be an function that can be initiated per instance
-        map: function () {
+        map: function(){
             return {
                 // Remove quirky moveTo behavior, probably not a good idea in the
                 // long run            
                 allOverlays: true,
-                controls: [                // Since OL2.11 the Navigation control includes touch navigation as well
-                new OpenLayers.Control.Navigation({
+                controls: [ // Since OL2.11 the Navigation control includes touch navigation as well
+new OpenLayers.Control.Navigation({
                     documentDrag: true,
                     dragPanOptions: {
                         interval: 1,
@@ -572,14 +585,15 @@
     // parseUri 1.2.2
     // (c) Steven Levithan <stevenlevithan.com>
     // MIT License
-    $.MapQuery.util.parseUri = function (str) {
+    $.MapQuery.util.parseUri = function(str){
         var o = $.MapQuery.util.parseUri.options, m = o.parser[o.strictMode ? "strict" : "loose"].exec(str), uri = {}, i = 14;
         
         while (i--) 
             uri[o.key[i]] = m[i] || "";
-            uri[o.q.name] = {};
-            uri[o.key[12]].replace(o.q.parser, function ($0, $1, $2) {
-            if ($1) uri[o.q.name][$1] = $2;
+        uri[o.q.name] = {};
+        uri[o.key[12]].replace(o.q.parser, function($0, $1, $2){
+            if ($1) 
+                uri[o.q.name][$1] = $2;
         });
         
         return uri;
