@@ -80,8 +80,8 @@ a:hover {
     width: 620px;
 }
 .example {
-     text-decoration: none;
-    margin-right: 20px;
+    font-weight: bold;
+    text-decoration: none;
     color: #070e31;
     cursor: pointer;
 }
