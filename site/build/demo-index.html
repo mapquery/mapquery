@@ -1,0 +1,70 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no, width=device-width">
+<meta name="format-detection" content="false">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Examples</title>
+<link rel="stylesheet" type="text/css" href="../css/docbody.css">
+<link rel="stylesheet" type="text/css" href="../css/doc.css">
+<link rel="stylesheet" type="text/css" href="../css/github.min.css">
+<script src="../scripts/highlight.js" type="text/javascript"></script>
+<script src="../lib/jquery/jquery-1.4.4.js" type="application/javascript"></script>
+<script type="application/javascript">hljs.initHighlightingOnLoad();</script>
+<script type="application/javascript">
+    $(document).ready(function() {
+    function callIframe(url, callback) {
+        $('iframe#iframe').attr('src', url);
+
+        $('iframe#iframe').load(function() 
+        {
+            callback(this);
+        });
+    };
+    var iLinks = $(".index").children();
+    $.each(iLinks,function(){
+        $(this).click(function(){
+            callIframe(this.id);
+        })
+    })
+    });
+</script>
+</head>
+<body>
+ <div id="container">
+    <div class="sidebar">
+        <div class="logo"><span><a href="http://mapquery.org/">
+             <img src="../img/logo.png" alt="MapQuery" title="MapQuery"></a></span></div>
+        <div class="blurb">
+            <h2>Combining the powers of OpenLayers and jQuery</h2>
+        </div>
+        <div class="index">
+         <h2>Layer types</h2>
+         <div id="basic.html" class="example">Basic</div>
+         <div id="bing.html" class="example">Bing</div>
+         <div id="google.html" class="example">Google</div>
+         <div id="reservates_json.html" class="example">JSON</div>
+         <div id="wms.html" class="example">WMS</div>
+         <div id="wms28992.html" class="example">WMS 28992</div>
+         <div id="wms900913.html" class="example">WMS 900913</div>
+         <h2>Widgets</h2>
+         <div id="widgets/mqFeatureInfo.html" class="example">mqFeatureInfo</div>
+         <div id="widgets/mqLayerManager.html" class="example">mqLayerManager</div>
+         <div id="widgets/mqMousePosition.html" class="example">mqMousePosition</div>
+         <div id="widgets/mqOverviewMap.html" class="example">mqOverviewMap</div>
+         <div id="widgets/mqPopup.html" class="example">mqPopup</div>
+         <div id="widgets/mqZoomButtons.html" class="example">mqZoomButtons</div>
+         <div id="widgets/mqZoomSlider.html" class="example">mqZoomSlider</div>
+        </div>
+    </div>
+    <div class="header">
+        <a href="/" >Overview</a>
+        <a href="/docs" >Documentation</a>
+        <a href="/demo/" class="active">Examples</a>
+        <a href="http://github.com/mapquery/mapquery/">Download</a>
+    </div>
+    <div class="content">
+    <iframe id="iframe"></iframe>
+    </div>
+</body>
+</html>

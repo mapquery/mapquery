@@ -1,0 +1,12 @@
+#Build files for the website
+
+##demo-index.html
+This file will become http://mapquery.org/demo/index.html Currently it's created 
+by hand. In the future it should be automatically created from the contents of
+/demo and probably some kind of start-content doc.
+
+##main.md
+This markdown file contains the text that is shown in http://mapquery.org/docs/
+
+##template.html
+This file is used by jodoc-js to generate the API docs

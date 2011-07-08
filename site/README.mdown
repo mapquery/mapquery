@@ -1,0 +1,7 @@
+#MapQuery.org files
+
+This directory contains the files need to auto-create the website after each
+push. Please be careful with changing files here, because it could break the
+website.
+
+If there are any questions, please ask on the mailinglist
