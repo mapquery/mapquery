@@ -353,3 +353,8 @@ hr:before {
   margin: 2px;;
   padding: 0;
 }
+iframe {
+   border: none;
+   width: 100%;
+   height: 100%;
+}

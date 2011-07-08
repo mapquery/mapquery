@@ -79,3 +79,12 @@ a:hover {
     margin-left: 305px;
     width: 620px;
 }
+.example {
+     text-decoration: none;
+    margin-right: 20px;
+    color: #070e31;
+    cursor: pointer;
+}
+.example:hover{
+    text-decoration: underline;
+}
