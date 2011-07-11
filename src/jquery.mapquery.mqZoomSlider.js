@@ -21,7 +21,7 @@ _version added 0.1_
 The mqZoomSlider widget allows us to display a vertical zoom slider. 
 
 
-     $('#featureinfo').mqZoomSlider({
+     $('#zoomslider').mqZoomSlider({
         map: '#map'
      });
 

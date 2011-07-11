@@ -23,7 +23,7 @@ can also add an optional home button in between which will return the map to the
 initial extent. 
 
 
-     $('#featureinfo').mqZoomSlider({
+     $('#zoombuttons').mqZoomButtons({
         map: '#map',
         home: true
      });
