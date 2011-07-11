@@ -4,7 +4,7 @@
  * full text of the license. */
 
 /**
-# mapquery.core.js
+# jquery.mapquery.core.js
 The main MapQuery file. It contains the MapQuery constructor, the MapQuery.Map 
 constructor and the MapQuery.Layer constructor.
 

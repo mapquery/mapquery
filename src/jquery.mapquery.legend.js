@@ -4,7 +4,7 @@
  * full text of the license. */
 
 /**
-# mapquery.legend.js
+#jquery.mapquery.legend.js
 A plugin on mapquery.core to add a legend to a layer. It will check if the layer 
 is within a valid extent and zoom range. And if not will return an error message. 
  */ 
@@ -26,7 +26,7 @@ _version added 0.1_
 
 **options** url:url the url to the legend image
  
->Returns: {url:url, msg:'E_ZOOMOUT'|'E_ZOOMIN'|'E_OUTSIDEBOX'|''}
+>Returns: {url:url, msg:'E_ZOOMOUT' | 'E_ZOOMIN' | 'E_OUTSIDEBOX' | ''}
 
 
 The `.legend()` function allows us to attach a legend image to a layer. It will 
