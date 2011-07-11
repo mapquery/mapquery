@@ -17,6 +17,7 @@ _version added 0.1_
 
 
 >Returns: widget  
+
 >Requires: jquery.mapquery.legend.js
  
 
