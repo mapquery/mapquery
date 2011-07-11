@@ -7,7 +7,7 @@
 #jquery.mapquery.mqFeatureInfo.js
 The file containing the mqFeatureInfo Widget
 
-### *$('selector')*.`mqFEatureInfor([options])`
+### *$('selector')*.`mqFeatureInfo([options])`
 _version added 0.1_
 ####**Description**: create a widget to show feature information
 
