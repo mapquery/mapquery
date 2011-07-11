@@ -648,10 +648,9 @@ $.extend($.MapQuery.Layer, {
                 layers: o.layers,
                 transparent: o.transparent,
                 format: o.format
-            };
-            //SMO20110611: TODO WMS requires a label, autogenerate one if not provided
+            };            
             return {
-                layer: new OpenLayers.Layer.WMS(o.label, o.url, params),
+                layer: new OpenLayers.Layer.WMS(o.label, o.url, params, o),
                 options: o
             };
         },
