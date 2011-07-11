@@ -1,5 +1,10 @@
+/* Copyright (c) 2011 by MapQuery Contributors (see AUTHORS for
+ * full list of contributors). Published under the MIT license. 
+ * See https://github.com/mapquery/mapquery/blob/master/LICENSE for the
+ * full text of the license. */
+
 /**
-# MapQuery.Core.js
+# mapquery.core.js
 The main MapQuery file. It contains the MapQuery constructor, the MapQuery.Map 
 constructor and the MapQuery.Layer constructor.
 

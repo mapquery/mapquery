@@ -1,3 +1,8 @@
+/* Copyright (c) 2011 by MapQuery Contributors (see AUTHORS for
+ * full list of contributors). Published under the MIT license. 
+ * See https://github.com/mapquery/mapquery/blob/master/LICENSE for the
+ * full text of the license. */
+
 (function($) {
 $.template('mqPopup',
     '<div class="mq-popup ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix">' +

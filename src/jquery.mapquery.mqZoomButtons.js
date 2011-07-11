@@ -1,3 +1,8 @@
+/* Copyright (c) 2011 by MapQuery Contributors (see AUTHORS for
+ * full list of contributors). Published under the MIT license. 
+ * See https://github.com/mapquery/mapquery/blob/master/LICENSE for the
+ * full text of the license. */
+
 (function($) {
 $.template('mqZoomButtons',
     '<div class="mq-zoombuttons ui-widget ui-helper-clearfix ">'+
