@@ -1,3 +1,14 @@
+/* Copyright (c) 2011 by MapQuery Contributors (see AUTHORS for
+ * full list of contributors). Published under the MIT license. 
+ * See https://github.com/mapquery/mapquery/blob/master/LICENSE for the
+ * full text of the license. */
+
+/**
+# mapquery.legend.js
+A plugin on mapquery.core to add a legend to a layer. It will check if the layer 
+is within a valid extent and zoom range. And if not will return an error message. 
+ */ 
+
 (function($, MQ) {
 $.extend( $.fn.mapQuery.defaults.layer.all, {
     legend: {
@@ -7,7 +18,26 @@ $.extend( $.fn.mapQuery.defaults.layer.all, {
 });
 //possible error messages to display in the legend
 LEGEND_ERRORS= ['E_ZOOMOUT', 'E_ZOOMIN', 'E_OUTSIDEBOX'];
-$.extend(MQ.Layer.prototype, {
+$.extend(MQ.Layer.prototype, {    
+/**
+###**layer**.`legend([options])`
+_version added 0.1_
+####**Description**: get/set the legend of a layer
+
+**options** url:url the url to the legend image
+ 
+>Returns: {url:url, msg:'E_ZOOMOUT'|'E_ZOOMIN'|'E_OUTSIDEBOX'|''}
+
+
+The `.legend()` function allows us to attach a legend image to a layer. It will 
+also check if the layer is not visible due to wrong extent or zoom level. It will 
+return an error message which can be used to notify the user. 
+
+
+     var legend = layer.legend();  //get the current legend
+     layer.legend({url:'legendimage.png'}) //set the legend url to legendimage.png
+     
+ */    
     //get/set the legend object
     legend: function(options) {
         //get the legend object
@@ -23,6 +53,7 @@ $.extend(MQ.Layer.prototype, {
         //set the legend url
         if (options.url!==undefined) {
             this.options.legend.url = options.url;
+            return this.options.legend;
         }
     },
     //Check if the layer has a maximum box set and if the current box
