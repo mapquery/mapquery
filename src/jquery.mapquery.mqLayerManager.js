@@ -3,6 +3,34 @@
  * See https://github.com/mapquery/mapquery/blob/master/LICENSE for the
  * full text of the license. */
 
+/**
+#jquery.mapquery.mqLayerManager.js
+The file containing the mqLayerManager Widget
+
+### *$('selector')*.`mqLayerManager([options])`
+_version added 0.1_
+####**Description**: create a widget to manage layers
+
+**options** 
+* map: the mapquery instance  
+* title: Title that will be displayed at the top of the layer manager (default: Layer Manager)
+
+
+>Returns: widget
+>Requires: jquery.mapquery.legend.js
+ 
+
+The mqLayerManager allows us to control the order, opacity and visibility of layers.
+ We can also remove layers. It also shows the legend of the layer if available and
+ the error messages provided by the legend plugin. It listens to layerchange event 
+ for order, transparancy and opacity changes. It listens to addlayer and removelayer 
+ events to keep track which layers are on the map.
+
+
+      $('#layermanager').mqLayerManager({map:'#map'});
+     
+
+ */ 
 (function($) {
 $.template('mqLayerManager',
     '<div class="mq-layermanager ui-widget-content  ">'+
