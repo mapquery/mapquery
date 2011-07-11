@@ -3,6 +3,32 @@
  * See https://github.com/mapquery/mapquery/blob/master/LICENSE for the
  * full text of the license. */
 
+/**
+#jquery.mapquery.mqZoomButtons.js
+The file containing the mqZoomButtons Widget
+
+### *$('selector')*.`mqZoomButtons([options])`
+_version added 0.1_
+####**Description**: create a widget to show zoom buttons
+
+**options** 
+* map: the mapquery instance
+* home: boolean stating if there should be a home button added (default false)
+ 
+>Returns: widget
+
+
+The mqZoomButtons widget allows us to display a plus and minus zoom button. We 
+can also add an optional home button in between which will return the map to the 
+initial extent. 
+
+
+     $('#featureinfo').mqZoomSlider({
+        map: '#map',
+        home: true
+     });
+
+ */ 
 (function($) {
 $.template('mqZoomButtons',
     '<div class="mq-zoombuttons ui-widget ui-helper-clearfix ">'+
