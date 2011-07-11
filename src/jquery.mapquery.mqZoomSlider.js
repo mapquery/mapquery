@@ -12,8 +12,8 @@ The file containing the mqZoomSlider Widget
 _version added 0.1_
 ####**Description**: create a widget to show a zoom slider
 
-**options** 
-* map: the mapquery instance
+ + **options**: 
+  - **map**: the mapquery instance
  
 >Returns: widget
 

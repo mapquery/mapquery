@@ -11,9 +11,9 @@ The file containing the mqZoomButtons Widget
 _version added 0.1_
 ####**Description**: create a widget to show zoom buttons
 
-**options** 
-* map: the mapquery instance
-* home: boolean stating if there should be a home button added (default false)
+ + **options**: 
+  - **map**: the mapquery instance
+  - **home**: boolean stating if there should be a home button added (default false)
  
 >Returns: widget
 

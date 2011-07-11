@@ -11,9 +11,9 @@ The file containing the mqLayerManager Widget
 _version added 0.1_
 ####**Description**: create a widget to manage layers
 
-**options** 
-* map: the mapquery instance  
-* title: Title that will be displayed at the top of the layer manager (default: Layer Manager)
+ + **options**:
+  - **map**: the mapquery instance  
+  - **title**: Title that will be displayed at the top of the layer manager (default: Layer Manager)
 
 
 >Returns: widget  

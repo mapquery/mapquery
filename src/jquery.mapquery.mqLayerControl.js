@@ -12,8 +12,8 @@ The file containing the mqLayerControl Widget
 _version added 0.1_
 ####**Description**: create a widget to control the order of layers
 
-**options** 
-* map: the mapquery instance  
+ + **options**: 
+  - **map**: the mapquery instance  
 
 >Returns: widget
 
