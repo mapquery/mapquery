@@ -16,7 +16,7 @@ _version added 0.1_
 * title: Title that will be displayed at the top of the layer manager (default: Layer Manager)
 
 
->Returns: widget
+>Returns: widget  
 >Requires: jquery.mapquery.legend.js
  
 

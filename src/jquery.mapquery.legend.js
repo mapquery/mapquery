@@ -26,7 +26,7 @@ _version added 0.1_
 
 **options** url:url the url to the legend image
  
->Returns: {url:url, msg:'E_ZOOMOUT' | 'E_ZOOMIN' | 'E_OUTSIDEBOX' | ''}
+>Returns: {url:url, msg:'E\_ZOOMOUT' | 'E\_ZOOMIN' | 'E\_OUTSIDEBOX' | ''}
 
 
 The `.legend()` function allows us to attach a legend image to a layer. It will 
