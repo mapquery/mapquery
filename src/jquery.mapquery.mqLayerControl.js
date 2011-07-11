@@ -3,6 +3,32 @@
  * See https://github.com/mapquery/mapquery/blob/master/LICENSE for the
  * full text of the license. */
  
+
+/**
+#jquery.mapquery.mqLayerControl.js
+The file containing the mqLayerControl Widget
+
+### *$('selector')*.`mqLayerControl([options])`
+_version added 0.1_
+####**Description**: create a widget to control the order of layers
+
+**options** 
+* map: the mapquery instance  
+
+>Returns: widget
+
+
+The mqLayerControl allows us to control the order and visibility of layers. We 
+can also remove layers. **Note**: the mqLayerManager widget does this and more. 
+It is likely that the two will be merged in the future
+
+
+     $('#layercontrol').mqLayerControl({
+        map: '#map'
+     });
+
+ */ 
+
 (function($) {
 $.template('mqLayerControl',
     '<li id="mq-layercontrol-${id}" class="mq-layercontrol ui-widget-content ui-helper-clearfix ui-corner-all">'+
