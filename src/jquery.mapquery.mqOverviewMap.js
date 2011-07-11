@@ -3,6 +3,37 @@
  * See https://github.com/mapquery/mapquery/blob/master/LICENSE for the
  * full text of the license. */
 
+
+/**
+#jquery.mapquery.mqOverviewMap.js
+The file containing the mqOverviewMap Widget
+
+### *$('selector')*.`mqOverviewMap([options])`
+_version added 0.1_
+####**Description**: create a widget to show an overview map
+
+**options** 
+* map: the mapquery instance
+* title: Title that will be displayed at the top of the overview window
+* position: The position of the overview map dialog (default right bottom)
+* width: width of the overview window (default 300px)
+* height: height of the overview window (default 200px)
+ 
+>Returns: widget
+
+
+The mqOverviewMap widget allows us to display an overview map dialog (http://jqueryui.com/demos/dialog/) 
+and a toggle button. The dialog will be put on the given position see 
+(http://jqueryui.com/demos/dialog/#option-position). The toggle button will be put 
+in the element where the widget is attached to.
+
+
+     $('#overviewmap').mqOverviewMap({
+        map: '#map',
+        position: ['right','top']
+     });
+
+ */ 
 (function($) {
 $.template('mqOverviewMap',
     '<div class="mq-overviewmap-button ui-state-default ui-corner-all">'+
