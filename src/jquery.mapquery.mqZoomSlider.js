@@ -3,6 +3,29 @@
  * See https://github.com/mapquery/mapquery/blob/master/LICENSE for the
  * full text of the license. */
 
+
+/**
+#jquery.mapquery.mqZoomSlider.js
+The file containing the mqZoomSlider Widget
+
+### *$('selector')*.`mqZoomSlider([options])`
+_version added 0.1_
+####**Description**: create a widget to show a zoom slider
+
+**options** 
+* map: the mapquery instance
+ 
+>Returns: widget
+
+
+The mqZoomSlider widget allows us to display a vertical zoom slider. 
+
+
+     $('#featureinfo').mqZoomSlider({
+        map: '#map'
+     });
+
+ */ 
 (function($) {
 $.template('mqZoomSlider',
     '<div class="mq-zoomslider ui-widget ui-helper-clearfix ">'+
