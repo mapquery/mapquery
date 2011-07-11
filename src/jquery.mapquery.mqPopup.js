@@ -3,6 +3,36 @@
  * See https://github.com/mapquery/mapquery/blob/master/LICENSE for the
  * full text of the license. */
 
+/**
+#jquery.mapquery.mqPopup.js
+The file containing the mqPopup Widget
+
+### *$('selector')*.`mqPopup([options])`
+_version added 0.1_
+####**Description**: create a popup at a click on a feature
+
+ + **options:**  
+  - **map**: the mapquery instance
+  - **contents**: A function that returns HTML to be put into the popup. It has one 
+argument, which is the OpenLayers feature that was selected.
+  - **title**: Title that will be displayed at the top of the feature info (default: Feature popup)
+  - **padding**: Padding (in px) around the popup when it needs to be panned in (default 10)
+ 
+>Returns: widget
+
+
+The mqPopup widget allows us to show a popup next to a feature. It will pan with 
+the feature.
+
+
+      $('#popup').mqPopup({
+        map: '#map',
+        contents: function(feature) {
+            return '<p>' + feature.data.id + '</p>';
+        }
+      });
+
+ */ 
 (function($) {
 $.template('mqPopup',
     '<div class="mq-popup ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix">' +
