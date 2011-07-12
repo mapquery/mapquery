@@ -74,7 +74,7 @@ $.widget("mapQuery.mqZoomButtons", {
         $(".mq-zoombuttons-minus").click(function(){
             //get the latest zoom from the map, in case something has changed in the mean time
             zoom = map.goto().zoom;
-            if(zoom>0){map.goto({zoom:zoom-1})}
+            if(zoom>0){map.goto({zoom:zoom-1});}
         });
     },
     _destroy: function() {
