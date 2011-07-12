@@ -61,7 +61,7 @@ $.widget("mapQuery.mqMousePosition", {
         if(map.options.displayProjection) {
             displayProjection = map.options.displayProjection;
             pos=pos.transform(new OpenLayers.Projection(mapProjection),new OpenLayers.Projection(displayProjection)); 
-        };
+        }
         $("#mq-mouseposition-x", element).html(this.options.x+': '+pos.lon.toFixed(this.options.precision));
         $("#mq-mouseposition-y", element).html(this.options.y+': '+pos.lat.toFixed(this.options.precision));
     },
