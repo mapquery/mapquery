@@ -6,7 +6,7 @@ JSLINTBIN=$MAPQUERY_HOME/tests/jslint/jslint4java-1.3.3.jar
 
 echo -e ""
 echo -e "### JSLint ###"
-JS_FILES=$( find $MAPQUERY_HOME/src -type f -name \*.js | grep -vE '\/bundles\/' | grep -v '\/lib\/' | grep -v '\/data\/')
+JS_FILES=$( find $MAPQUERY_HOME/src -type f -name \*.js )
 
 echo -e "Running jslint for the following files:" 
 for file in $JS_FILES; do 
