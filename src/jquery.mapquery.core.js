@@ -47,7 +47,7 @@ $.MapQuery.Map = function(element, options) {
     if(options){
     if(!options.maxResolution&&options.maxExtent&&options.projection){
         options.maxResolution = (options.maxExtent[2]-options.maxExtent[0])/256;
-    }};
+    }}
     this.options = $.extend({}, new $.fn.mapQuery.defaults.map(), options);
 
     this.element = element;
@@ -59,7 +59,7 @@ $.MapQuery.Map = function(element, options) {
     delete this.olMapOptions.maxExtent;    
     delete this.olMapOptions.zoomToMaxExtent;
     this.maxExtent = this.options.maxExtent;    //TODO SMO20110630 the maxExtent is in mapprojection, decide whether or not we need to change it to displayProjection
-    this.olMapOptions.maxExtent = new OpenLayers.Bounds(this.maxExtent[0],this.maxExtent[1],this.maxExtent[2],this.maxExtent[3])
+    this.olMapOptions.maxExtent = new OpenLayers.Bounds(this.maxExtent[0],this.maxExtent[1],this.maxExtent[2],this.maxExtent[3]);
     
     
     OpenLayers.IMAGE_RELOAD_ATTEMPTS = 3; 
@@ -94,12 +94,12 @@ $.MapQuery.Map = function(element, options) {
     // Add layers to the map
     if (this.options.layers!==undefined) {
         this.layers(this.options.layers);
-    };
+    }
     
     // zoom to the maxExtent of the map
     if (this.options.zoomToMaxExtent) {        
         this.olMap.zoomToMaxExtent();
-    };
+    }
 };
 
 $.MapQuery.Map.prototype = {
@@ -138,9 +138,10 @@ We can also use it to retrieve all layers currently attached to the map.
                     return self._addLayer(layer);
                 });
             }
+            break;
         default:
             throw('wrong argument number');
-        };
+        }
     },
     // Returns all layers as an array, sorted by there order in the map. First
     // element in the array is the topmost layer
@@ -214,9 +215,11 @@ The coordinates are returned in displayProjection.
  */ 
     goto: function (options) {
         var position;
-
+        var mapProjection;
         // Determine source projection
         var sourceProjection = null;
+        var zoom;
+        var box;
         if(options && options.projection) {
             sourceProjection = options.projection.CLASS_NAME === 'OpenLayers.Projection' ? options.projection : new OpenLayers.Projection(options.projection);
         } else {
@@ -232,9 +235,9 @@ The coordinates are returned in displayProjection.
         // Get the current position
         if (arguments.length===0) {
             position = this.olMap.getCenter();
-            var zoom = this.olMap.getZoom();
-            var box = this.olMap.getExtent();
-            var mapProjection = this.olMap.getProjectionObject();
+            zoom = this.olMap.getZoom();
+            box = this.olMap.getExtent();
+            mapProjection = this.olMap.getProjectionObject();
             
 
             if (!mapProjection.equals(sourceProjection)) {
@@ -251,11 +254,11 @@ The coordinates are returned in displayProjection.
 
         // Zoom to the extent of the box
         if (options.box!==undefined) {
-            var mapProjection = this.olMap.getProjectionObject();
-            var box = new OpenLayers.Bounds(options.box[0], options.box[1],options.box[2], options.box[3]);
+            mapProjection = this.olMap.getProjectionObject();
+            box = new OpenLayers.Bounds(options.box[0], options.box[1],options.box[2], options.box[3]);
             if (!mapProjection.equals(sourceProjection)) {
                 box.transform(sourceProjection,mapProjection);
-            };
+            }
             this.olMap.zoomToExtent(box);
               
         }
@@ -267,7 +270,7 @@ The coordinates are returned in displayProjection.
         else {
             position = new OpenLayers.LonLat(options.position[0],
                                              options.position[1]);
-            var mapProjection = this.olMap.getProjectionObject();
+            mapProjection = this.olMap.getProjectionObject();
             if (!mapProjection.equals(sourceProjection)) {
                 position.transform(sourceProjection, mapProjection);
             }
@@ -377,7 +380,7 @@ at the bottom.
         delta = delta || 1;
         var pos = this.position();
         pos = pos - delta;
-        if (pos<0) {pos = 0};
+        if (pos<0) {pos = 0;}
         this.position(pos);        
         return this;
     },
@@ -602,21 +605,23 @@ $.extend($.MapQuery.Layer, {
             this.isVector = true;
             var strategies = [];
             for (var i in o.strategies) {
-                switch(o.strategies[i].toLowerCase()) {
-                case 'bbox':
-                    strategies.push(new OpenLayers.Strategy.BBOX()); break;
-                case 'cluster':
-                    strategies.push(new OpenLayers.Strategy.Cluster()); break;
-                case 'filter':
-                    strategies.push(new OpenLayers.Strategy.Filter()); break;
-                case 'fixed':
-                    strategies.push(new OpenLayers.Strategy.Fixed()); break;
-                case 'paging':
-                    strategies.push(new OpenLayers.Strategy.Paging()); break;
-                case 'refresh':
-                    strategies.push(new OpenLayers.Strategy.Refresh()); break;
-                case 'save':
-                    strategies.push(new OpenLayers.Strategy.Save()); break;
+                if(o.strategies.hasOwnProperty(i)) {
+                    switch(o.strategies[i].toLowerCase()) {
+                    case 'bbox':
+                        strategies.push(new OpenLayers.Strategy.BBOX()); break;
+                    case 'cluster':
+                        strategies.push(new OpenLayers.Strategy.Cluster()); break;
+                    case 'filter':
+                        strategies.push(new OpenLayers.Strategy.Filter()); break;
+                    case 'fixed':
+                        strategies.push(new OpenLayers.Strategy.Fixed()); break;
+                    case 'paging':
+                        strategies.push(new OpenLayers.Strategy.Paging()); break;
+                    case 'refresh':
+                        strategies.push(new OpenLayers.Strategy.Refresh()); break;
+                    case 'save':
+                        strategies.push(new OpenLayers.Strategy.Save()); break;
+                    }
                 }
             }
             var params = {
@@ -780,11 +785,11 @@ $.MapQuery.util.parseUri = function (str) {
         uri = {},
         i = 14;
 
-    while (i--) {uri[o.key[i]] = m[i] || ""};
+    while (i--) {uri[o.key[i]] = m[i] || "";}
 
     uri[o.q.name] = {};
     uri[o.key[12]].replace(o.q.parser, function ($0, $1, $2) {
-        if ($1) {uri[o.q.name][$1] = $2};
+        if ($1) {uri[o.q.name][$1] = $2;}
     });
 
     return uri;
