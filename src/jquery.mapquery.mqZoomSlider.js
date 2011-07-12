@@ -35,7 +35,7 @@ $.template('mqZoomSlider',
 $.widget("mapQuery.mqZoomSlider", {
     options: {
         // The MapQuery instance
-        map: undefined,
+        map: undefined
 
     },
     _create: function() {
