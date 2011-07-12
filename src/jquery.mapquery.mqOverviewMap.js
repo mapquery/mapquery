@@ -106,8 +106,8 @@ $.widget("mapQuery.mqOverviewMap", {
         });
         element.delegate('.mq-overviewmap-open', 'click', function() {
             $(this).removeClass('mq-overviewmap-open ui-icon-arrowthick-1-nw').addClass('mq-overviewmap-close ui-icon-arrowthick-1-se');
-        	$('#'+id).dialog('open');        	
-    	});
+            $('#'+id).dialog('open');        	
+        });
     },
     _destroy: function() {
         this.element.removeClass(' ui-widget ui-helper-clearfix ' +

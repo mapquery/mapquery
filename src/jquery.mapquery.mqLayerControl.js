@@ -41,7 +41,7 @@ $.template('mqLayerControl',
 $.widget("mapQuery.mqLayerControl", {
     options: {
         // The MapQuery instance
-        map: undefined,
+        map: undefined
 
     },
     _create: function() {
@@ -81,7 +81,8 @@ $.widget("mapQuery.mqLayerControl", {
         element.delegate('.mq-layercontrol-visibility', 'change', function() {
             var checkbox = $(this);
             var layer = checkbox.parents('li').data('layer');
-            checkbox.attr('checked') ? layer.visible(true) : layer.visible(false);
+            var vis = checkbox.attr('checked') ? true : false;
+            layer.visible(vis);
         });
 
         element.delegate('button', 'click', function() {
@@ -126,7 +127,7 @@ $.widget("mapQuery.mqLayerControl", {
     _remove: function(id, removed) {
          var controlId = "#mq-layercontrol-"+id;
          var control = $(controlId);
-         removed ? true : control.data('layer').remove();
+         if(!removed){ control.data('layer').remove();}
          control.fadeOut(function() {
             $(this).remove();
          });
