@@ -103,7 +103,7 @@ $.widget("mapQuery.mqLayerManager", {
 
         element.delegate('.mq-layermanager-element-vischeckbox', 'change', function() {
             var checkbox = $(this);
-            var element = checkbox.parents('.mq-layermanager-element')
+            var element = checkbox.parents('.mq-layermanager-element');
             var layer = element.data('layer');
             var self = element.data('self');
             self._visible(layer,checkbox.attr('checked'));
@@ -168,7 +168,7 @@ $.widget("mapQuery.mqLayerManager", {
         switch(error){
             case '':
                 url =layer.legend().url;
-                (url=='')?error='No legend for this layer':false; 
+                if(url==''){error='No legend for this layer';} 
                 break;
             case 'E_ZOOMOUT':
                 error = 'Please zoom out to see this layer';
@@ -179,7 +179,7 @@ $.widget("mapQuery.mqLayerManager", {
             case 'E_OUTSIDEBOX':
                 error = 'This layer is outside the current view';
                 break;
-        };
+        }
             
         var layerElement = $.tmpl('mqLayerManagerElement',{
             id: layer.id,
@@ -209,11 +209,11 @@ $.widget("mapQuery.mqLayerManager", {
            change: function(event, ui) {
                var layer = layerElement.data('layer');
                var self =  layerElement.data('self');               
-               if(ui.value>0) {
-                   layer.visible()?true:layer.visible(true);
+               if(ui.value>=0.01) {
+                   if(!layer.visible()){layer.visible(true);}
                }
                if(ui.value<0.01) {
-                   layer.visible()?layer.visible(false):false;
+                   if(layer.visible()){layer.visible(false);}
                }
            }
        });
@@ -238,7 +238,7 @@ $.widget("mapQuery.mqLayerManager", {
         });
         for (i=0;i<tmpNodes.length;i++) {
             layerNodes.parent().append(tmpNodes[i]);
-        };
+        }
     },
 
     _layerVisible: function(widget, layer) {
@@ -247,7 +247,9 @@ $.widget("mapQuery.mqLayerManager", {
         checkbox[0].checked = layer.visible();
         //update the opacity slider as well
         var slider = layerElement.find('.mq-layermanager-element-slider');        
-        layer.visible()?slider.slider('value',layer.opacity()*100): slider.slider('value',0); 
+        var value = layer.visible()?layer.opacity()*100: 0;
+        slider.slider('value',value); 
+        
         //update legend image
         layerElement.find('.mq-layermanager-element-legend img').css({visibility:layer.visible()?true:'hidden'});
     },
@@ -281,7 +283,7 @@ $.widget("mapQuery.mqLayerManager", {
         //since we don't know which layer we get we've to loop through 
         //the openlayers.layer.ids to find the correct one
         $.each(evt.data.map.layers(), function(){
-           if(this.olLayer.id == data.layer.id) layer=this; 
+           if(this.olLayer.id == data.layer.id) {layer=this;} 
         });
         //(name, order, opacity, params, visibility or attribution)
          switch(data.property) {
