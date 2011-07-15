@@ -624,10 +624,21 @@ $.extend($.MapQuery.Layer, {
                     }
                 }
             }
+            var mapProjection = this.map.olMap.getProjectionObject();
+            var projection = o.projection || 'EPSG:4326';
+            var format;
+            if (o.projection !== mapProjection.getCode()) {
+                format = new OpenLayers.Format.GeoJSON({
+                    internalProjection: mapProjection,
+                    externalProjection: new OpenLayers.Projection(projection)
+                });
+            } else {
+                format = new OpenLayers.Format.GeoJSON();
+            }
             var params = {
-                protocol: new OpenLayers.Protocol.HTTP({
+                protocol: new OpenLayers.Protocol.Script({
                     url: o.url,
-                    format: new OpenLayers.Format.GeoJSON()
+                    format: format
                 }),
                 strategies: strategies
             };

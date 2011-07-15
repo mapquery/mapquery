@@ -27,13 +27,15 @@
                 layers:'basic'
             },{
                 type: 'JSON',
-                url: 'data/reservate.json',
-                //url: 'http://localhost:5984/ethiopia_reservate/_design/geo/_list/geojson/all?type=geojson',
+                //url: 'data/reservate.json',
+                url: 'http://geoality.iriscouch.com/ethiopia_reservate/_design/geo/_list/geojson/all?type=geojson',
                 label: 'reservate'
             }]       
         });
-    map.data('mapQuery').goto({position:[40,10]}); 
-    map.data('mapQuery').goto({zoom:5});            
+    map.data('mapQuery').goto({
+        position:[40,10],
+        zoom:5
+        });        
 
     $('#featureinfo').mqFeatureInfo({
         map: $('#map'),
