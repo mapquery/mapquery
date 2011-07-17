@@ -6,45 +6,48 @@
   <title>MapQuery Geocouch example</title>
   <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/themes/base/jquery-ui.css" type="text/css" media="all" />
   <link rel='StyleSheet' type='text/css' href='style/style.css'/>
-  <script src="../lib/openlayers/OpenLayers.js" type="text/javascript"></script>
-  <script src="../lib/jquery/jquery-1.4.4.js" type="text/javascript"></script>
-  <script src="../lib/jquery/ui/jquery-ui.js" type="text/javascript"></script>
-  <script src="../lib/jquery/jquery.tmpl.js" type="text/javascript"></script>
-  <script src="../src/jquery.mapquery.core.js" type="text/javascript"></script>
-  <script src="../src/jquery.mapquery.mqFeatureInfo.js" type="text/javascript"></script>
+  <script src="../lib/openlayers/OpenLayers.js"></script>
+  <script src="../lib/jquery/jquery-1.4.4.js"></script>
+  <script src="../lib/jquery/ui/jquery-ui.js"></script>
+  <script src="../lib/jquery/jquery.tmpl.js"></script>
+  <script src="../src/jquery.mapquery.core.js"></script>
+  <script src="../src/jquery.mapquery.mqFeatureInfo.js"></script>
   
   <script type="text/javascript">
+    /*jslint evil: false, strict: false, white: false, onevar:false, plusplus:false, browser:true */
+    /*global $:true */
     $(document).ready(function() {
-        // no data arrives from couchdb -> geocouch does not send back formatted json data
         
-    //initialise mapquery with an Bing Aerial layer
-    var map = $('#map').mapQuery({
-        maxExtent:[-180,-90,180,90], //Since this is a 4326 map, you need to set a different maxExtent
-        projection:'EPSG:4326', //Projection of your map (WGS84 in this case)
-        layers:[{ //layers to add to the map
-                type:'wms',
-                url:'http://vmap0.tiles.osgeo.org/wms/vmap0',
-                layers:'basic'
-            },{
-                type: 'JSON',
-                url: 'data/reservate.json',
-                //url: 'http://localhost:5984/ethiopia_reservate/_design/geo/_list/geojson/all?type=geojson',
-                label: 'reservate'
-            }]       
-        });
-    map.data('mapQuery').goto({position:[40,10]}); 
-    map.data('mapQuery').goto({zoom:5});            
-
-    $('#featureinfo').mqFeatureInfo({
-        map: $('#map'),
-        contents: function(feature) {
-            var html = '<h1>' + feature.data.properties.GISNAME + '</h2>';
-            if (feature.data.properties.Species) {
-                html += '<p>Species: ' + feature.data.properties.Species + '</p>';
+        //initialise mapquery with an Bing Aerial layer
+        var map = $('#map').mapQuery({
+            maxExtent:[-180,-90,180,90], //Since this is a 4326 map, you need to set a different maxExtent
+            projection:'EPSG:4326', //Projection of your map (WGS84 in this case)
+            layers:[{ //layers to add to the map
+                    type:'wms',
+                    url:'http://vmap0.tiles.osgeo.org/wms/vmap0',
+                    layers:'basic'
+                },{
+                    type: 'JSON',
+                    //url: 'data/reservate.json',
+                    url: 'http://geoality.iriscouch.com/ethiopia_reservate/_design/geo/_list/geojson/all?type=geojson',
+                    label: 'reservate'
+                }]       
+            });
+        map.data('mapQuery').goto({
+            position:[40,10],
+            zoom:5
+            });        
+    
+        $('#featureinfo').mqFeatureInfo({
+            map: $('#map'),
+            contents: function(feature) {
+                var html = '<h1>' + feature.data.properties.GISNAME + '<\/h2>';
+                if (feature.data.properties.Species) {
+                    html += '<p>Species: ' + feature.data.properties.Species + '<\/p>';
+                }
+                return html;
             }
-            return html;
-        }
-    });
+        });
     });
   </script>
 </head>
