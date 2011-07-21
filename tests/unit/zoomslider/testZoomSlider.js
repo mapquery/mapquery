@@ -7,7 +7,7 @@ module('zoomslider');
 test("ZoomSlider is shown", 1, function() {
     var map = $('#map1').mapQuery({
         layers:[{
-            type:'osm' 
+            type:'osm'
         }]
     });
     var mq = map.data('mapQuery');
@@ -19,7 +19,7 @@ test("ZoomSlider is shown", 1, function() {
 test("ZoomSlider works", 2, function() {
     var map = $('#map1').mapQuery({
         layers:[{
-            type:'osm' 
+            type:'osm'
         }]
     });
     var mq = map.data('mapQuery');

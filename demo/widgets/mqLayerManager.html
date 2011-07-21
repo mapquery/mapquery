@@ -30,7 +30,7 @@
             }]
         });
     $('#layermanager').mqLayerManager({map:'#map'});
-    
+
     //create add layer options
     $("#addOsm").click(function() {
         jQuery('#map').data("mapQuery").layers({
@@ -51,9 +51,9 @@
         });
     $("#addBing").click(function() {
         jQuery('#map').data("mapQuery").layers({
-            type:'bing', 
-            label: 'Bing Aerial',       
-            view:'satellite',   
+            type:'bing',
+            label: 'Bing Aerial',
+            view:'satellite',
             key:'ArAGGPJ16xm0RXRbw27PvYc9Tfuj1k1dUr_gfA5j8QBD6yAYMlsAtF6YkVyiiLGn'
             });
         });

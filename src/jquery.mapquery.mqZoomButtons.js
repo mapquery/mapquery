@@ -1,5 +1,5 @@
 /* Copyright (c) 2011 by MapQuery Contributors (see AUTHORS for
- * full list of contributors). Published under the MIT license. 
+ * full list of contributors). Published under the MIT license.
  * See https://github.com/mapquery/mapquery/blob/master/LICENSE for the
  * full text of the license. */
 
@@ -11,16 +11,16 @@ The file containing the mqZoomButtons Widget
 _version added 0.1_
 ####**Description**: create a widget to show zoom buttons
 
- + **options**: 
+ + **options**:
   - **map**: the mapquery instance
   - **home**: boolean stating if there should be a home button added (default false)
- 
+
 >Returns: widget
 
 
-The mqZoomButtons widget allows us to display a plus and minus zoom button. We 
-can also add an optional home button in between which will return the map to the 
-initial extent. 
+The mqZoomButtons widget allows us to display a plus and minus zoom button. We
+can also add an optional home button in between which will return the map to the
+initial extent.
 
 
      $('#zoombuttons').mqZoomButtons({
@@ -28,7 +28,7 @@ initial extent.
         home: true
      });
 
- */ 
+ */
 (function($) {
 $.template('mqZoomButtons',
     '<div class="mq-zoombuttons ui-widget ui-helper-clearfix ">'+
@@ -36,12 +36,12 @@ $.template('mqZoomButtons',
     '{{if home}}<div class="ui-state-default ui-corner-all"><div class="mq-zoombuttons-home ui-icon ui-icon-home"></div></div>{{/if}}'+
     '<div class="ui-state-default ui-corner-all"><div class="mq-zoombuttons-minus ui-icon ui-icon-minusthick"></div></div>'+
     '</div>');
-        
+
 $.widget("mapQuery.mqZoomButtons", {
     options: {
         // The MapQuery instance
         map: undefined,
-        
+
         //Option to display a home button between the + and - button, default: false
         home: false
 
@@ -52,13 +52,13 @@ $.widget("mapQuery.mqZoomButtons", {
         var numzoomlevels;
         var self = this;
         var element = this.element;
-       
+
        //get the mapquery object
         map = $(this.options.map).data('mapQuery');
-        
+
         var startExtent = map.goto();
         $.tmpl('mqZoomButtons',{
-            home: this.options.home    
+            home: this.options.home
         }).appendTo(element);
 
         $(".mq-zoombuttons-plus").click(function(){

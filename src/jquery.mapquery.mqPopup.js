@@ -1,5 +1,5 @@
 /* Copyright (c) 2011 by MapQuery Contributors (see AUTHORS for
- * full list of contributors). Published under the MIT license. 
+ * full list of contributors). Published under the MIT license.
  * See https://github.com/mapquery/mapquery/blob/master/LICENSE for the
  * full text of the license. */
 
@@ -11,17 +11,17 @@ The file containing the mqPopup Widget
 _version added 0.1_
 ####**Description**: create a popup at a click on a feature
 
- + **options:**  
+ + **options:**
   - **map**: the mapquery instance
-  - **contents**: A function that returns HTML to be put into the popup. It has one 
+  - **contents**: A function that returns HTML to be put into the popup. It has one
 argument, which is the OpenLayers feature that was selected.
   - **title**: Title that will be displayed at the top of the feature info (default: Feature popup)
   - **padding**: Padding (in px) around the popup when it needs to be panned in (default 10)
- 
+
 >Returns: widget
 
 
-The mqPopup widget allows us to show a popup next to a feature. It will pan with 
+The mqPopup widget allows us to show a popup next to a feature. It will pan with
 the feature.
 
 
@@ -32,7 +32,7 @@ the feature.
         }
       });
 
- */ 
+ */
 (function($) {
 $.template('mqPopup',
     '<div class="mq-popup ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix">' +
@@ -62,10 +62,10 @@ $.widget("mapQuery.mqPopup", {
         var map;
         var self = this;
         var element = this.element;
-        
+
         //get the mapquery object
         map = $(this.options.map).data('mapQuery');
-        
+
         var layers = $.map(map.layers(), function(layer) {
             return layer.isVector ? layer : null;
         });

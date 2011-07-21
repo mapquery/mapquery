@@ -2,7 +2,7 @@ function testWidgetDefaults(widget, defaults) {
 	var pluginDefaults = $.extend({},
 		$.ui[widget].prototype.options
 	);
-	
+
 	// ensure that all defaults have the correct value
 	test('defined defaults', function() {
 		$.each(defaults, function(key, val) {
@@ -13,7 +13,7 @@ function testWidgetDefaults(widget, defaults) {
 			same(pluginDefaults[key], val, key);
 		});
 	});
-	
+
 	// ensure that all defaults were tested
 	test('tested defaults', function() {
 		$.each(pluginDefaults, function(key, val) {

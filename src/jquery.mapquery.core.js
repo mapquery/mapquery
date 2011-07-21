@@ -1,32 +1,32 @@
 /* Copyright (c) 2011 by MapQuery Contributors (see AUTHORS for
- * full list of contributors). Published under the MIT license. 
+ * full list of contributors). Published under the MIT license.
  * See https://github.com/mapquery/mapquery/blob/master/LICENSE for the
  * full text of the license. */
 
 /**
 # jquery.mapquery.core.js
-The main MapQuery file. It contains the MapQuery constructor, the MapQuery.Map 
+The main MapQuery file. It contains the MapQuery constructor, the MapQuery.Map
 constructor and the MapQuery.Layer constructor.
 
 
 ### *$('selector')*.`mapQuery([options])`
 _version added 0.1_
-####**Description**: initialise MapQuery and associate it with the matched element 
+####**Description**: initialise MapQuery and associate it with the matched element
 
-**options**  an object of key-value pairs with options for the map.  
+**options**  an object of key-value pairs with options for the map.
 
 > Returns: $('selector') (jQuery object)
 
 
-We can initialise MapQuery without any options, or for instance pass in a layers object. 
+We can initialise MapQuery without any options, or for instance pass in a layers object.
 The mapQuery function returns a jQuery object, to access the mapQuery object retrieve
 the 'mapQuery' data object.
 
      var map = $('#map').mapQuery(); //create an empty map
      var map = $('#map').mapQuery({layers:[{type:'osm'}]); //create a map with osm
-    
+
      var mq = map.data('mapQuery'); //get the MapQuery object
- */ 
+ */
 (function ($) {
 $.MapQuery = $.MapQuery || {};
 
@@ -36,8 +36,8 @@ $.MapQuery = $.MapQuery || {};
 
 #MapQuery.Map
 
-The MapQuery.Map object. It is automatically constructed from the options 
-given in the `mapQuery([options])` constructor. The Map object is refered to as _map_ in 
+The MapQuery.Map object. It is automatically constructed from the options
+given in the `mapQuery([options])` constructor. The Map object is refered to as _map_ in
 the documentation.
  */
 $.MapQuery.Map = function(element, options) {
@@ -56,20 +56,20 @@ $.MapQuery.Map = function(element, options) {
     // smo 20110620: you need the exact map options in the overviewmap widget as such we need to preserve them
     this.olMapOptions = $.extend({}, this.options);
     delete this.olMapOptions.layers;
-    delete this.olMapOptions.maxExtent;    
+    delete this.olMapOptions.maxExtent;
     delete this.olMapOptions.zoomToMaxExtent;
     this.maxExtent = this.options.maxExtent;    //TODO SMO20110630 the maxExtent is in mapprojection, decide whether or not we need to change it to displayProjection
     this.olMapOptions.maxExtent = new OpenLayers.Bounds(this.maxExtent[0],this.maxExtent[1],this.maxExtent[2],this.maxExtent[3]);
-    
-    
-    OpenLayers.IMAGE_RELOAD_ATTEMPTS = 3; 
-    OpenLayers.Util.onImageLoadErrorColor = "transparent"; 
-    
+
+
+    OpenLayers.IMAGE_RELOAD_ATTEMPTS = 3;
+    OpenLayers.Util.onImageLoadErrorColor = "transparent";
+
     // create the OpenLayers Map
     this.olMap = new OpenLayers.Map(this.element[0], this.olMapOptions);
-    
+
     //OpenLayers doesn't want to return a maxExtent when there is no baselayer set (eg on an empty map, so we create a fake baselayer
-    this.olMap.addLayer(new OpenLayers.Layer('fake', {baseLayer: true}));    
+    this.olMap.addLayer(new OpenLayers.Layer('fake', {baseLayer: true}));
 
     // Keep IDs of vector layer for select feature control
     this.vectorLayers = [];
@@ -95,9 +95,9 @@ $.MapQuery.Map = function(element, options) {
     if (this.options.layers!==undefined) {
         this.layers(this.options.layers);
     }
-    
+
     // zoom to the maxExtent of the map
-    if (this.options.zoomToMaxExtent) {        
+    if (this.options.zoomToMaxExtent) {
         this.olMap.zoomToMaxExtent();
     }
 };
@@ -108,21 +108,21 @@ $.MapQuery.Map.prototype = {
 _version added 0.1_
 ####**Description**: get/set the layers of the map
 
-**options** an object of key-value pairs with options to create one or more layers  
- 
+**options** an object of key-value pairs with options to create one or more layers
+
 >Returns: [layer] (array of MapQuery.Layer)
 
 
-The `.layers()` method allows us to attach layers to a mapQuery object. It takes 
-an options object with layer options. To add multiple layers, create an array of layer 
-options objects. If an options object is given, it will return the resulting layer(s).  
-We can also use it to retrieve all layers currently attached to the map. 
+The `.layers()` method allows us to attach layers to a mapQuery object. It takes
+an options object with layer options. To add multiple layers, create an array of layer
+options objects. If an options object is given, it will return the resulting layer(s).
+We can also use it to retrieve all layers currently attached to the map.
 
 
      var osm = map.layers({type:'osm'}); //add an osm layer to the map
      var layers = map.layers(); //get all layers of the map
 
-     */    
+     */
     layers: function(options) {
         //var o = $.extend({}, options);
         var self = this;
@@ -181,7 +181,7 @@ We can also use it to retrieve all layers currently attached to the map.
         });
         this._updateSelectFeatureControl(this.vectorLayers);
         this.events.trigger('mqRemoveLayer',id);
-        delete this.layersList[id];        
+        delete this.layersList[id];
         // XXX vmx: shouldn't the layer be destroyed() properly?
         return this;
     },
@@ -189,30 +189,30 @@ We can also use it to retrieve all layers currently attached to the map.
  ###*map*.`goto([options])`
 _version added 0.1_
 ####**Description**: get/set the extent, zoom and position of the map
-    
-**position** the position as [x,y] in displayProjection (default EPSG:4326) to center the map at     
-**zoom** the zoomlevel as integer to zoom the map to    
-**box** an array with the lower left x, lower left y, upper right x, upper right y to zoom the map to, 
-this will take precedent when conflicting with any of the above values      
-**projection** the projection the coordinates are in, default is the displayProjection    
 
->Returns: {position: [x,y], zoom: z<int>, box: [llx,lly,urx,ury]}  
+**position** the position as [x,y] in displayProjection (default EPSG:4326) to center the map at
+**zoom** the zoomlevel as integer to zoom the map to
+**box** an array with the lower left x, lower left y, upper right x, upper right y to zoom the map to,
+this will take precedent when conflicting with any of the above values
+**projection** the projection the coordinates are in, default is the displayProjection
+
+>Returns: {position: [x,y], zoom: z<int>, box: [llx,lly,urx,ury]}
 
 
-The `.goto()` method allows us to move to map to a specific zoom level, specific 
+The `.goto()` method allows us to move to map to a specific zoom level, specific
 position or a specific extent. We can specify the projection of the coordinates
 to override the displayProjection. For instance you want to show the coordinates
-in 4326, but you have a dataset in EPSG:28992 (dutch projection).  
-We can also retrieve the current zoomlevel, position and extent from the map. 
+in 4326, but you have a dataset in EPSG:28992 (dutch projection).
+We can also retrieve the current zoomlevel, position and extent from the map.
 The coordinates are returned in displayProjection.
- 
+
 
      var goto = map.goto(); //get the current zoom, position and extent
      map.goto({zoom:4}); //zoom to zoomlevel 4
      map.goto({position:[5,52]}); //pan to point 5,52
      map.goto(box:[-180,-90,180,90]); //zoom to the box -180,-900,180,90
      map.goto({position:[125000,485000],projection:'EPSG:28992'}); //pan to point 125000,485000 in dutch projection
- */ 
+ */
     goto: function (options) {
         var position;
         var mapProjection;
@@ -238,7 +238,7 @@ The coordinates are returned in displayProjection.
             zoom = this.olMap.getZoom();
             box = this.olMap.getExtent();
             mapProjection = this.olMap.getProjectionObject();
-            
+
 
             if (!mapProjection.equals(sourceProjection)) {
                 position.transform(mapProjection, sourceProjection);
@@ -260,7 +260,7 @@ The coordinates are returned in displayProjection.
                 box.transform(sourceProjection,mapProjection);
             }
             this.olMap.zoomToExtent(box);
-              
+
         }
         // Only zoom is given
         else if (options.position===undefined) {
@@ -312,11 +312,11 @@ The coordinates are returned in displayProjection.
 #MapQuery.Layer
 
 The MapQuery.Layer object. It is constructed with layer options object in the
-map.`layers([options])` function or by passing a `layer:{options}` object in the `mapQuery()` 
+map.`layers([options])` function or by passing a `layer:{options}` object in the `mapQuery()`
 constructor. The Layer object is refered to as _layer_ in the documentation.
  */
 $.MapQuery.Layer = function(map, id, options) {
-    
+
     var self = this;
     // apply default options that are not specific to a layer
 
@@ -356,32 +356,32 @@ $.MapQuery.Layer = function(map, id, options) {
 
 $.MapQuery.Layer.prototype = {
 /**
-###*layer*.`down([delta])` 
+###*layer*.`down([delta])`
 _version added 0.1_
 ####**Description**: move the layer down in the layer stack of the map
-     
-**delta** the amount of layers the layer has to move down in the layer stack (default 1)  
-  
->Returns layer (MapQuery.Layer)  
+
+**delta** the amount of layers the layer has to move down in the layer stack (default 1)
+
+>Returns layer (MapQuery.Layer)
 
 
 The `.down()` method is a shortcut method for `.position(pos)` which makes
 it easier to move a layer down in the layerstack relative to its current position.
 It takes an integer and will try to move the layer down the number of places given.
-If delta is bigger than the current position in the stack, it will put the layer 
+If delta is bigger than the current position in the stack, it will put the layer
 at the bottom.
 
 
      layer.down();  //move layer 1 place down
      layer.down(3); //move layer 3 places down
 
- */  
+ */
     down: function(delta) {
         delta = delta || 1;
         var pos = this.position();
         pos = pos - delta;
         if (pos<0) {pos = 0;}
-        this.position(pos);        
+        this.position(pos);
         return this;
     },
     // NOTE vmx: this would be pretty cool, but it's not easily possible
@@ -389,20 +389,20 @@ at the bottom.
     // convenience.
     each: function () {},
 /**
-###*layer*.`remove()` 
+###*layer*.`remove()`
 _version added 0.1_
 ####**Description**: remove the layer from the map
-   
->Returns: id (string)  
+
+>Returns: id (string)
 
 
-The `.remove()` method allows us to remove a layer from the map. 
+The `.remove()` method allows us to remove a layer from the map.
 It returns an id to allow widgets to remove their references to the destroyed layer.
-  
+
      var id = layer.remove(); //remove this layer
 
 
- */  
+ */
     remove: function() {
         this.map.olMap.removeLayer(this.olLayer);
         // remove references to this layer that are stored in the
@@ -413,22 +413,22 @@ It returns an id to allow widgets to remove their references to the destroyed la
 ###*layer*.`position([position])`
 _version added 0.1_
 ####**Description**: get/set the `position` of the layer in the layer stack of the map
-  
-**position** an integer setting the new position of the layer in the layer stack  
 
->Returns: position (integer)  
+**position** an integer setting the new position of the layer in the layer stack
+
+>Returns: position (integer)
 
 
-The `.position()` method allows us to change the position of the layer in the layer 
-stack. It will take into account the hidden baselayer that is used by OpenLayers. 
+The `.position()` method allows us to change the position of the layer in the layer
+stack. It will take into account the hidden baselayer that is used by OpenLayers.
 The lowest layer is position 0.
 If no position is given, it will return the current postion.
- 
+
 
      var pos =  layer.position(); //get position of layer in the layer stack
      layer.position(2); //put layer on position 2 in the layer stack
 
- */      
+ */
     position: function(pos) {
         if (pos===undefined) {
             return this.map.olMap.getLayerIndex(this.olLayer)-1;
@@ -438,13 +438,13 @@ If no position is given, it will return the current postion.
         }
     },
 /**
-###*layer*.`up([delta])` 
+###*layer*.`up([delta])`
 _version added 0.1_
 ####**Description**: move the layer up in the layer stack of the map
-     
-**delta** the amount of layers the layer has to move up in the layer stack (default 1)  
-  
->Returns: layer (MapQuery.Layer)  
+
+**delta** the amount of layers the layer has to move up in the layer stack (default 1)
+
+>Returns: layer (MapQuery.Layer)
 
 
 The `.up()` method is a shortcut method for `.position(pos)` which makes
@@ -460,27 +460,27 @@ It takes an integer and will move the layer up the number of places given.
         delta = delta || 1;
         var pos = this.position();
         pos = pos + delta;
-        this.position(pos);        
+        this.position(pos);
         return this;
     },
 /**
 ###*layer*.`visible([visible])`
 _version added 0.1_
 ####**Description**: get/set the `visible` state of the layer
-  
-**visible** a boolean setting the visibiliyu of the layer  
 
->Returns: visible (boolean)  
+**visible** a boolean setting the visibiliyu of the layer
+
+>Returns: visible (boolean)
 
 
-The `.visible()` method allows us to change the visibility of the layer. 
+The `.visible()` method allows us to change the visibility of the layer.
 If no visible is given, it will return the current visibility.
- 
+
 
      var vis =  layer.visible(); //get the visibility of layer
      layer.visible(true); //set visibility of layer to true
 
- */    
+ */
     visible: function(vis) {
         if (vis===undefined) {
             return this.olLayer.getVisibility();
@@ -494,20 +494,20 @@ If no visible is given, it will return the current visibility.
 ###*layer*.`opacity([opacity])`
 _version added 0.1_
 ####**Description**: get/set the `opacity` of the layer
-  
-**position** a float [0-1] setting the opacity of the layer  
 
->Returns: opacity (float)  
+**position** a float [0-1] setting the opacity of the layer
+
+>Returns: opacity (float)
 
 
-The `.opacity()` method allows us to change the opacity of the layer. 
+The `.opacity()` method allows us to change the opacity of the layer.
 If no opacity is given, it will return the current opacity.
- 
+
 
      var opac =  layer.opacity(); //get opacity of layer
      layer.opacity(0.7); //set opacity of layer to 0.7
 
- */    
+ */
     opacity: function(opac) {
          if (opac===undefined) {
             // this.olLayer.opacity can be null if never set so return the visibility
@@ -664,7 +664,7 @@ $.extend($.MapQuery.Layer, {
                 layers: o.layers,
                 transparent: o.transparent,
                 format: o.format
-            };            
+            };
             return {
                 layer: new OpenLayers.Layer.WMS(o.label, o.url, params, o),
                 options: o
@@ -673,7 +673,7 @@ $.extend($.MapQuery.Layer, {
         wmts: function(options) {
             var o = $.extend(true, {}, $.fn.mapQuery.defaults.layer.all,
                     $.fn.mapQuery.defaults.layer.wmts);
-            //smo 20110614 the maxExtent is set here with OpenLayers.Bounds 
+            //smo 20110614 the maxExtent is set here with OpenLayers.Bounds
             if (options.sphericalMercator===true) {
                 $.extend(true, o, {
                     maxExtent: new OpenLayers.Bounds(
@@ -713,7 +713,7 @@ $.extend($.MapQuery.Layer, {
                 layer: new OpenLayers.Layer.WMTS(params),
                 options: o
             };
-        } 
+        }
     }
 });
 
@@ -724,12 +724,12 @@ $.fn.mapQuery.defaults = {
     map: function() {
         return {
             // Remove quirky moveTo behavior, probably not a good idea in the
-            // long run            
+            // long run
             allOverlays: true,
             controls: [
                 // Since OL2.11 the Navigation control includes touch navigation as well
                 new OpenLayers.Control.Navigation({
-                    documentDrag: true, 
+                    documentDrag: true,
                     dragPanOptions: {
                         interval: 1,
                         enableKinetic: true
@@ -744,12 +744,12 @@ $.fn.mapQuery.defaults = {
             numZoomLevels: 19,
             projection: 'EPSG:900913',
             displayProjection: 'EPSG:4326',
-            zoomToMaxExtent: true,            
-            units: 'm'            
+            zoomToMaxExtent: true,
+            units: 'm'
         };
     },
     layer: {
-        all: {            
+        all: {
             isBaseLayer: false,
             displayOutsideMaxExtent: false  //in general it is kinda pointless to load tiles outside a maxextent
         },
@@ -763,7 +763,7 @@ $.fn.mapQuery.defaults = {
             view: 'road',
             sphericalMercator: true
         },
-        osm: {            
+        osm: {
             transitionEffect: 'resize',
             sphericalMercator: true
         },

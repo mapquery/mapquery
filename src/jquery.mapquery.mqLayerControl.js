@@ -1,8 +1,8 @@
 /* Copyright (c) 2011 by MapQuery Contributors (see AUTHORS for
- * full list of contributors). Published under the MIT license. 
+ * full list of contributors). Published under the MIT license.
  * See https://github.com/mapquery/mapquery/blob/master/LICENSE for the
  * full text of the license. */
- 
+
 
 /**
 #jquery.mapquery.mqLayerControl.js
@@ -12,14 +12,14 @@ The file containing the mqLayerControl Widget
 _version added 0.1_
 ####**Description**: create a widget to control the order of layers
 
- + **options**: 
-  - **map**: the mapquery instance  
+ + **options**:
+  - **map**: the mapquery instance
 
 >Returns: widget
 
 
-The mqLayerControl allows us to control the order and visibility of layers. We 
-can also remove layers. **Note**: the mqLayerManager widget does this and more. 
+The mqLayerControl allows us to control the order and visibility of layers. We
+can also remove layers. **Note**: the mqLayerManager widget does this and more.
 It is likely that the two will be merged in the future
 
 
@@ -27,7 +27,7 @@ It is likely that the two will be merged in the future
         map: '#map'
      });
 
- */ 
+ */
 
 (function($) {
 $.template('mqLayerControl',
@@ -37,7 +37,7 @@ $.template('mqLayerControl',
     '<input type="checkbox" class="mq-layercontrol-visibility" id="${id}-visibility" checked="${visible}" />'+
     '<label for="${id}-visibility">Visible</label></span>'+
     '</li>');
-        
+
 $.widget("mapQuery.mqLayerControl", {
     options: {
         // The MapQuery instance
@@ -48,16 +48,16 @@ $.widget("mapQuery.mqLayerControl", {
         var map;
         var self = this;
         var element = this.element;
-        
+
         //get the mapquery object
         map = $(this.options.map).data('mapQuery');
-        
+
         element.append('<ul class=" ui-widget"></ul>');
         var ulElement = element.children('ul');
         $.each(map.layers().reverse(), function() {
             self._add(ulElement, this);
         });
-        
+
         element.find('button').button();
         ulElement.sortable({
             axis:'y',
@@ -87,9 +87,9 @@ $.widget("mapQuery.mqLayerControl", {
 
         element.delegate('button', 'click', function() {
             var control = $(this).parents('li');
-            self._remove(control.data('layer').id);            
+            self._remove(control.data('layer').id);
         });
-        
+
          //binding events
         map.bind("mqAddLayer",
             {widget:self,map:map,control:ulElement},
@@ -132,7 +132,7 @@ $.widget("mapQuery.mqLayerControl", {
             $(this).remove();
          });
     },
-    
+
     _onLayerRemove: function(evt, id) {
         evt.data.widget._remove(id,true);
     }

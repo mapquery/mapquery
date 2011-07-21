@@ -1,12 +1,12 @@
 /* Copyright (c) 2011 by MapQuery Contributors (see AUTHORS for
- * full list of contributors). Published under the MIT license. 
+ * full list of contributors). Published under the MIT license.
  * See https://github.com/mapquery/mapquery/blob/master/LICENSE for the
  * full text of the license. */
- 
+
 /**
 #jquery.mapquery.popup.js
-A plugin on mapquery.core to add a popup to the map, attached to a layer. 
- */ 
+A plugin on mapquery.core to add a popup to the map, attached to a layer.
+ */
 
 (function($, MQ) {
 $.extend(MQ.Map.prototype, {
@@ -18,20 +18,20 @@ $.extend(MQ.Map.prototype, {
 _version added 0.1_
 ####**Description**: get the position in viewport pixels from a coordinate
 
-**x**: the x-coordinate in map-projection  
+**x**: the x-coordinate in map-projection
 **y**: the y-ccordinate in map-projection
- 
+
 >Returns: [x,y] in viewport pixels
 
 
-The `.pixelsFromPosition()` function allows us to get the position of a point 
-on the map in pixels on the screen. Useful for putting a DOM element at a point 
-in the map. If the coordinate is outside the current view, it will return null; 
+The `.pixelsFromPosition()` function allows us to get the position of a point
+on the map in pixels on the screen. Useful for putting a DOM element at a point
+in the map. If the coordinate is outside the current view, it will return null;
 
 
      var pos = map.pixelsFromPosition(5,52) //get the pixel-position of Amsterdam
-     
- */        
+
+ */
     pixelsFromPosition: function(x, y) {
         var pos;
         var lonLat = new OpenLayers.LonLat(x, y);
@@ -47,18 +47,18 @@ in the map. If the coordinate is outside the current view, it will return null;
 _version added 0.1_
 ####**Description**: pan the map smoothly by a certain amount of pixels
 
-**dx**: the x-coordinate in pixels  
+**dx**: the x-coordinate in pixels
 **dy**: the y-ccordinate in pixels
- 
+
 >Returns: nothing
 
 
-The `.pan()` function allows us to move the map by a certain amount of pixels. 
+The `.pan()` function allows us to move the map by a certain amount of pixels.
 
 
       map.pan(100,200) //pan the map 100 pixels right and 200 up
-     
- */     
+
+ */
     // Pans the map smoothly by a certain amount of pixels
     pan: function(dx, dy) {
         this.olMap.pan(dx, dy);
@@ -70,16 +70,16 @@ $.extend(MQ.Layer.prototype, {
 _version added 0.1_
 ####**Description**: get the z-index of the current layer
 
- 
+
 >Returns: z-index (integer)
 
 
-The `.zIndex()` function allows us to get the z-index of the current layer. 
+The `.zIndex()` function allows us to get the z-index of the current layer.
 
 
       var z= layer.zIndex()
-     
- */  
+
+ */
     zIndex: function() {
         return this.olLayer.getZIndex();
     },

@@ -1,5 +1,5 @@
 /* Copyright (c) 2011 by MapQuery Contributors (see AUTHORS for
- * full list of contributors). Published under the MIT license. 
+ * full list of contributors). Published under the MIT license.
  * See https://github.com/mapquery/mapquery/blob/master/LICENSE for the
  * full text of the license. */
 
@@ -11,12 +11,12 @@ The file containing the mqFeatureInfo Widget
 _version added 0.1_
 ####**Description**: create a widget to show feature information
 
- + **options** 
+ + **options**
   - **map**: the mapquery instance
-  - **contents**: A function that returns HTML to be put into the popup. It has one 
+  - **contents**: A function that returns HTML to be put into the popup. It has one
 argument, which is the OpenLayers feature that was selected.
   - **title**: Title that will be displayed at the top of the feature info (default: Feature information)
- 
+
 >Returns: widget
 
 
@@ -30,7 +30,7 @@ The mqFeatureInfo widget allows us to display the information of a selected feat
         }
      });
 
- */ 
+ */
 (function($) {
 $.template('mqFeatureInfo',
     '<div class="mq-featureinfo ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix">' +
@@ -54,10 +54,10 @@ $.widget("mapQuery.mqFeatureInfo", {
         var map;
         var self = this;
         var element = this.element;
-        
+
         //get the mapquery object
         map = $(this.options.map).data('mapQuery');
-        
+
         var layers = $.map(map.layers(), function(layer) {
             return layer.isVector ? layer : null;
         });

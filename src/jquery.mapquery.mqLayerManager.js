@@ -1,5 +1,5 @@
 /* Copyright (c) 2011 by MapQuery Contributors (see AUTHORS for
- * full list of contributors). Published under the MIT license. 
+ * full list of contributors). Published under the MIT license.
  * See https://github.com/mapquery/mapquery/blob/master/LICENSE for the
  * full text of the license. */
 
@@ -12,26 +12,26 @@ _version added 0.1_
 ####**Description**: create a widget to manage layers
 
  + **options**:
-  - **map**: the mapquery instance  
+  - **map**: the mapquery instance
   - **title**: Title that will be displayed at the top of the layer manager (default: Layer Manager)
 
 
->Returns: widget  
+>Returns: widget
 
 >Requires: jquery.mapquery.legend.js
- 
+
 
 The mqLayerManager allows us to control the order, opacity and visibility of layers.
  We can also remove layers. It also shows the legend of the layer if available and
- the error messages provided by the legend plugin. It listens to layerchange event 
- for order, transparancy and opacity changes. It listens to addlayer and removelayer 
+ the error messages provided by the legend plugin. It listens to layerchange event
+ for order, transparancy and opacity changes. It listens to addlayer and removelayer
  events to keep track which layers are on the map.
 
 
       $('#layermanager').mqLayerManager({map:'#map'});
-     
 
- */ 
+
+ */
 (function($) {
 $.template('mqLayerManager',
     '<div class="mq-layermanager ui-widget-content  ">'+
@@ -74,10 +74,10 @@ $.widget("mapQuery.mqLayerManager", {
 
         //get the mapquery object
         map = $(this.options.map).data('mapQuery');
-        
+
         this.element.addClass('ui-widget  ui-helper-clearfix ' +
                               'ui-corner-all');
-                              
+
         var lmElement = $.tmpl('mqLayerManager').appendTo(element);
         element.find('.ui-icon-closethick').button();
 
@@ -95,10 +95,10 @@ $.widget("mapQuery.mqLayerManager", {
             }
         });
 
-        //these layers are already added to the map as such won't trigger and event, 
+        //these layers are already added to the map as such won't trigger and event,
         //we call the draw function directly
         $.each(map.layers().reverse(), function(){
-           self._layerAdded(lmElement, this); 
+           self._layerAdded(lmElement, this);
         });
 
         element.delegate('.mq-layermanager-element-vischeckbox', 'change', function() {
@@ -155,20 +155,20 @@ $.widget("mapQuery.mqLayerManager", {
     _visible: function(layer, vis) {
         layer.visible(vis);
     },
-    
+
     _opacity: function(layer,opac) {
         layer.opacity(opac);
     },
 
     //functions that change the widget
-    _layerAdded: function(widget, layer) { 
+    _layerAdded: function(widget, layer) {
         var self = this;
         var error = layer.legend().msg;
         var url;
         switch(error){
             case '':
                 url =layer.legend().url;
-                if(url==''){error='No legend for this layer';} 
+                if(url==''){error='No legend for this layer';}
                 break;
             case 'E_ZOOMOUT':
                 error = 'Please zoom out to see this layer';
@@ -180,7 +180,7 @@ $.widget("mapQuery.mqLayerManager", {
                 error = 'This layer is outside the current view';
                 break;
         }
-            
+
         var layerElement = $.tmpl('mqLayerManagerElement',{
             id: layer.id,
             label: layer.label,
@@ -208,7 +208,7 @@ $.widget("mapQuery.mqLayerManager", {
            //using the slide event to check for the checkbox often gives errors.
            change: function(event, ui) {
                var layer = layerElement.data('layer');
-               var self =  layerElement.data('self');               
+               var self =  layerElement.data('self');
                if(ui.value>=0.01) {
                    if(!layer.visible()){layer.visible(true);}
                }
@@ -246,26 +246,26 @@ $.widget("mapQuery.mqLayerManager", {
         var checkbox = layerElement.find('.mq-layermanager-element-vischeckbox');
         checkbox[0].checked = layer.visible();
         //update the opacity slider as well
-        var slider = layerElement.find('.mq-layermanager-element-slider');        
+        var slider = layerElement.find('.mq-layermanager-element-slider');
         var value = layer.visible()?layer.opacity()*100: 0;
-        slider.slider('value',value); 
-        
+        slider.slider('value',value);
+
         //update legend image
         layerElement.find('.mq-layermanager-element-legend img').css({visibility:layer.visible()?true:'hidden'});
     },
 
     _layerOpacity: function(widget, layer) {
         var layerElement = widget.element.find('#mq-layermanager-element-'+layer.id);
-        var slider = layerElement.find('.mq-layermanager-element-slider');       
+        var slider = layerElement.find('.mq-layermanager-element-slider');
         slider.slider('value',layer.opacity()*100);
         //update legend image
-        layerElement.find('.mq-layermanager-element-legend img').css({opacity:layer.opacity()});  
+        layerElement.find('.mq-layermanager-element-legend img').css({opacity:layer.opacity()});
     },
-    
+
     _moveEnd: function (widget,lmElement,map) {
         lmElement.empty();
         $.each(map.layers().reverse(), function(){
-           widget._layerAdded(lmElement, this); 
+           widget._layerAdded(lmElement, this);
         });
     },
 
@@ -280,10 +280,10 @@ $.widget("mapQuery.mqLayerManager", {
 
     _onLayerChange: function(evt, data) {
         var layer;
-        //since we don't know which layer we get we've to loop through 
+        //since we don't know which layer we get we've to loop through
         //the openlayers.layer.ids to find the correct one
         $.each(evt.data.map.layers(), function(){
-           if(this.olLayer.id == data.layer.id) {layer=this;} 
+           if(this.olLayer.id == data.layer.id) {layer=this;}
         });
         //(name, order, opacity, params, visibility or attribution)
          switch(data.property) {
