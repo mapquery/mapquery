@@ -658,8 +658,10 @@ $.extend($.MapQuery.Layer, {
             var o = $.extend(true, {}, $.fn.mapQuery.defaults.layer.all,
                 $.fn.mapQuery.defaults.layer.osm,
                 options);
+            var label = options.label || undefined;
+            var url = options.url || undefined;
             return {
-                layer: new OpenLayers.Layer.OSM(options),
+                layer: new OpenLayers.Layer.OSM(label, url, o),
                 options: o
             };
         },
