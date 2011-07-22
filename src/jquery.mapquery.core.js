@@ -13,7 +13,10 @@ constructor and the MapQuery.Layer constructor.
 _version added 0.1_
 ####**Description**: initialise MapQuery and associate it with the matched element
 
-**options**  an object of key-value pairs with options for the map.
+**options**  an object of key-value pairs with options for the map. Possible pairs are:
+
+ * **layers** (array of MapQuery.Layer *or* MapQuery.Layer): Either an array or a single layer that should be added to the map
+ * **goto** ({position: [x,y], zoom: z<int>, box: [llx,lly,urx,ury]}): Initially go to a certain location. At least one layer (in the `layers` option) needs to be specified.
 
 > Returns: $('selector') (jQuery object)
 
@@ -94,10 +97,14 @@ $.MapQuery.Map = function(element, options) {
     // Add layers to the map
     if (this.options.layers!==undefined) {
         this.layers(this.options.layers);
+        // You can only go to some location if there were layers added
+        if (this.options.goto!==undefined) {
+            this.goto(this.options.goto);
+        }
     }
 
-    // zoom to the maxExtent of the map
-    if (this.options.zoomToMaxExtent) {
+    // zoom to the maxExtent of the map if no precise location was specified
+    if (this.options.zoomToMaxExtent && this.options.goto===undefined) {
         this.olMap.zoomToMaxExtent();
     }
 };

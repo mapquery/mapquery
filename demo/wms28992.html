@@ -24,9 +24,9 @@
                type:'wms',
             url:'http://r1.edugis.nl/tiles/tilecache.py?map=maps/edugis/cache/base.map',
             layers:'topografie'
-            }]
-        }).data('mapQuery');                         // we directly get the mapQuery map object to be able to set the initial extent
-    map.goto({box:[5,52,6,54]});                     // we zoom to a area defined as a box in wgs84 (long/lat)
+            }],
+        goto : {box:[5,52,6,54]}                    // we zoom to a area defined as a box in wgs84 (long/lat)
+        })
     });
   </script>
 </head>

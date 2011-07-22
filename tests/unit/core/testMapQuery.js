@@ -163,6 +163,24 @@ test("Add layers on initialisation", function() {
     equals(map2.layersList.mapquery1.label, 'World', 'Layer2 was added');
 });
 
+test("Go to a certain position on initialisation", 2, function() {
+    var mq = $('#map_init_goto').mapQuery({
+        layers: [{
+            type: 'WMTS',
+            label: 'naturalearth',
+            url: '../../../demo/data/wmts/1.0.0/NE1_HR_LC_SR_W_DR/default/10m',
+            sphericalMercator: true
+        }],
+        goto: {
+            position: [-20, 30],
+            zoom: 2
+        }
+    }).data('mapQuery');
+    var goto = mq.goto();
+    equals(goto.zoom, 2, 'Got to the right zoom level');
+    deepEqual(goto.position, [-20, 30], 'Got to the right position');
+});
+
 test("goto works properly (EPSG:900913)", function() {
     expect(30);
 
