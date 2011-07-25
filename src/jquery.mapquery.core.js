@@ -647,7 +647,8 @@ $.extend($.MapQuery.Layer, {
                     format: new OpenLayers.Format.GeoJSON()
                 }),
                 strategies: strategies,
-                projection: o.projection || 'EPSG:4326'
+                projection: o.projection || 'EPSG:4326',
+                styleMap: o.styleMap
             };
             return {
                 layer: new OpenLayers.Layer.Vector(o.label, params),
