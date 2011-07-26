@@ -552,7 +552,8 @@ _version added 0.1_
 ####**Description**: create a Bing maps layer
 
 **view** a string ['road','hybrid','satellite'] to define which Bing maps layer to use (default road)   
-**key** Bing Maps API key for your application. Get you own at http://bingmapsportal.com/ 
+**key** Bing Maps API key for your application. Get you own at http://bingmapsportal.com/    
+**label** string with the name of the layer 
 
 
       layers:[{
@@ -596,7 +597,8 @@ _version added 0.1_
 _version added 0.1_
 ####**Description**: create a Google maps layer
 
-**view** a string ['road','hybrid','satellite'] to define which Google maps layer to use (default road)
+**view** a string ['road','hybrid','satellite'] to define which Google maps layer to use (default road)    
+**label** string with the name of the layer
 
 
 *Note* you need to include the google maps v3 API in your application by adding
@@ -629,6 +631,19 @@ _version added 0.1_
                 options: o
             };
         },
+/**
+###*layer* `{type:vector}`
+_version added 0.1_
+####**Description**: create a vector layer
+
+**label** string with the name of the layer
+
+
+      layers:[{
+            type:'vector',      //create a vector layer
+            }]
+
+*/
         vector: function(options) {
             var o = $.extend(true, {}, $.fn.mapQuery.defaults.layer.all,
                     $.fn.mapQuery.defaults.layer.vector,
@@ -639,6 +654,27 @@ _version added 0.1_
                 options: o
             };
         },
+/**
+###*layer* `{type:json}`
+_version added 0.1_
+####**Description**: create a JSON layer
+
+**url** a string pointing to the location of the JSON data
+**strategies** a string ['bbox','cluster','filter','fixed','paging','refresh','save'] 
+stating which update strategy should be used (see also http://dev.openlayers.org/apidocs/files/OpenLayers/Strategy-js.html)
+(default fixed)   
+**projection** a string with the projection of the JSON data (default EPSG:4326)    
+**styleMap** {object} the style to be used to render the JSON data    
+**label** string with the name of the layer
+
+
+      layers:[{
+            type: 'JSON',
+            url: 'data/reservate.json',
+            label: 'reservate'
+            }]
+
+*/
         json: function(options) {
             var o = $.extend(true, {}, $.fn.mapQuery.defaults.layer.all,
                     $.fn.mapQuery.defaults.layer.vector,
