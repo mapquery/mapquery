@@ -197,10 +197,10 @@ We can also use it to retrieve all layers currently attached to the map.
 _version added 0.1_
 ####**Description**: get/set the extent, zoom and position of the map
 
-**position** the position as [x,y] in displayProjection (default EPSG:4326) to center the map at
-**zoom** the zoomlevel as integer to zoom the map to
+**position** the position as [x,y] in displayProjection (default EPSG:4326) to center the map at   
+**zoom** the zoomlevel as integer to zoom the map to   
 **box** an array with the lower left x, lower left y, upper right x, upper right y to zoom the map to,
-this will take precedent when conflicting with any of the above values
+this will take precedent when conflicting with any of the above values   
 **projection** the projection the coordinates are in, default is the displayProjection
 
 >Returns: {position: [x,y], zoom: z<int>, box: [llx,lly,urx,ury]}
@@ -549,14 +549,14 @@ $.fn.mapQuery = function(options) {
 _version added 0.1_
 ####**Description**: create a Bing layer
 
-**view** a string ['road','hybrid','satellite'] to define which Bing layer to use (default road)
+**view** a string ['road','hybrid','satellite'] to define which Bing layer to use (default road)   
 **key** Bing Maps API key for your application. Get you own at http://bingmapsportal.com/ 
 
 
       layers:[{
-            type:'bing',        //create a bing maps layer
-            view:'satellite',    //use the bing satellite (aerial) layer
-            key:'ArAGGPJ16xm0RXRbw27PvYc9Tfuj1k1dUr_gfA5j8QBD6yAYMlsAtF6YkVyiiLGn' 
+            type:'bing',      //create a bing maps layer
+            view:'satellite', //use the bing satellite layer
+            key:'ArAGGPJ16xm0RX' 
             }]
 
 */
