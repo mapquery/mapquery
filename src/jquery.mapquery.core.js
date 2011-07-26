@@ -725,6 +725,20 @@ stating which update strategy should be used (see also http://dev.openlayers.org
                 options: o
             };
         },
+/**
+###*layer* `{type:osm}`
+_version added 0.1_
+####**Description**: create an OpenStreetMap layer
+
+ 
+**label** string with the name of the layer
+
+
+      layers:[{
+            type: 'osm',
+            }]
+
+*/
         osm: function(options) {
             var o = $.extend(true, {}, $.fn.mapQuery.defaults.layer.all,
                 $.fn.mapQuery.defaults.layer.osm,
@@ -736,6 +750,25 @@ stating which update strategy should be used (see also http://dev.openlayers.org
                 options: o
             };
         },
+/**
+###*layer* `{type:wms}`
+_version added 0.1_
+####**Description**: create a WMS layer
+
+**url** a string pointing to the location of the WMS service
+**layers** a string with the name of the WMS layer(s)
+**format** a string with format of the WMS image (default image/jpeg)    
+**transparent** a boolean for requesting images with transparency    
+**label** string with the name of the layer
+
+
+      layers:[{
+            type:'wms',
+            url:'http://vmap0.tiles.osgeo.org/wms/vmap0',
+            layers:'basic'
+            }]
+
+*/
         wms: function(options) {
             var o = $.extend(true, {}, $.fn.mapQuery.defaults.layer.all,
                     $.fn.mapQuery.defaults.layer.raster,
