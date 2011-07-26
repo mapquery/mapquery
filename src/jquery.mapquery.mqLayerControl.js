@@ -32,7 +32,8 @@ It is likely that the two will be merged in the future
 (function($) {
 $.template('mqLayerControl',
     '<li id="mq-layercontrol-${id}" class="mq-layercontrol ui-widget-content ui-helper-clearfix ui-corner-all">'+
-    '<span><div class="ui-icon ui-icon-arrowthick-2-n-s"></div><div class="mq-layercontrol-label">${label}</div>' +
+    '<span><div class="ui-icon ui-icon-arrowthick-2-n-s"></div>'+
+    '<div class="mq-layercontrol-label">${label}</div>' +
     '<button class="mq-layercontrol-delete">Delete</button>' +
     '<input type="checkbox" class="mq-layercontrol-visibility" id="${id}-visibility" checked="${visible}" />'+
     '<label for="${id}-visibility">Visible</label></span>'+
@@ -123,7 +124,8 @@ $.widget("mapQuery.mqLayerControl", {
         evt.data.widget._add(evt.data.control,layer);
     },
 
-    // if _remove is called from the mqRemoveLayer event it means that the layer is already removed, so set removed to true
+    // if _remove is called from the mqRemoveLayer event it means that the
+    // layer is already removed, so set removed to true
     _remove: function(id, removed) {
          var controlId = "#mq-layercontrol-"+id;
          var control = $(controlId);
