@@ -544,12 +544,14 @@ $.fn.mapQuery = function(options) {
     });
 };
 
+$.extend($.MapQuery.Layer, {
+    types: {
 /**
 ###*layer* `{type:bing}`
 _version added 0.1_
-####**Description**: create a Bing layer
+####**Description**: create a Bing maps layer
 
-**view** a string ['road','hybrid','satellite'] to define which Bing layer to use (default road)   
+**view** a string ['road','hybrid','satellite'] to define which Bing maps layer to use (default road)   
 **key** Bing Maps API key for your application. Get you own at http://bingmapsportal.com/ 
 
 
@@ -560,9 +562,6 @@ _version added 0.1_
             }]
 
 */
-
-$.extend($.MapQuery.Layer, {
-    types: {
         bing: function(options) {
             var o = $.extend(true, {}, $.fn.mapQuery.defaults.layer.all,
                 $.fn.mapQuery.defaults.layer.bing,
@@ -592,6 +591,24 @@ $.extend($.MapQuery.Layer, {
                 options: o
             };
         },
+/**
+###*layer* `{type:google}`
+_version added 0.1_
+####**Description**: create a Google maps layer
+
+**view** a string ['road','hybrid','satellite'] to define which Google maps layer to use (default road)
+
+
+*Note* you need to include the google maps v3 API in your application by adding
+`<script src="http://maps.google.com/maps/api/js?v=3.5&amp;sensor=false" type="text/javascript"></script>`
+
+
+      layers:[{
+            type:'google',      //create a google maps layer
+            view:'hybrid', //use the google hybridlayer
+            }]
+
+*/
         google: function(options) {
             var o = $.extend(true, {}, $.fn.mapQuery.defaults.layer.all,
                     $.fn.mapQuery.defaults.layer.google,
