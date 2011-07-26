@@ -3,6 +3,7 @@
  * See https://github.com/mapquery/mapquery/blob/master/LICENSE for the
  * full text of the license. */
 
+(function ($) {
 /**
 # jquery.mapquery.core.js
 The main MapQuery file. It contains the MapQuery constructor, the MapQuery.Map
@@ -29,8 +30,7 @@ the 'mapQuery' data object.
      var map = $('#map').mapQuery({layers:[{type:'osm'}]); //create a map with osm
 
      var mq = map.data('mapQuery'); //get the MapQuery object
- */
-(function ($) {
+*/
 $.MapQuery = $.MapQuery || {};
 
 /**
