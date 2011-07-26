@@ -164,34 +164,34 @@ test("Add layers on initialisation", function() {
 });
 
 test("Go to a certain position on initialisation", 2, function() {
-    var mq = $('#map_init_goto').mapQuery({
+    var mq = $('#map_init_center').mapQuery({
         layers: [{
             type: 'WMTS',
             label: 'naturalearth',
             url: '../../../demo/data/wmts/1.0.0/NE1_HR_LC_SR_W_DR/default/10m',
             sphericalMercator: true
         }],
-        goto: {
+        center: {
             position: [-20, 30],
             zoom: 2
         }
     }).data('mapQuery');
-    var goto = mq.goto();
-    equals(goto.zoom, 2, 'Got to the right zoom level');
-    deepEqual(goto.position, [-20, 30], 'Got to the right position');
+    var center = mq.center();
+    equals(center.zoom, 2, 'Got to the right zoom level');
+    deepEqual(center.position, [-20, 30], 'Got to the right position');
 });
 
-test("goto works properly (EPSG:900913)", function() {
+test("center works properly (EPSG:900913)", function() {
     expect(30);
 
     var maps = [
         // this is EPSG:900913
-        $('#map_goto').mapQuery({layers: [{
+        $('#map_center').mapQuery({layers: [{
             type: 'OSM',
             label: 'OpenStreetMap'
         }]}),
         // this is EPSG:4326
-        $('#map_goto2').mapQuery({layers: [{
+        $('#map_center2').mapQuery({layers: [{
             type: 'WMTS',
             label: 'naturalearth',
             url: '../../../demo/data/wmts/1.0.0/NE1_HR_LC_SR_W_DR/default/10m'
@@ -203,78 +203,78 @@ test("goto works properly (EPSG:900913)", function() {
 
         // position
 
-        map.goto({position: [10.898333, 48.371667]});
-        var goto = map.goto();
-        same(goto.position, [10.898333, 48.371667],
+        map.center({position: [10.898333, 48.371667]});
+        var center = map.center();
+        same(center.position, [10.898333, 48.371667],
              'Setting the position only');
-        map.goto({position: [4.892222, 52.373056]});
-        goto = map.goto();
-        same(goto.position, [4.892222, 52.373056],
+        map.center({position: [4.892222, 52.373056]});
+        center = map.center();
+        same(center.position, [4.892222, 52.373056],
              'Setting the position only (2)');
-        map.goto({position: [4.892222, 52.373056], zoom: 5});
-        map.goto({position: [4.892222, 52.373056], zoom: 7});
-        map.goto({position: [10.898333, 48.371667]});
-        goto = map.goto();
-        equals(goto.zoom, 7,
+        map.center({position: [4.892222, 52.373056], zoom: 5});
+        map.center({position: [4.892222, 52.373056], zoom: 7});
+        map.center({position: [10.898333, 48.371667]});
+        center = map.center();
+        equals(center.zoom, 7,
              'Setting the position only, keep the current zoom level');
 
         // zoom
 
-        map.goto({position: [10.898333, 48.371667], zoom: 5});
-        map.goto({zoom: 3});
-        goto = map.goto();
-        same(goto.position, [10.898333, 48.371667],
+        map.center({position: [10.898333, 48.371667], zoom: 5});
+        map.center({zoom: 3});
+        center = map.center();
+        same(center.position, [10.898333, 48.371667],
              'Setting the zoom only zoom (position is right)');
-        equals(goto.zoom, 3, 'Setting the zoom only (zoom is right)');
+        equals(center.zoom, 3, 'Setting the zoom only (zoom is right)');
 
         // position + zoom
 
-        map.goto({position: [10.898333, 48.371667], zoom: 6});
-        goto = map.goto();
-        same(goto.position, [10.898333, 48.371667],
+        map.center({position: [10.898333, 48.371667], zoom: 6});
+        center = map.center();
+        same(center.position, [10.898333, 48.371667],
              'Setting the position and zoom (position is right)');
-        equals(goto.zoom, 6, 'Setting the position and zoom (zoom is right)');
-        map.goto({position: [4.892222, 52.373056], zoom: 4});
-        goto = map.goto();
-        same(goto.position, [4.892222, 52.373056],
+        equals(center.zoom, 6, 'Setting the position and zoom (zoom is right)');
+        map.center({position: [4.892222, 52.373056], zoom: 4});
+        center = map.center();
+        same(center.position, [4.892222, 52.373056],
              'Setting the position and zoom (position is right) (2)');
-        equals(goto.zoom, 4, 'Setting the position and zoom ' +
+        equals(center.zoom, 4, 'Setting the position and zoom ' +
                '(zoom is right) (2)');
 
         // box
 
-        map.goto({box: [4.892222, 48.371667, 10.898333, 52.373056]});
-        goto = map.goto();
+        map.center({box: [4.892222, 48.371667, 10.898333, 52.373056]});
+        center = map.center();
         // The extend will be fit in to the nearest zoom level, hence
         // the box given, doesn't match the final one
-            console.log(goto.box);
+            console.log(center.box);
 
-        /* same(goto.box, [-21.962936669741, 20.514147330259, 37.753491669741,
+        /* same(center.box, [-21.962936669741, 20.514147330259, 37.753491669741,
                         80.230575669741],
              'Setting box only (position is right)'); */
-        equals((goto.position[0] == 7.8952775000002) && (goto.position[1] == 50.414584408364), true,
+        equals((center.position[0] == 7.8952775000002) && (center.position[1] == 50.414584408364), true,
             'Setting box only (position is right)');
 
-        same(goto.zoom, 4,
+        same(center.zoom, 4,
              'Setting box only (zoom is right)');
 
         // ignore position or zoom settings
-        map.goto({position: [-22.566667, 17.15], zoom: 9});
-        goto = map.goto();
-        same(goto.position, [-22.566667, 17.15],
+        map.center({position: [-22.566667, 17.15], zoom: 9});
+        center = map.center();
+        same(center.position, [-22.566667, 17.15],
              'Reset position to somewhere outside of the box we\'ll set');
-        equals(goto.zoom, 9,
+        equals(center.zoom, 9,
                'Reset position to somewhere outside of the box we\'ll set ' +
                '(zoom)');
-        map.goto({box: [4.892222, 48.371667, 10.898333, 52.373056],
+        map.center({box: [4.892222, 48.371667, 10.898333, 52.373056],
                   position: [135, -25], zoom: 7});
-        goto = map.goto();
+        center = map.center();
         // The extend will be fit in to the nearest zoom level, hence
         // the box given, doesn't match the final one
-        console.log(goto.box);
-        equals((goto.position[0] == 7.8952775000002) && (goto.position[1] == 50.414584408364), true,
+        console.log(center.box);
+        equals((center.position[0] == 7.8952775000002) && (center.position[1] == 50.414584408364), true,
             'Setting box only (position is right)');
-        equals(goto.zoom, 4,
+        equals(center.zoom, 4,
              'Setting box only (zoom is right)');
     }
 });

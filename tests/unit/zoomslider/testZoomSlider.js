@@ -23,11 +23,11 @@ test("ZoomSlider works", 2, function() {
         }]
     });
     var mq = map.data('mapQuery');
-    var goto = mq.goto();
+    var center = mq.center();
     $(".mq-zoomslider-slider").slider('value',19-4);
-    goto = mq.goto();
-    equals(goto.zoom, 4, 'Zoomed in to 4 using slider');
-    mq.goto({zoom:3});
+    center = mq.center();
+    equals(center.zoom, 4, 'Zoomed in to 4 using slider');
+    mq.center({zoom:3});
     equals($(".mq-zoomslider-slider").slider('value'), 19-3, 'Zoomed out to 3, slider is 3');
 });
 

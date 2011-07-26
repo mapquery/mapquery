@@ -17,7 +17,7 @@
             url:'http://t1.edugis.nl/tiles/tilecache.py?map=maps/edugis/cache/population.map', //note: this is actually a tileservice and only works with the spherical mercator tileschema
             layers:'Bevolkingsdichtheid_2010'}]
         });
-    $('#map').mapQuery().data('mapQuery').goto({position:[5,52],zoom:3}); //for some reason the WMS doesn't show data at the highest zoomlevel so we zoom in a bit and focus on europe
+    $('#map').mapQuery().data('mapQuery').center({position:[5,52],zoom:3}); //for some reason the WMS doesn't show data at the highest zoomlevel so we zoom in a bit and focus on europe
     });
   </script>
 </head>

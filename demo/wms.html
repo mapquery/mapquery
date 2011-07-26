@@ -12,7 +12,7 @@
     $(document).ready(function() {
        //initialise mapquery with a non-spherical mercator WMS layer
     $('#map').mapQuery({
-        maxExtent:[-180,-90,180,90], //Set the max extent of the map, this will be used to define the tileschema of the map, use .goto() to zoom in to a specific area at startup
+        maxExtent:[-180,-90,180,90], //Set the max extent of the map, this will be used to define the tileschema of the map, use .center() to zoom in to a specific area at startup
         projection:'EPSG:4326', //Projection of your map (WGS84 in this case)
         units:'degrees', //WGS84 uses degrees as unit, not meters
         layers:[{ //layers to add to the map

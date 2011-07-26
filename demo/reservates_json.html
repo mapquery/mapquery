@@ -32,8 +32,8 @@
                 label: 'reservate'
             }]
         });
-    map.data('mapQuery').goto({position:[40,10]});
-    map.data('mapQuery').goto({zoom:5});
+    map.data('mapQuery').center({position:[40,10]});
+    map.data('mapQuery').center({zoom:5});
 
     $('#featureinfo').mqFeatureInfo({
         map: $('#map'),

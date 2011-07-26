@@ -16,7 +16,7 @@ _version added 0.1_
 **options**  an object of key-value pairs with options for the map. Possible pairs are:
 
  * **layers** (array of MapQuery.Layer *or* MapQuery.Layer): Either an array or a single layer that should be added to the map
- * **goto** ({position: [x,y], zoom: z<int>, box: [llx,lly,urx,ury]}): Initially go to a certain location. At least one layer (in the `layers` option) needs to be specified.
+ * **center** ({position: [x,y], zoom: z<int>, box: [llx,lly,urx,ury]}): Initially go to a certain location. At least one layer (in the `layers` option) needs to be specified.
 
 > Returns: $('selector') (jQuery object)
 
@@ -98,13 +98,13 @@ $.MapQuery.Map = function(element, options) {
     if (this.options.layers!==undefined) {
         this.layers(this.options.layers);
         // You can only go to some location if there were layers added
-        if (this.options.goto!==undefined) {
-            this.goto(this.options.goto);
+        if (this.options.center!==undefined) {
+            this.center(this.options.center);
         }
     }
 
     // zoom to the maxExtent of the map if no precise location was specified
-    if (this.options.zoomToMaxExtent && this.options.goto===undefined) {
+    if (this.options.zoomToMaxExtent && this.options.center===undefined) {
         this.olMap.zoomToMaxExtent();
     }
 };
@@ -193,7 +193,7 @@ We can also use it to retrieve all layers currently attached to the map.
         return this;
     },
 /**
- ###*map*.`goto([options])`
+ ###*map*.`center([options])`
 _version added 0.1_
 ####**Description**: get/set the extent, zoom and position of the map
 
@@ -206,7 +206,7 @@ this will take precedent when conflicting with any of the above values
 >Returns: {position: [x,y], zoom: z<int>, box: [llx,lly,urx,ury]}
 
 
-The `.goto()` method allows us to move to map to a specific zoom level, specific
+The `.center()` method allows us to move to map to a specific zoom level, specific
 position or a specific extent. We can specify the projection of the coordinates
 to override the displayProjection. For instance you want to show the coordinates
 in 4326, but you have a dataset in EPSG:28992 (dutch projection).
@@ -214,13 +214,13 @@ We can also retrieve the current zoomlevel, position and extent from the map.
 The coordinates are returned in displayProjection.
 
 
-     var goto = map.goto(); //get the current zoom, position and extent
-     map.goto({zoom:4}); //zoom to zoomlevel 4
-     map.goto({position:[5,52]}); //pan to point 5,52
-     map.goto(box:[-180,-90,180,90]); //zoom to the box -180,-900,180,90
-     map.goto({position:[125000,485000],projection:'EPSG:28992'}); //pan to point 125000,485000 in dutch projection
+     var center = map.center(); //get the current zoom, position and extent
+     map.center({zoom:4}); //zoom to zoomlevel 4
+     map.center({position:[5,52]}); //pan to point 5,52
+     map.center(box:[-180,-90,180,90]); //zoom to the box -180,-900,180,90
+     map.center({position:[125000,485000],projection:'EPSG:28992'}); //pan to point 125000,485000 in dutch projection
  */
-    goto: function (options) {
+    center: function (options) {
         var position;
         var mapProjection;
         // Determine source projection

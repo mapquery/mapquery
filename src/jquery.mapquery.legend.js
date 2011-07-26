@@ -41,12 +41,12 @@ return an error message which can be used to notify the user.
     //get/set the legend object
     legend: function(options) {
         //get the legend object
-        var goto = this.map.goto();
+        var center = this.map.center();
         if (arguments.length===0) {
-            this._checkZoom(goto);
+            this._checkZoom(center);
             //if zoom = ok, check box
             if(this.options.legend.msg==''){
-                this._checkBox(goto);
+                this._checkBox(center);
             }
             return this.options.legend;
         }
@@ -58,10 +58,10 @@ return an error message which can be used to notify the user.
     },
     //Check if the layer has a maximum box set and if the current box
     //is outside these settings, set the legend.msg accordingly
-    _checkBox: function(goto){
+    _checkBox: function(center){
         var maxExtent = this.options.maxExtent;
         if(maxExtent!==undefined) {
-            var mapBounds = new OpenLayers.Bounds(goto.box[0],goto.box[1],goto.box[2],goto.box[3]);
+            var mapBounds = new OpenLayers.Bounds(center.box[0],center.box[1],center.box[2],center.box[3]);
             var layerBounds = new OpenLayers.Bounds(maxExtent[0],maxExtent[1],maxExtent[2],maxExtent[3]);
             var inside = layerBounds.containsBounds(mapBounds, true);
             this.options.legend.msg = inside?'':LEGEND_ERRORS[2];
@@ -69,8 +69,8 @@ return an error message which can be used to notify the user.
     },
     //Check if the layer has a minimum or maximum zoom set and if the current zoom
     //is outside these settings, set the legend.msg accordingly
-    _checkZoom: function(goto){
-        var zoom = goto.zoom;
+    _checkZoom: function(center){
+        var zoom = center.zoom;
         var maxZoom = this.options.maxZoom;
         var minZoom = this.options.minZoom;
         this.options.legend.msg=(maxZoom!==undefined&&maxZoom<zoom)? LEGEND_ERRORS[0]:'';
