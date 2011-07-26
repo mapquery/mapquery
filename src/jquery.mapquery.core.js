@@ -544,6 +544,23 @@ $.fn.mapQuery = function(options) {
     });
 };
 
+/**
+###*layer* `{type:bing}`
+_version added 0.1_
+####**Description**: create a Bing layer
+
+**view** a string ['road','hybrid','satellite'] to define which Bing layer to use (default road)
+**key** Bing Maps API key for your application. Get you own at http://bingmapsportal.com/ 
+
+
+      layers:[{
+            type:'bing',        //create a bing maps layer
+            view:'satellite',    //use the bing satellite (aerial) layer
+            key:'ArAGGPJ16xm0RXRbw27PvYc9Tfuj1k1dUr_gfA5j8QBD6yAYMlsAtF6YkVyiiLGn' 
+            }]
+
+*/
+
 $.extend($.MapQuery.Layer, {
     types: {
         bing: function(options) {
