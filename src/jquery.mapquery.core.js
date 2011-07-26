@@ -717,7 +717,7 @@ stating which update strategy should be used (default fixed)
             var strategies = [];
             for (var i in o.strategies) {
                 if(o.strategies.hasOwnProperty(i)) {
-                    switch(o.strategies[i].toLowerCase())
+                    switch(o.strategies[i].toLowerCase()) {
                     case 'bbox':
                         strategies.push(new OpenLayers.Strategy.BBOX());
 		       	break;
@@ -926,7 +926,7 @@ $.fn.mapQuery.defaults = {
     },
     layer: {
         all: {
-            isBaseLayer: false,i
+            isBaseLayer: false,
 	    //in general it is kinda pointless to load tiles outside a maxextent
             displayOutsideMaxExtent: false
         },
