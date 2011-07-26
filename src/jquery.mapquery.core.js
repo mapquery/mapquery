@@ -783,6 +783,24 @@ _version added 0.1_
                 options: o
             };
         },
+//TODO complete this documentation
+/**
+###*layer* `{type:wmts}`
+_version added 0.1_
+####**Description**: create a WMTS (tiling) layer
+
+**url** a string pointing to the location of the WMTS service
+**layer** a string with the name of the WMTS layer
+**matrixSet** a string with one of the advertised matrix set identifiers
+**style** a string with one of the advertised layer styles    
+**label** string with the name of the layer
+
+
+      layers:[{
+            type:'wmts'
+            }]
+
+*/
         wmts: function(options) {
             var o = $.extend(true, {}, $.fn.mapQuery.defaults.layer.all,
                     $.fn.mapQuery.defaults.layer.wmts);
