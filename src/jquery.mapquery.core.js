@@ -559,7 +559,7 @@ _version added 0.1_
       layers:[{
             type:'bing',      //create a bing maps layer
             view:'satellite', //use the bing satellite layer
-            key:'ArAGGPJ16xm0RX' 
+            key:'ArAGGPJ16xm0RX' //the Bing maps API key
             }]
 
 */
@@ -607,7 +607,7 @@ _version added 0.1_
 
       layers:[{
             type:'google',      //create a google maps layer
-            view:'hybrid', //use the google hybridlayer
+            view:'hybrid' //use the google hybridlayer
             }]
 
 */
@@ -640,7 +640,7 @@ _version added 0.1_
 
 
       layers:[{
-            type:'vector',      //create a vector layer
+            type:'vector'     //create a vector layer
             }]
 
 */
@@ -735,7 +735,7 @@ _version added 0.1_
 
 
       layers:[{
-            type: 'osm',
+            type: 'osm'
             }]
 
 */
