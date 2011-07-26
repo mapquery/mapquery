@@ -627,7 +627,7 @@ _version added 0.1_
                     view = google.maps.MapTypeId.SATELLITE; break;
             }
             return {
-                layer: new OpenLayers.Layer.Google({type:view}),
+                layer: new OpenLayers.Layer.GoogleNG({type:view}),
                 options: o
             };
         },
