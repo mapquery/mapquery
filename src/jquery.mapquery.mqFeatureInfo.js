@@ -13,14 +13,16 @@ _version added 0.1_
 
  + **options**
   - **map**: the mapquery instance
-  - **contents**: A function that returns HTML to be put into the popup. It has one
-argument, which is the OpenLayers feature that was selected.
-  - **title**: Title that will be displayed at the top of the feature info (default: Feature information)
+  - **contents**: A function that returns HTML to be put into the popup.
+  It has one argument, which is the OpenLayers feature that was selected.
+  - **title**: Title that will be displayed at the top of the feature
+  info (default: Feature information)
 
 >Returns: widget
 
 
-The mqFeatureInfo widget allows us to display the information of a selected feature.
+The mqFeatureInfo widget allows us to display the information
+of a selected feature.
 
 
      $('#featureinfo').mqFeatureInfo({

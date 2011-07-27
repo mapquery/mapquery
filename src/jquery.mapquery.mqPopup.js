@@ -13,10 +13,12 @@ _version added 0.1_
 
  + **options:**
   - **map**: the mapquery instance
-  - **contents**: A function that returns HTML to be put into the popup. It has one
-argument, which is the OpenLayers feature that was selected.
-  - **title**: Title that will be displayed at the top of the feature info (default: Feature popup)
-  - **padding**: Padding (in px) around the popup when it needs to be panned in (default 10)
+  - **contents**: A function that returns HTML to be put into the popup.
+  It has one argument, which is the OpenLayers feature that was selected.
+  - **title**: Title that will be displayed at the top of the feature
+  info (default: Feature popup)
+  - **padding**: Padding (in px) around the popup when it needs to be
+  panned in (default 10)
 
 >Returns: widget
 
@@ -35,9 +37,10 @@ the feature.
  */
 (function($) {
 $.template('mqPopup',
-    '<div class="mq-popup ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix">' +
-    '<span class="ui-dialog-title">${title}</span>' +
-    '<a class="ui-dialog-titlebar-close ui-corner-all" href="#"><span class="ui-icon ui-icon-closethick">close</span></a>' +
+    '<div class="mq-popup ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix">'+
+    '<span class="ui-dialog-title">${title}</span>'+
+    '<a class="ui-dialog-titlebar-close ui-corner-all" href="#">'+
+    '<span class="ui-icon ui-icon-closethick">close</span></a>'+
     '</div>' +
     '<div" class="ui-dialog-content ui-widget-content">{{html contents}}</div>');
 // Parts of the code were inspired by the code from GeoExt

@@ -11,18 +11,23 @@ constructor and the MapQuery.Layer constructor.
 
 ### *$('selector')*.`mapQuery([options])`
 _version added 0.1_
-####**Description**: initialise MapQuery and associate it with the matched element
+####**Description**: initialise MapQuery and associate it with
+the matched element
 
-**options**  an object of key-value pairs with options for the map. Possible pairs are:
+**options**  an object of key-value pairs with options for the map. Possible
+pairs are:
 
- * **layers** (array of MapQuery.Layer *or* MapQuery.Layer): Either an array or a single layer that should be added to the map
- * **center** ({position: [x,y], zoom: z<int>, box: [llx,lly,urx,ury]}): Initially go to a certain location. At least one layer (in the `layers` option) needs to be specified.
+ * **layers** (array of MapQuery.Layer *or* MapQuery.Layer): Either an array
+ * or a single layer that should be added to the map
+ * **center** ({position: [x,y], zoom: z<int>, box: [llx,lly,urx,ury]}):
+ * Initially go to a certain location. At least one layer (in the `layers`
+ * option) needs to be specified.
 
 > Returns: $('selector') (jQuery object)
 
 
-We can initialise MapQuery without any options, or for instance pass in a layers object.
-The mapQuery function returns a jQuery object, to access the mapQuery object retrieve
+We can initialise MapQuery without any options, or for instance pass in a layer
+object. The mapQuery function returns a jQuery object, to access the mapQuery object retrieve
 the 'mapQuery' data object.
 
      var map = $('#map').mapQuery(); //create an empty map
@@ -40,13 +45,15 @@ $.MapQuery = $.MapQuery || {};
 #MapQuery.Map
 
 The MapQuery.Map object. It is automatically constructed from the options
-given in the `mapQuery([options])` constructor. The Map object is refered to as _map_ in
-the documentation.
+given in the `mapQuery([options])` constructor. The Map object is refered
+to as _map_ in the documentation.
  */
 $.MapQuery.Map = function(element, options) {
     var self = this;
-    //If there are a maxExtent and a projection other than Spherical Mercator automagically set maxResolution if it is not set
-    // TODO smo 20110614: put maxExtent and maxResolution setting in the proper option building routine
+    //If there are a maxExtent and a projection other than Spherical Mercator
+    //automagically set maxResolution if it is not set
+    //TODO smo 20110614: put maxExtent and maxResolution setting in the
+    //proper option building routine
     if(options){
     if(!options.maxResolution&&options.maxExtent&&options.projection){
         options.maxResolution = (options.maxExtent[2]-options.maxExtent[0])/256;
@@ -56,13 +63,17 @@ $.MapQuery.Map = function(element, options) {
     this.element = element;
     // TODO vmx 20110609: do proper options building
     // TODO SMO 20110616: make sure that all projection strings are uppercase
-    // smo 20110620: you need the exact map options in the overviewmap widget as such we need to preserve them
+    // smo 20110620: you need the exact map options in the overviewmap widget
+    // as such we need to preserve them
     this.olMapOptions = $.extend({}, this.options);
     delete this.olMapOptions.layers;
     delete this.olMapOptions.maxExtent;
     delete this.olMapOptions.zoomToMaxExtent;
-    this.maxExtent = this.options.maxExtent;    //TODO SMO20110630 the maxExtent is in mapprojection, decide whether or not we need to change it to displayProjection
-    this.olMapOptions.maxExtent = new OpenLayers.Bounds(this.maxExtent[0],this.maxExtent[1],this.maxExtent[2],this.maxExtent[3]);
+    //TODO SMO20110630 the maxExtent is in mapprojection, decide whether or
+    //not we need to change it to displayProjection
+    this.maxExtent = this.options.maxExtent;
+    this.olMapOptions.maxExtent = new OpenLayers.Bounds(
+	this.maxExtent[0],this.maxExtent[1],this.maxExtent[2],this.maxExtent[3]);
 
 
     OpenLayers.IMAGE_RELOAD_ATTEMPTS = 3;
@@ -71,7 +82,8 @@ $.MapQuery.Map = function(element, options) {
     // create the OpenLayers Map
     this.olMap = new OpenLayers.Map(this.element[0], this.olMapOptions);
 
-    //OpenLayers doesn't want to return a maxExtent when there is no baselayer set (eg on an empty map, so we create a fake baselayer
+    //OpenLayers doesn't want to return a maxExtent when there is no baselayer
+    //set (eg on an empty map, so we create a fake baselayer
     this.olMap.addLayer(new OpenLayers.Layer('fake', {baseLayer: true}));
 
     // Keep IDs of vector layer for select feature control
@@ -115,15 +127,17 @@ $.MapQuery.Map.prototype = {
 _version added 0.1_
 ####**Description**: get/set the layers of the map
 
-**options** an object of key-value pairs with options to create one or more layers
+**options** an object of key-value pairs with options to create one or
+more layers
 
 >Returns: [layer] (array of MapQuery.Layer)
 
 
 The `.layers()` method allows us to attach layers to a mapQuery object. It takes
-an options object with layer options. To add multiple layers, create an array of layer
-options objects. If an options object is given, it will return the resulting layer(s).
-We can also use it to retrieve all layers currently attached to the map.
+an options object with layer options. To add multiple layers, create an array of
+layer options objects. If an options object is given, it will return the
+resulting layer(s). We can also use it to retrieve all layers currently attached
+to the map.
 
 
      var osm = map.layers({type:'osm'}); //add an osm layer to the map
@@ -197,28 +211,32 @@ We can also use it to retrieve all layers currently attached to the map.
 _version added 0.1_
 ####**Description**: get/set the extent, zoom and position of the map
 
-**position** the position as [x,y] in displayProjection (default EPSG:4326) to center the map at   
-**zoom** the zoomlevel as integer to zoom the map to   
-**box** an array with the lower left x, lower left y, upper right x, upper right y to zoom the map to,
-this will take precedent when conflicting with any of the above values   
-**projection** the projection the coordinates are in, default is the displayProjection
+**position** the position as [x,y] in displayProjection (default EPSG:4326)
+to center the map at
+**zoom** the zoomlevel as integer to zoom the map to
+**box** an array with the lower left x, lower left y, upper right x,
+upper right y to zoom the map to,
+this will take precedent when conflicting with any of the above values
+**projection** the projection the coordinates are in, default is
+the displayProjection
 
 >Returns: {position: [x,y], zoom: z<int>, box: [llx,lly,urx,ury]}
 
 
-The `.center()` method allows us to move to map to a specific zoom level, specific
-position or a specific extent. We can specify the projection of the coordinates
-to override the displayProjection. For instance you want to show the coordinates
-in 4326, but you have a dataset in EPSG:28992 (dutch projection).
-We can also retrieve the current zoomlevel, position and extent from the map.
-The coordinates are returned in displayProjection.
+The `.center()` method allows us to move to map to a specific zoom level,
+specific position or a specific extent. We can specify the projection of the
+coordinates to override the displayProjection. For instance you want to show
+the coordinates in 4326, but you have a dataset in EPSG:28992
+(dutch projection). We can also retrieve the current zoomlevel, position and
+extent from the map. The coordinates are returned in displayProjection.
 
 
      var center = map.center(); //get the current zoom, position and extent
      map.center({zoom:4}); //zoom to zoomlevel 4
      map.center({position:[5,52]}); //pan to point 5,52
      map.center(box:[-180,-90,180,90]); //zoom to the box -180,-900,180,90
-     map.center({position:[125000,485000],projection:'EPSG:28992'}); //pan to point 125000,485000 in dutch projection
+     //pan to point 125000,485000 in dutch projection
+     map.center({position:[125000,485000],projection:'EPSG:28992'});
  */
     center: function (options) {
         var position;
@@ -228,14 +246,18 @@ The coordinates are returned in displayProjection.
         var zoom;
         var box;
         if(options && options.projection) {
-            sourceProjection = options.projection.CLASS_NAME === 'OpenLayers.Projection' ? options.projection : new OpenLayers.Projection(options.projection);
+            sourceProjection = options.projection.CLASS_NAME ===
+		    'OpenLayers.Projection' ? options.projection :
+		    new OpenLayers.Projection(options.projection);
         } else {
             var displayProjection = this.olMap.displayProjection;
             if(!displayProjection) {
                 // source == target
                 sourceProjection = new OpenLayers.Projection('EPSG:4326');
             } else {
-                sourceProjection = displayProjection.CLASS_NAME === 'OpenLayers.Projection' ? displayProjection : new OpenLayers.Projection(displayProjection);
+                sourceProjection = displayProjection.CLASS_NAME ===
+			'OpenLayers.Projection' ? displayProjection :
+			new OpenLayers.Projection(displayProjection);
             }
         }
 
@@ -262,7 +284,8 @@ The coordinates are returned in displayProjection.
         // Zoom to the extent of the box
         if (options.box!==undefined) {
             mapProjection = this.olMap.getProjectionObject();
-            box = new OpenLayers.Bounds(options.box[0], options.box[1],options.box[2], options.box[3]);
+            box = new OpenLayers.Bounds(
+		options.box[0], options.box[1],options.box[2], options.box[3]);
             if (!mapProjection.equals(sourceProjection)) {
                 box.transform(sourceProjection,mapProjection);
             }
@@ -319,8 +342,9 @@ The coordinates are returned in displayProjection.
 #MapQuery.Layer
 
 The MapQuery.Layer object. It is constructed with layer options object in the
-map.`layers([options])` function or by passing a `layer:{options}` object in the `mapQuery()`
-constructor. The Layer object is refered to as _layer_ in the documentation.
+map.`layers([options])` function or by passing a `layer:{options}` object in
+the `mapQuery()` constructor. The Layer object is refered to as _layer_ in the
+documentation.
  */
 $.MapQuery.Layer = function(map, id, options) {
 
@@ -367,16 +391,17 @@ $.MapQuery.Layer.prototype = {
 _version added 0.1_
 ####**Description**: move the layer down in the layer stack of the map
 
-**delta** the amount of layers the layer has to move down in the layer stack (default 1)
+**delta** the amount of layers the layer has to move down in the layer
+stack (default 1)
 
 >Returns layer (MapQuery.Layer)
 
 
 The `.down()` method is a shortcut method for `.position(pos)` which makes
-it easier to move a layer down in the layerstack relative to its current position.
-It takes an integer and will try to move the layer down the number of places given.
-If delta is bigger than the current position in the stack, it will put the layer
-at the bottom.
+it easier to move a layer down in the layerstack relative to its current
+position. It takes an integer and will try to move the layer down the number of
+places given. If delta is bigger than the current position in the stack, it
+will put the layer at the bottom.
 
 
      layer.down();  //move layer 1 place down
@@ -404,7 +429,8 @@ _version added 0.1_
 
 
 The `.remove()` method allows us to remove a layer from the map.
-It returns an id to allow widgets to remove their references to the destroyed layer.
+It returns an id to allow widgets to remove their references to the
+destroyed layer.
 
      var id = layer.remove(); //remove this layer
 
@@ -419,17 +445,18 @@ It returns an id to allow widgets to remove their references to the destroyed la
 /**
 ###*layer*.`position([position])`
 _version added 0.1_
-####**Description**: get/set the `position` of the layer in the layer stack of the map
+####**Description**: get/set the `position` of the layer in the layer
+stack of the map
 
 **position** an integer setting the new position of the layer in the layer stack
 
 >Returns: position (integer)
 
 
-The `.position()` method allows us to change the position of the layer in the layer
-stack. It will take into account the hidden baselayer that is used by OpenLayers.
-The lowest layer is position 0.
-If no position is given, it will return the current postion.
+The `.position()` method allows us to change the position of the layer in the
+layer stack. It will take into account the hidden baselayer that is used by
+OpenLayers. The lowest layer is position 0. If no position is given, it will
+return the current postion.
 
 
      var pos =  layer.position(); //get position of layer in the layer stack
@@ -449,14 +476,16 @@ If no position is given, it will return the current postion.
 _version added 0.1_
 ####**Description**: move the layer up in the layer stack of the map
 
-**delta** the amount of layers the layer has to move up in the layer stack (default 1)
+**delta** the amount of layers the layer has to move up in the layer
+stack (default 1)
 
 >Returns: layer (MapQuery.Layer)
 
 
 The `.up()` method is a shortcut method for `.position(pos)` which makes
-it easier to move a layer up in the layerstack relative to its current position.
-It takes an integer and will move the layer up the number of places given.
+it easier to move a layer up in the layerstack relative to its current
+position. It takes an integer and will move the layer up the number of places
+given.
 
 
 
@@ -517,8 +546,10 @@ If no opacity is given, it will return the current opacity.
  */
     opacity: function(opac) {
          if (opac===undefined) {
-            // this.olLayer.opacity can be null if never set so return the visibility
-            var value = this.olLayer.opacity ? this.olLayer.opacity : this.olLayer.getVisibility();
+            // this.olLayer.opacity can be null if never
+	    // set so return the visibility
+            var value = this.olLayer.opacity ?
+		    this.olLayer.opacity : this.olLayer.getVisibility();
             return value;
         }
         else {
@@ -551,9 +582,11 @@ $.extend($.MapQuery.Layer, {
 _version added 0.1_
 ####**Description**: create a Bing maps layer
 
-**view** a string ['road','hybrid','satellite'] to define which Bing maps layer to use (default road)   
-**key** Bing Maps API key for your application. Get you own at http://bingmapsportal.com/    
-**label** string with the name of the layer 
+**view** a string ['road','hybrid','satellite'] to define which Bing maps
+layer to use (default road)   
+**key** Bing Maps API key for your application. Get you own at
+http://bingmapsportal.com/ 
+**label** string with the name of the layer
 
 
       layers:[{
@@ -597,12 +630,13 @@ _version added 0.1_
 _version added 0.1_
 ####**Description**: create a Google maps layer
 
-**view** a string ['road','hybrid','satellite'] to define which Google maps layer to use (default road)    
+**view** a string ['road','hybrid','satellite'] to define which Google maps
+layer to use (default road)
 **label** string with the name of the layer
 
 
 *Note* you need to include the google maps v3 API in your application by adding
-`<script src="http://maps.google.com/maps/api/js?v=3.5&amp;sensor=false" type="text/javascript"></script>`
+`<script src="http://maps.google.com/maps/api/js?v=3.5&amp;sensor=false"type="text/javascript"></script>`
 
 
       layers:[{
@@ -660,10 +694,10 @@ _version added 0.1_
 ####**Description**: create a JSON layer
 
 **url** a string pointing to the location of the JSON data
-**strategies** a string ['bbox','cluster','filter','fixed','paging','refresh','save'] 
-stating which update strategy should be used (see also http://dev.openlayers.org/apidocs/files/OpenLayers/Strategy-js.html)
-(default fixed)   
-**projection** a string with the projection of the JSON data (default EPSG:4326)    
+**strategies** a string ['bbox','cluster','filter','fixed','paging','refresh','save']
+stating which update strategy should be used (default fixed)
+(see also http://dev.openlayers.org/apidocs/files/OpenLayers/Strategy-js.html)
+**projection** a string with the projection of the JSON data (default EPSG:4326)
 **styleMap** {object} the style to be used to render the JSON data    
 **label** string with the name of the layer
 
@@ -685,19 +719,26 @@ stating which update strategy should be used (see also http://dev.openlayers.org
                 if(o.strategies.hasOwnProperty(i)) {
                     switch(o.strategies[i].toLowerCase()) {
                     case 'bbox':
-                        strategies.push(new OpenLayers.Strategy.BBOX()); break;
+                        strategies.push(new OpenLayers.Strategy.BBOX());
+		       	break;
                     case 'cluster':
-                        strategies.push(new OpenLayers.Strategy.Cluster()); break;
+                        strategies.push(new OpenLayers.Strategy.Cluster());
+		       	break;
                     case 'filter':
-                        strategies.push(new OpenLayers.Strategy.Filter()); break;
+                        strategies.push(new OpenLayers.Strategy.Filter());
+		       	break;
                     case 'fixed':
-                        strategies.push(new OpenLayers.Strategy.Fixed()); break;
+                        strategies.push(new OpenLayers.Strategy.Fixed());
+		       	break;
                     case 'paging':
-                        strategies.push(new OpenLayers.Strategy.Paging()); break;
+                        strategies.push(new OpenLayers.Strategy.Paging());
+		       	break;
                     case 'refresh':
-                        strategies.push(new OpenLayers.Strategy.Refresh()); break;
+                        strategies.push(new OpenLayers.Strategy.Refresh());
+		       	break;
                     case 'save':
-                        strategies.push(new OpenLayers.Strategy.Save()); break;
+                        strategies.push(new OpenLayers.Strategy.Save());
+		       	break;
                     }
                 }
             }
@@ -757,8 +798,8 @@ _version added 0.1_
 
 **url** a string pointing to the location of the WMS service
 **layers** a string with the name of the WMS layer(s)
-**format** a string with format of the WMS image (default image/jpeg)    
-**transparent** a boolean for requesting images with transparency    
+**format** a string with format of the WMS image (default image/jpeg)
+**transparent** a boolean for requesting images with transparency
 **label** string with the name of the layer
 
 
@@ -867,10 +908,14 @@ $.fn.mapQuery.defaults = {
                     }
                 }),
                 new OpenLayers.Control.ArgParser(),
-                new OpenLayers.Control.Attribution()
+                new OpenLayers.Control.Attribution(),
+		new OpenLayers.Control.KeyboardDefaults()
             ],
             format: 'image/png',
-            maxExtent: [-128 * 156543.0339, -128 * 156543.0339, 128 * 156543.0339, 128 * 156543.0339],
+            maxExtent: [-128*156543.0339,
+	    		-128*156543.0339,
+			128*156543.0339,
+			128*156543.0339],
             maxResolution: 156543.0339,
             numZoomLevels: 19,
             projection: 'EPSG:900913',
@@ -882,7 +927,8 @@ $.fn.mapQuery.defaults = {
     layer: {
         all: {
             isBaseLayer: false,
-            displayOutsideMaxExtent: false  //in general it is kinda pointless to load tiles outside a maxextent
+	    //in general it is kinda pointless to load tiles outside a maxextent
+            displayOutsideMaxExtent: false
         },
         bing: {
             transitionEffect: 'resize',
