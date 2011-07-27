@@ -660,7 +660,7 @@ layer to use (default road)
                     view = google.maps.MapTypeId.SATELLITE; break;
             }
             return {
-                layer: new OpenLayers.Layer.GoogleNG({type:view}),
+                layer: new OpenLayers.Layer.Google({type:view}),
                 options: o
             };
         },
