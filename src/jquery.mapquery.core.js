@@ -909,13 +909,13 @@ $.fn.mapQuery.defaults = {
                 }),
                 new OpenLayers.Control.ArgParser(),
                 new OpenLayers.Control.Attribution(),
-        new OpenLayers.Control.KeyboardDefaults()
+                new OpenLayers.Control.KeyboardDefaults()
             ],
             format: 'image/png',
             maxExtent: [-128*156543.0339,
                 -128*156543.0339,
-            128*156543.0339,
-            128*156543.0339],
+                128*156543.0339,
+                128*156543.0339],
             maxResolution: 156543.0339,
             numZoomLevels: 19,
             projection: 'EPSG:900913',
