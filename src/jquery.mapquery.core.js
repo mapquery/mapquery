@@ -219,7 +219,7 @@ this will take precedent when conflicting with any of the above values
 **projection** the projection the coordinates are in, default is
 the displayProjection
 
->Returns: {position: [x,y], zoom: z<int>, box: [llx,lly,urx,ury]}
+>Returns: {position: [x,y], zoom: z(int), box: [llx,lly,urx,ury]}
 
 
 The `.center()` method allows us to move to map to a specific zoom level,
