@@ -66,7 +66,7 @@ $.widget("mapQuery.mqZoomButtons", {
 
         $(".mq-zoombuttons-plus").click(function(){
             //get the latest numzoomlevels and zoom from the map,
-	    //in case something has changed in the mean time
+        //in case something has changed in the mean time
             numzoomlevels = map.options.numZoomLevels;
             zoom = map.center().zoom;
             if(zoom<numzoomlevels){ map.center({zoom:zoom+1});}
@@ -77,7 +77,7 @@ $.widget("mapQuery.mqZoomButtons", {
         });
         $(".mq-zoombuttons-minus").click(function(){
             //get the latest zoom from the map, in case
-	    //something has changed in the mean time
+        //something has changed in the mean time
             zoom = map.center().zoom;
             if(zoom>0){map.center({zoom:zoom-1});}
         });

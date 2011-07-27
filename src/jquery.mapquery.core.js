@@ -73,7 +73,7 @@ $.MapQuery.Map = function(element, options) {
     //not we need to change it to displayProjection
     this.maxExtent = this.options.maxExtent;
     this.olMapOptions.maxExtent = new OpenLayers.Bounds(
-	this.maxExtent[0],this.maxExtent[1],this.maxExtent[2],this.maxExtent[3]);
+    this.maxExtent[0],this.maxExtent[1],this.maxExtent[2],this.maxExtent[3]);
 
 
     OpenLayers.IMAGE_RELOAD_ATTEMPTS = 3;
@@ -247,8 +247,8 @@ extent from the map. The coordinates are returned in displayProjection.
         var box;
         if(options && options.projection) {
             sourceProjection = options.projection.CLASS_NAME ===
-		    'OpenLayers.Projection' ? options.projection :
-		    new OpenLayers.Projection(options.projection);
+            'OpenLayers.Projection' ? options.projection :
+            new OpenLayers.Projection(options.projection);
         } else {
             var displayProjection = this.olMap.displayProjection;
             if(!displayProjection) {
@@ -256,8 +256,8 @@ extent from the map. The coordinates are returned in displayProjection.
                 sourceProjection = new OpenLayers.Projection('EPSG:4326');
             } else {
                 sourceProjection = displayProjection.CLASS_NAME ===
-			'OpenLayers.Projection' ? displayProjection :
-			new OpenLayers.Projection(displayProjection);
+            'OpenLayers.Projection' ? displayProjection :
+            new OpenLayers.Projection(displayProjection);
             }
         }
 
@@ -285,7 +285,7 @@ extent from the map. The coordinates are returned in displayProjection.
         if (options.box!==undefined) {
             mapProjection = this.olMap.getProjectionObject();
             box = new OpenLayers.Bounds(
-		options.box[0], options.box[1],options.box[2], options.box[3]);
+        options.box[0], options.box[1],options.box[2], options.box[3]);
             if (!mapProjection.equals(sourceProjection)) {
                 box.transform(sourceProjection,mapProjection);
             }
@@ -547,9 +547,9 @@ If no opacity is given, it will return the current opacity.
     opacity: function(opac) {
          if (opac===undefined) {
             // this.olLayer.opacity can be null if never
-	    // set so return the visibility
+        // set so return the visibility
             var value = this.olLayer.opacity ?
-		    this.olLayer.opacity : this.olLayer.getVisibility();
+            this.olLayer.opacity : this.olLayer.getVisibility();
             return value;
         }
         else {
@@ -720,25 +720,25 @@ stating which update strategy should be used (default fixed)
                     switch(o.strategies[i].toLowerCase()) {
                     case 'bbox':
                         strategies.push(new OpenLayers.Strategy.BBOX());
-		       	break;
+                   break;
                     case 'cluster':
                         strategies.push(new OpenLayers.Strategy.Cluster());
-		       	break;
+                   break;
                     case 'filter':
                         strategies.push(new OpenLayers.Strategy.Filter());
-		       	break;
+                   break;
                     case 'fixed':
                         strategies.push(new OpenLayers.Strategy.Fixed());
-		       	break;
+                   break;
                     case 'paging':
                         strategies.push(new OpenLayers.Strategy.Paging());
-		       	break;
+                   break;
                     case 'refresh':
                         strategies.push(new OpenLayers.Strategy.Refresh());
-		       	break;
+                   break;
                     case 'save':
                         strategies.push(new OpenLayers.Strategy.Save());
-		       	break;
+                   break;
                     }
                 }
             }
@@ -909,13 +909,13 @@ $.fn.mapQuery.defaults = {
                 }),
                 new OpenLayers.Control.ArgParser(),
                 new OpenLayers.Control.Attribution(),
-		new OpenLayers.Control.KeyboardDefaults()
+        new OpenLayers.Control.KeyboardDefaults()
             ],
             format: 'image/png',
             maxExtent: [-128*156543.0339,
-	    		-128*156543.0339,
-			128*156543.0339,
-			128*156543.0339],
+                -128*156543.0339,
+            128*156543.0339,
+            128*156543.0339],
             maxResolution: 156543.0339,
             numZoomLevels: 19,
             projection: 'EPSG:900913',
@@ -927,7 +927,7 @@ $.fn.mapQuery.defaults = {
     layer: {
         all: {
             isBaseLayer: false,
-	    //in general it is kinda pointless to load tiles outside a maxextent
+        //in general it is kinda pointless to load tiles outside a maxextent
             displayOutsideMaxExtent: false
         },
         bing: {

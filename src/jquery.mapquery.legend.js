@@ -63,9 +63,9 @@ It will return an error message which can be used to notify the user.
         var maxExtent = this.options.maxExtent;
         if(maxExtent!==undefined) {
             var mapBounds = new OpenLayers.Bounds(
-		center.box[0],center.box[1],center.box[2],center.box[3]);
+        center.box[0],center.box[1],center.box[2],center.box[3]);
             var layerBounds = new OpenLayers.Bounds(
-		maxExtent[0],maxExtent[1],maxExtent[2],maxExtent[3]);
+        maxExtent[0],maxExtent[1],maxExtent[2],maxExtent[3]);
             var inside = layerBounds.containsBounds(mapBounds, true);
             this.options.legend.msg = inside?'':LEGEND_ERRORS[2];
         }
@@ -77,9 +77,9 @@ It will return an error message which can be used to notify the user.
         var maxZoom = this.options.maxZoom;
         var minZoom = this.options.minZoom;
         this.options.legend.msg=(
-		maxZoom!==undefined&&maxZoom<zoom)? LEGEND_ERRORS[0]:'';
+        maxZoom!==undefined&&maxZoom<zoom)? LEGEND_ERRORS[0]:'';
         this.options.legend.msg=(
-		minZoom!==undefined&&minZoom>zoom)? LEGEND_ERRORS[1]:'';
+        minZoom!==undefined&&minZoom>zoom)? LEGEND_ERRORS[1]:'';
     }
 
 });

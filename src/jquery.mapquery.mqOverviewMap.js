@@ -61,10 +61,10 @@ $.widget("mapQuery.mqOverviewMap", {
         var map;
         var self = this;
         var element = this.element;
-	//TODO smo20110620 make this configurable
+    //TODO smo20110620 make this configurable
         var id = 'mqOverviewMap-dialog';
 
-	//get the mapquery object
+    //get the mapquery object
         map = $(this.options.map).data('mapQuery');
 
         this.element.addClass('ui-widget  ui-helper-clearfix ' +
@@ -82,44 +82,44 @@ $.widget("mapQuery.mqOverviewMap", {
             position: this.options.position,
             resizeStop: function (event, ui) {
                 $('.olMap', this).width($(this).width());
-	       	$('.olMap', this).height($(this).height());
+               $('.olMap', this).height($(this).height());
             },
             close:function(event,ui){
                  $('.mq-overviewmap-close').removeClass(
-			'mq-overviewmap-close ui-icon-arrowthick-1-se').addClass(
-			'mq-overviewmap-open ui-icon-arrowthick-1-nw');
+            'mq-overviewmap-close ui-icon-arrowthick-1-se').addClass(
+            'mq-overviewmap-open ui-icon-arrowthick-1-nw');
             }
 
         });
 
         var overviewmapsize = {
-		w: $(dialogElement).width(),
-		h: $(dialogElement).height() };
+        w: $(dialogElement).width(),
+        h: $(dialogElement).height() };
         var mapOptions = map.olMapOptions;
         //remove the controls, otherwise you end up with recursing events
         delete mapOptions.controls;
         // use the lowest layer of the map as overviewmap
         // TODO: make the layer configurable
         var overview = new OpenLayers.Control.OverviewMap(
-		{div: document.getElementById(id),size:overviewmapsize,
-			mapOptions:mapOptions,layers:[
-				map.layers().reverse()[0].olLayer.clone()]});
+        {div: document.getElementById(id),size:overviewmapsize,
+            mapOptions:mapOptions,layers:[
+                map.layers().reverse()[0].olLayer.clone()]});
         map.olMap.addControl(overview);
 
         // remove OpenLayers blue border around overviewmap
         $('.olControlOverviewMapElement', dialogElement).removeClass(
-		'olControlOverviewMapElement');
+        'olControlOverviewMapElement');
 
         element.delegate('.mq-overviewmap-close', 'click', function() {
             $(this).removeClass(
-		'mq-overviewmap-close ui-icon-arrowthick-1-se').addClass(
-		'mq-overviewmap-open ui-icon-arrowthick-1-nw');
+        'mq-overviewmap-close ui-icon-arrowthick-1-se').addClass(
+        'mq-overviewmap-open ui-icon-arrowthick-1-nw');
             $('#'+id).dialog('close');
         });
         element.delegate('.mq-overviewmap-open', 'click', function() {
             $(this).removeClass(
-		'mq-overviewmap-open ui-icon-arrowthick-1-nw').addClass(
-		'mq-overviewmap-close ui-icon-arrowthick-1-se');
+        'mq-overviewmap-open ui-icon-arrowthick-1-nw').addClass(
+        'mq-overviewmap-close ui-icon-arrowthick-1-se');
             $('#'+id).dialog('open');
         });
     },

@@ -48,7 +48,7 @@ $.template('mqLayerManagerElement',
         '<div class="mq-layermanager-element-visibility">'+
             '<input type="checkbox" class="mq-layermanager-element-vischeckbox" id="${id}-visibility" {{if visible}}checked="${visible}"{{/if}} />'+
             '<div class="mq-layermanager-element-slider-container">'+
-	    '<div class="mq-layermanager-element-slider"></div></div>'+
+        '<div class="mq-layermanager-element-slider"></div></div>'+
         '</div>'+
         '<div class="mq-layermanager-element-legend">'+
             '{{if imgUrl}}'+
@@ -100,13 +100,13 @@ $.widget("mapQuery.mqLayerManager", {
         });
 
         //these layers are already added to the map as such won't trigger 
-	//and event, we call the draw function directly
+    //and event, we call the draw function directly
         $.each(map.layers().reverse(), function(){
            self._layerAdded(lmElement, this);
         });
 
         element.delegate('.mq-layermanager-element-vischeckbox',
-			'change',function() {
+            'change',function() {
             var checkbox = $(this);
             var element = checkbox.parents('.mq-layermanager-element');
             var layer = element.data('layer');
@@ -248,9 +248,9 @@ $.widget("mapQuery.mqLayerManager", {
 
     _layerVisible: function(widget, layer) {
         var layerElement =
-		widget.element.find('#mq-layermanager-element-'+layer.id);
+        widget.element.find('#mq-layermanager-element-'+layer.id);
         var checkbox =
-		layerElement.find('.mq-layermanager-element-vischeckbox');
+        layerElement.find('.mq-layermanager-element-vischeckbox');
         checkbox[0].checked = layer.visible();
         //update the opacity slider as well
         var slider = layerElement.find('.mq-layermanager-element-slider');
@@ -259,19 +259,19 @@ $.widget("mapQuery.mqLayerManager", {
 
         //update legend image
         layerElement.find('.mq-layermanager-element-legend img').css(
-			{visibility:layer.visible()?true:'hidden'});
+            {visibility:layer.visible()?true:'hidden'});
     },
 
     _layerOpacity: function(widget, layer) {
         var layerElement = widget.element.find(
-			'#mq-layermanager-element-'+layer.id);
+            '#mq-layermanager-element-'+layer.id);
         var slider = layerElement.find(
-			'.mq-layermanager-element-slider');
+            '.mq-layermanager-element-slider');
         slider.slider('value',layer.opacity()*100);
         //update legend image
         layerElement.find(
-			'.mq-layermanager-element-legend img').css(
-			{opacity:layer.opacity()});
+            '.mq-layermanager-element-legend img').css(
+            {opacity:layer.opacity()});
     },
 
     _moveEnd: function (widget,lmElement,map) {
