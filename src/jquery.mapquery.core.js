@@ -19,7 +19,7 @@ pairs are:
 
  * **layers** (array of MapQuery.Layer *or* MapQuery.Layer): Either an array
  * or a single layer that should be added to the map
- * **center** ({position: [x,y], zoom: z<int>, box: [llx,lly,urx,ury]}):
+ * **center** ({position: [x,y], zoom: z(int), box: [llx,lly,urx,ury]}):
  * Initially go to a certain location. At least one layer (in the `layers`
  * option) needs to be specified.
 
