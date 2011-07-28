@@ -2,10 +2,6 @@
  * full list of contributors). Published under the MIT license.
  * See https://github.com/mapquery/mapquery/blob/master/LICENSE for the
  * full text of the license. */
-<<<<<<< HEAD
-
-=======
->>>>>>> master
 (function ($) {
 /**
 # jquery.mapquery.core.js
@@ -38,11 +34,7 @@ the 'mapQuery' data object.
      var map = $('#map').mapQuery({layers:[{type:'osm'}]); //create a map with osm
 
      var mq = map.data('mapQuery'); //get the MapQuery object
-<<<<<<< HEAD
-*/
-=======
  */
->>>>>>> master
 $.MapQuery = $.MapQuery || {};
 
 /**
