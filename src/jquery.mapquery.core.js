@@ -777,14 +777,16 @@ Cloudmade
 **attribution** A string to put some attribution on the map
 
       layers:[{
-            type: 'osm',
-            url: [
-                    'http://a.tile.cloudmade.com/<yourapikey>/999/256/${z}/${x}/${y}.png',
-                    'http://b.tile.cloudmade.com/<yourapikey>/999/256/${z}/${x}/${y}.png',
-                    'http://c.tile.cloudmade.com/<yourapikey>/999/256/${z}/${x}/${y}.png'
-                ],
-            attribution: "Data &copy; 2009 <a href='http://openstreetmap.org/'>OpenStreetMap</a>. Rendering &copy; 2009 <a href='http://cloudmade.com'>CloudMade</a>."
-            }]
+        type: 'osm',
+        url: [
+          'http://a.tile.cloudmade.com/<yourapikey>/999/256/${z}/${x}/${y}.png',
+          'http://b.tile.cloudmade.com/<yourapikey>/999/256/${z}/${x}/${y}.png',
+          'http://c.tile.cloudmade.com/<yourapikey>/999/256/${z}/${x}/${y}.png'
+        ],
+        attribution: "Data &copy; 2009 <a href='http://openstreetmap.org/'>
+          OpenStreetMap</a>. Rendering &copy; 2009 
+          <a href='http://cloudmade.com'>CloudMade</a>."
+        }]
 
 */
         osm: function(options) {
