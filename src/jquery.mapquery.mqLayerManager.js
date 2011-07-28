@@ -13,7 +13,8 @@ _version added 0.1_
 
  + **options**:
   - **map**: the mapquery instance
-  - **title**: Title that will be displayed at the top of the layer manager (default: Layer Manager)
+  - **title**: Title that will be displayed at the top of the 
+  layer manager (default: Layer Manager)
 
 
 >Returns: widget
@@ -21,11 +22,11 @@ _version added 0.1_
 >Requires: jquery.mapquery.legend.js
 
 
-The mqLayerManager allows us to control the order, opacity and visibility of layers.
- We can also remove layers. It also shows the legend of the layer if available and
- the error messages provided by the legend plugin. It listens to layerchange event
- for order, transparancy and opacity changes. It listens to addlayer and removelayer
- events to keep track which layers are on the map.
+The mqLayerManager allows us to control the order, opacity and visibility
+of layers. We can also remove layers. It also shows the legend of the layer if
+available and the error messages provided by the legend plugin. It listens to
+layerchange event for order, transparancy and opacity changes. It listens to
+addlayer and removelayer events to keep track which layers are on the map.
 
 
       $('#layermanager').mqLayerManager({map:'#map'});
@@ -39,12 +40,15 @@ $.template('mqLayerManager',
 
 $.template('mqLayerManagerElement',
     '<div class="mq-layermanager-element ui-widget-content ui-corner-all" id="mq-layermanager-element-${id}">'+
-    '<div class="mq-layermanager-element-header ui-dialog-titlebar  ui-widget-header  ui-corner-all  ui-helper-clearfix"><span class="mq-layermanager-label ui-dialog-title">${label}</span>'+
-    '<a class="ui-dialog-titlebar-close ui-corner-all" href="#" role="button"><span class="ui-icon ui-icon-closethick">close</span></a></div>'+
+    '<div class="mq-layermanager-element-header ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix">'+
+    '<span class="mq-layermanager-label ui-dialog-title">${label}</span>'+
+    '<a class="ui-dialog-titlebar-close ui-corner-all" href="#" role="button">'+
+    '<span class="ui-icon ui-icon-closethick">close</span></a></div>'+
     '<div class="mq-layermanager-element-content">'+
         '<div class="mq-layermanager-element-visibility">'+
             '<input type="checkbox" class="mq-layermanager-element-vischeckbox" id="${id}-visibility" {{if visible}}checked="${visible}"{{/if}} />'+
-            '<div class="mq-layermanager-element-slider-container"><div class="mq-layermanager-element-slider"></div></div>'+
+            '<div class="mq-layermanager-element-slider-container">'+
+        '<div class="mq-layermanager-element-slider"></div></div>'+
         '</div>'+
         '<div class="mq-layermanager-element-legend">'+
             '{{if imgUrl}}'+
@@ -95,13 +99,14 @@ $.widget("mapQuery.mqLayerManager", {
             }
         });
 
-        //these layers are already added to the map as such won't trigger and event,
-        //we call the draw function directly
+        //these layers are already added to the map as such won't trigger 
+    //and event, we call the draw function directly
         $.each(map.layers().reverse(), function(){
            self._layerAdded(lmElement, this);
         });
 
-        element.delegate('.mq-layermanager-element-vischeckbox', 'change', function() {
+        element.delegate('.mq-layermanager-element-vischeckbox',
+            'change',function() {
             var checkbox = $(this);
             var element = checkbox.parents('.mq-layermanager-element');
             var layer = element.data('layer');
@@ -242,8 +247,10 @@ $.widget("mapQuery.mqLayerManager", {
     },
 
     _layerVisible: function(widget, layer) {
-        var layerElement = widget.element.find('#mq-layermanager-element-'+layer.id);
-        var checkbox = layerElement.find('.mq-layermanager-element-vischeckbox');
+        var layerElement =
+        widget.element.find('#mq-layermanager-element-'+layer.id);
+        var checkbox =
+        layerElement.find('.mq-layermanager-element-vischeckbox');
         checkbox[0].checked = layer.visible();
         //update the opacity slider as well
         var slider = layerElement.find('.mq-layermanager-element-slider');
@@ -251,15 +258,20 @@ $.widget("mapQuery.mqLayerManager", {
         slider.slider('value',value);
 
         //update legend image
-        layerElement.find('.mq-layermanager-element-legend img').css({visibility:layer.visible()?true:'hidden'});
+        layerElement.find('.mq-layermanager-element-legend img').css(
+            {visibility:layer.visible()?true:'hidden'});
     },
 
     _layerOpacity: function(widget, layer) {
-        var layerElement = widget.element.find('#mq-layermanager-element-'+layer.id);
-        var slider = layerElement.find('.mq-layermanager-element-slider');
+        var layerElement = widget.element.find(
+            '#mq-layermanager-element-'+layer.id);
+        var slider = layerElement.find(
+            '.mq-layermanager-element-slider');
         slider.slider('value',layer.opacity()*100);
         //update legend image
-        layerElement.find('.mq-layermanager-element-legend img').css({opacity:layer.opacity()});
+        layerElement.find(
+            '.mq-layermanager-element-legend img').css(
+            {opacity:layer.opacity()});
     },
 
     _moveEnd: function (widget,lmElement,map) {

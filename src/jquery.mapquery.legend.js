@@ -7,7 +7,7 @@
 #jquery.mapquery.legend.js
 A plugin on mapquery.core to add a legend to a layer. It will check if the layer
 is within a valid extent and zoom range. And if not will return an error message.
- */
+*/
 
 (function($, MQ) {
 $.extend( $.fn.mapQuery.defaults.layer.all, {
@@ -30,12 +30,13 @@ _version added 0.1_
 
 
 The `.legend()` function allows us to attach a legend image to a layer. It will
-also check if the layer is not visible due to wrong extent or zoom level. It will
-return an error message which can be used to notify the user.
+also check if the layer is not visible due to wrong extent or zoom level.
+It will return an error message which can be used to notify the user.
 
 
      var legend = layer.legend();  //get the current legend
-     layer.legend({url:'legendimage.png'}) //set the legend url to legendimage.png
+     //set the legend url to legendimage.png
+     layer.legend({url:'legendimage.png'})
 
  */
     //get/set the legend object
@@ -61,20 +62,24 @@ return an error message which can be used to notify the user.
     _checkBox: function(center){
         var maxExtent = this.options.maxExtent;
         if(maxExtent!==undefined) {
-            var mapBounds = new OpenLayers.Bounds(center.box[0],center.box[1],center.box[2],center.box[3]);
-            var layerBounds = new OpenLayers.Bounds(maxExtent[0],maxExtent[1],maxExtent[2],maxExtent[3]);
+            var mapBounds = new OpenLayers.Bounds(
+        center.box[0],center.box[1],center.box[2],center.box[3]);
+            var layerBounds = new OpenLayers.Bounds(
+        maxExtent[0],maxExtent[1],maxExtent[2],maxExtent[3]);
             var inside = layerBounds.containsBounds(mapBounds, true);
             this.options.legend.msg = inside?'':LEGEND_ERRORS[2];
         }
     },
-    //Check if the layer has a minimum or maximum zoom set and if the current zoom
-    //is outside these settings, set the legend.msg accordingly
+    //Check if the layer has a minimum or maximum zoom set and if the
+    //current zoom is outside these settings, set the legend.msg accordingly
     _checkZoom: function(center){
         var zoom = center.zoom;
         var maxZoom = this.options.maxZoom;
         var minZoom = this.options.minZoom;
-        this.options.legend.msg=(maxZoom!==undefined&&maxZoom<zoom)? LEGEND_ERRORS[0]:'';
-        this.options.legend.msg=(minZoom!==undefined&&minZoom>zoom)? LEGEND_ERRORS[1]:'';
+        this.options.legend.msg=(
+        maxZoom!==undefined&&maxZoom<zoom)? LEGEND_ERRORS[0]:'';
+        this.options.legend.msg=(
+        minZoom!==undefined&&minZoom>zoom)? LEGEND_ERRORS[1]:'';
     }
 
 });

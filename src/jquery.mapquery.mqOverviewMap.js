@@ -22,10 +22,10 @@ _version added 0.1_
 >Returns: widget
 
 
-The mqOverviewMap widget allows us to display an overview map dialog (http://jqueryui.com/demos/dialog/)
-and a toggle button. The dialog will be put on the given position see
-(http://jqueryui.com/demos/dialog/#option-position). The toggle button will be put
-in the element where the widget is attached to.
+The mqOverviewMap widget allows us to display an overview map dialog
+(http://jqueryui.com/demos/dialog/) and a toggle button. The dialog will be put
+on the given position see (http://jqueryui.com/demos/dialog/#option-position).
+The toggle button will be put in the element where the widget is attached to.
 
 
      $('#overviewmap').mqOverviewMap({
@@ -37,7 +37,7 @@ in the element where the widget is attached to.
 (function($) {
 $.template('mqOverviewMap',
     '<div class="mq-overviewmap-button ui-state-default ui-corner-all">'+
-        '<div class="mq-overviewmap-close ui-icon ui-icon-arrowthick-1-se "></div>'+
+    '<div class="mq-overviewmap-close ui-icon ui-icon-arrowthick-1-se "></div>'+
     '</div>'+
     '<div id="${id}" class="mq-overviewmap ui-widget ">'+
     '</div>');
@@ -61,9 +61,10 @@ $.widget("mapQuery.mqOverviewMap", {
         var map;
         var self = this;
         var element = this.element;
-        var id = 'mqOverviewMap-dialog'; //TODO smo20110620 make this configurable
+    //TODO smo20110620 make this configurable
+        var id = 'mqOverviewMap-dialog';
 
-        //get the mapquery object
+    //get the mapquery object
         map = $(this.options.map).data('mapQuery');
 
         this.element.addClass('ui-widget  ui-helper-clearfix ' +
@@ -80,32 +81,45 @@ $.widget("mapQuery.mqOverviewMap", {
             title: this.options.title,
             position: this.options.position,
             resizeStop: function (event, ui) {
-                $('.olMap', this).width($(this).width()); $('.olMap', this).height($(this).height());
+                $('.olMap', this).width($(this).width());
+               $('.olMap', this).height($(this).height());
             },
             close:function(event,ui){
-                 $('.mq-overviewmap-close').removeClass('mq-overviewmap-close ui-icon-arrowthick-1-se').addClass('mq-overviewmap-open ui-icon-arrowthick-1-nw');
+                 $('.mq-overviewmap-close').removeClass(
+            'mq-overviewmap-close ui-icon-arrowthick-1-se').addClass(
+            'mq-overviewmap-open ui-icon-arrowthick-1-nw');
             }
 
         });
 
-        var overviewmapsize = { w: $(dialogElement).width(), h: $(dialogElement).height() };
+        var overviewmapsize = {
+        w: $(dialogElement).width(),
+        h: $(dialogElement).height() };
         var mapOptions = map.olMapOptions;
         //remove the controls, otherwise you end up with recursing events
         delete mapOptions.controls;
         // use the lowest layer of the map as overviewmap
         // TODO: make the layer configurable
-        var overview = new OpenLayers.Control.OverviewMap( {div: document.getElementById(id),size:overviewmapsize,mapOptions:mapOptions,layers:[map.layers().reverse()[0].olLayer.clone()]});
+        var overview = new OpenLayers.Control.OverviewMap(
+        {div: document.getElementById(id),size:overviewmapsize,
+            mapOptions:mapOptions,layers:[
+                map.layers().reverse()[0].olLayer.clone()]});
         map.olMap.addControl(overview);
 
         // remove OpenLayers blue border around overviewmap
-        $('.olControlOverviewMapElement', dialogElement).removeClass ('olControlOverviewMapElement');
+        $('.olControlOverviewMapElement', dialogElement).removeClass(
+        'olControlOverviewMapElement');
 
         element.delegate('.mq-overviewmap-close', 'click', function() {
-            $(this).removeClass('mq-overviewmap-close ui-icon-arrowthick-1-se').addClass('mq-overviewmap-open ui-icon-arrowthick-1-nw');
+            $(this).removeClass(
+        'mq-overviewmap-close ui-icon-arrowthick-1-se').addClass(
+        'mq-overviewmap-open ui-icon-arrowthick-1-nw');
             $('#'+id).dialog('close');
         });
         element.delegate('.mq-overviewmap-open', 'click', function() {
-            $(this).removeClass('mq-overviewmap-open ui-icon-arrowthick-1-nw').addClass('mq-overviewmap-close ui-icon-arrowthick-1-se');
+            $(this).removeClass(
+        'mq-overviewmap-open ui-icon-arrowthick-1-nw').addClass(
+        'mq-overviewmap-close ui-icon-arrowthick-1-se');
             $('#'+id).dialog('open');
         });
     },

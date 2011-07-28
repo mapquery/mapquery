@@ -13,7 +13,7 @@ _version added 0.1_
 
  + **options**:
   - **map**: the mapquery instance
-  - **home**: boolean stating if there should be a home button added (default false)
+  - **home**: boolean stating if there should be a home button (default false)
 
 >Returns: widget
 
@@ -32,9 +32,12 @@ initial extent.
 (function($) {
 $.template('mqZoomButtons',
     '<div class="mq-zoombuttons ui-widget ui-helper-clearfix ">'+
-    '<div class="ui-state-default ui-corner-all"><div class="mq-zoombuttons-plus ui-icon ui-icon-plusthick "></div></div>'+
-    '{{if home}}<div class="ui-state-default ui-corner-all"><div class="mq-zoombuttons-home ui-icon ui-icon-home"></div></div>{{/if}}'+
-    '<div class="ui-state-default ui-corner-all"><div class="mq-zoombuttons-minus ui-icon ui-icon-minusthick"></div></div>'+
+    '<div class="ui-state-default ui-corner-all">'+
+    '<div class="mq-zoombuttons-plus ui-icon ui-icon-plusthick "></div></div>'+
+    '{{if home}}<div class="ui-state-default ui-corner-all">'+
+    '<div class="mq-zoombuttons-home ui-icon ui-icon-home"></div></div>{{/if}}'+
+    '<div class="ui-state-default ui-corner-all">'+
+    '<div class="mq-zoombuttons-minus ui-icon ui-icon-minusthick"></div></div>'+
     '</div>');
 
 $.widget("mapQuery.mqZoomButtons", {
@@ -42,7 +45,7 @@ $.widget("mapQuery.mqZoomButtons", {
         // The MapQuery instance
         map: undefined,
 
-        //Option to display a home button between the + and - button, default: false
+        //Option to display home button between the + and - button, default: false
         home: false
 
     },
@@ -62,7 +65,8 @@ $.widget("mapQuery.mqZoomButtons", {
         }).appendTo(element);
 
         $(".mq-zoombuttons-plus").click(function(){
-            //get the latest numzoomlevels and zoom from the map, in case something has changed in the mean time
+            //get the latest numzoomlevels and zoom from the map,
+        //in case something has changed in the mean time
             numzoomlevels = map.options.numZoomLevels;
             zoom = map.center().zoom;
             if(zoom<numzoomlevels){ map.center({zoom:zoom+1});}
@@ -72,7 +76,8 @@ $.widget("mapQuery.mqZoomButtons", {
             map.center(startExtent);
         });
         $(".mq-zoombuttons-minus").click(function(){
-            //get the latest zoom from the map, in case something has changed in the mean time
+            //get the latest zoom from the map, in case
+        //something has changed in the mean time
             zoom = map.center().zoom;
             if(zoom>0){map.center({zoom:zoom-1});}
         });
