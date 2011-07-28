@@ -771,11 +771,19 @@ _version added 0.1_
 ####**Description**: create an OpenStreetMap layer
 
  
-**label** string with the name of the layer
-
+**label** string with the name of the layer   
+**url** A single URL (string) or an array of URLs to OSM-like server like 
+Cloudmade   
+**attribution** A string to put some attribution on the map
 
       layers:[{
-            type: 'osm'
+            type: 'osm',
+            url: [
+                    'http://a.tile.cloudmade.com/<yourapikey>/999/256/${z}/${x}/${y}.png',
+                    'http://b.tile.cloudmade.com/<yourapikey>/999/256/${z}/${x}/${y}.png',
+                    'http://c.tile.cloudmade.com/<yourapikey>/999/256/${z}/${x}/${y}.png'
+                ],
+            attribution: "Data &copy; 2009 <a href='http://openstreetmap.org/'>OpenStreetMap</a>. Rendering &copy; 2009 <a href='http://cloudmade.com'>CloudMade</a>."
             }]
 
 */
