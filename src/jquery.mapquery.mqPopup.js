@@ -85,6 +85,11 @@ $.widget("mapQuery.mqPopup", {
         this.element.addClass('ui-dialog ui-widget ui-widget-content ' +
                               'ui-corner-all');
         map.bind("move", {widget: self, map: map}, self._onMove);
+        
+        map.bind("mqAddLayer",
+            {widget:self,map:map},
+            self._onLayerAdd);
+            
     },
     _destroy: function() {
         this.element.removeClass('ui-dialog ui-widget ui-widget-content ' +
@@ -127,6 +132,17 @@ $.widget("mapQuery.mqPopup", {
         var self = evt.data.widget;
         self.element.hide();
         self.lonLat = null;
+    },
+    _onLayerAdd: function(evt,layer) {
+        if(layer.isVector) {
+            var self = evt.data.widget;
+            layer.bind("featureselected",
+                    {widget: self, map: evt.data.map, layer: layer},
+                    self._onFeatureselected);
+            layer.bind("featureunselected",
+                    {widget: self},
+                    self._onFeatureunselected);
+        }
     },
     _onMove: function(evt, data) {
         var self = evt.data.widget;
