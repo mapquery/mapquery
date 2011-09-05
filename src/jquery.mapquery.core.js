@@ -830,7 +830,7 @@ _version added 0.1_
                 format: o.format
             };
             if(typeof o.wms_parameters != "undefined"){
-                var params = $.extend(params, o.wms_parameters);
+                params = $.extend(params, o.wms_parameters);
             }
             return {
                 layer: new OpenLayers.Layer.WMS(o.label, o.url, params, o),
