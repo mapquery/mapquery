@@ -810,6 +810,7 @@ _version added 0.1_
 **format** a string with format of the WMS image (default image/jpeg)
 **transparent** a boolean for requesting images with transparency
 **label** string with the name of the layer
+**wms_parameters** an hashtable of extra GetMap query string parameters and parameter values
 
 
       layers:[{
@@ -828,6 +829,9 @@ _version added 0.1_
                 transparent: o.transparent,
                 format: o.format
             };
+            if(typeof o.wms_parameters != "undefined"){
+                var params = $.extend(params, o.wms_parameters);
+            }
             return {
                 layer: new OpenLayers.Layer.WMS(o.label, o.url, params, o),
                 options: o
