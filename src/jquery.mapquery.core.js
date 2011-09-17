@@ -829,7 +829,7 @@ _version added 0.1_
             var params = {
                 layername: o.layer,
                 type: o.format
-            }
+            };
             return {
                 layer: new OpenLayers.Layer.TMS(label, url, params),
                 options: o
