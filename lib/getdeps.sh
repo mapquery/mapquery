@@ -10,9 +10,9 @@ ant -file tmp/jquery-jquery-ui-7b43b32/build/build.xml copy concatenate
 mv tmp/jquery-jquery-ui-7b43b32/build/dist/jquery-ui-1.9m4/ jquery
 
 # Get OpenLayers
-curl -o "download/OpenLayers-2.11-rc1.tar.gz" "http://openlayers.org/download/OpenLayers-2.11-rc1.tar.gz"  
+curl -o "download/OpenLayers-2.11.tar.gz" "http://openlayers.org/download/OpenLayers-2.11.tar.gz"  
 mkdir openlayers
-tar zxvf download/OpenLayers-2.11-rc1.tar.gz --strip 1 -C openlayers
+tar zxvf download/OpenLayers-2.11.tar.gz --strip 1 -C openlayers
 
 # Get jQuery-tmpl
 curl -o "download/jquery.tmpl.js" "http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.js"  
