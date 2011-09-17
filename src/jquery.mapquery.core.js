@@ -801,6 +801,41 @@ Cloudmade
             };
         },
 /**
+###*layer* `{type:tms}`
+_version added 0.1_
+####**Description**: create an OpenStreetMap layer
+
+ 
+ * **label** string with the name of the layer   
+ * **url** A single URL (string) or an array of URLs to the TMS end point
+ * **layer** The identifier for the <TileMap> as advertised by the service. 
+ For example, if the service advertises a <TileMap> with ‘href=”http://tms.osgeo.org/1.0.0/vmap0”’, 
+ the layer property would be set to “vmap0”.
+ * **format** The image format (default png)
+
+      layers:[{
+        type: 'tms',
+        url: 'http://tilecache.osgeo.org/wms-c/Basic.py/',
+        layer: 'basic'
+        }]
+
+*/        
+        tms: function(options) {
+            var o = $.extend(true, {}, $.fn.mapQuery.defaults.layer.all,
+                $.fn.mapQuery.defaults.layer.tms,
+                options);
+            var label = options.label || undefined;
+            var url = options.url || undefined;
+            var params = {
+                layername: o.layer,
+                type: o.format
+            }
+            return {
+                layer: new OpenLayers.Layer.TMS(label, url, params),
+                options: o
+            };
+        },
+/**
 ###*layer* `{type:wms}`
 _version added 0.1_
 ####**Description**: create a WMS layer
@@ -956,6 +991,10 @@ $.fn.mapQuery.defaults = {
         osm: {
             transitionEffect: 'resize',
             sphericalMercator: true
+        },
+        tms: {
+            transitionEffect: 'resize',
+            format: 'png'
         },
         raster: {
             // options for raster layers

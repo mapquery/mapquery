@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0;">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>MapQuery TMS example</title>
+  <link rel='StyleSheet' type='text/css' href='style/style.css'/>
+  <script src="../lib/openlayers/OpenLayers.js" type="text/javascript"></script>
+  <script src="../lib/jquery/jquery-1.4.4.js" type="text/javascript"></script>
+  <script src="../src/jquery.mapquery.core.js" type="text/javascript"></script>
+  <script type="text/javascript">
+    $(document).ready(function() {
+       //initialise mapquery with a non-spherical mercator WMS layer
+    $('#map').mapQuery({
+        maxExtent:[-180,-90,180,90], //Set the max extent of the map, this will be used to define the tileschema of the map, use .center() to zoom in to a specific area at startup
+        projection:'EPSG:4326', //Projection of your map (WGS84 in this case)
+        maxResolution:1.40625/2,
+        units:'degrees', //WGS84 uses degrees as unit, not meters
+        layers:[{ //layers to add to the map
+            type:'tms',
+            url:'http://tilecache.osgeo.org/wms-c/Basic.py/',
+            layer:'xkcd-onlinecommunities'
+            }]
+        });
+    });
+  </script>
+
+</head>
+<body>
+  <div id="map" class="map"></div>
+</body>
+</html>
