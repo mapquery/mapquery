@@ -3,6 +3,32 @@
  * See https://github.com/mapquery/mapquery/blob/master/LICENSE for the
  * full text of the license. */
 
+/**
+#jquery.mapquery.mqMousePosition.js
+The file containing the mqMousePosition Widget
+
+### *$('selector')*.`mqMousePosition([options])`
+_version added 0.1_
+####**Description**: create a widget to show the location under the mouse pointer
+
+ + **options**
+  - **map**: the mapquery instance
+  - **precision**: the number of decimals (default 2)
+  - **x**: the label for the x-coordinate (default x)
+  - **y**: the label for the y-coordinate (default y)
+
+
+>Returns: widget
+
+
+The mqMousePosition allows us to show the coordinates under the mouse pointer
+
+
+     $('#mousepointer').mqMousePointer({
+        map: '#map'
+     });
+
+ */
 (function($) {
 $.template('mqMousePosition',
     '<div class="mq-mouseposition ui-widget ui-helper-clearfix ">'+
