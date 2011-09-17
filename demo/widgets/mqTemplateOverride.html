@@ -3,9 +3,9 @@
 <head>
   <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0;">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <title>MapQuery layer manager example</title>
+  <title>MapQuery template override example</title>
   <link rel="stylesheet" href="../../lib/jquery/themes/base/jquery-ui.css" type="text/css" media="all" />
-  <link rel='StyleSheet' type='text/css' href='../style/style.css'/>
+  <link rel='StyleSheet' type='text/css' href='../style/altstyle.css'/>
   <script src="../../lib/openlayers/OpenLayers.js" type="text/javascript"></script>
   <script src="../../lib/jquery/jquery-1.4.4.js" type="text/javascript"></script>
   <script src="../../lib/jquery/jquery.tmpl.js" type="text/javascript"></script>
@@ -14,7 +14,19 @@
   <script src="../../src/jquery.mapquery.mqLayerManager.js" type="text/javascript"></script>
   <script src="../../src/jquery.mapquery.legend.js" type="text/javascript"></script>
   <script type="text/javascript">
-    $(document).ready(function() {
+      $(document).ready(function() {
+    $.template('mqLayerManager','<div class="mq-layermanager"></div>');
+    $.template('mqLayerManagerElement',
+    '<div class="mq-layermanager-element accordion-item ui-corner-all" id="mq-layermanager-element-${id}">'+
+        '<div class="mq-layermanager-element-header ui-widget-header ui-corner-all ui-helper-clearfix">'+
+            '<input type="checkbox" class="mq-layermanager-element-vischeckbox" id="${id}-visibility" {{if visible}}checked="${visible}"{{/if}} />'+    
+            '<span class="mq-layermanager-label ui-dialog-title">${label}</span>'+
+        '</div>'+
+        '<div class="mq-layermanager-element-slider-container">'+
+            '<div class="mq-layermanager-element-slider mq-layermanager-element-slider-handle"></div>' +
+        '</div>'+
+        '</div>');
+
     $('#map').mapQuery({
         layers:[{         //add layers to your map; you need to define at least one to be able to see anything on the map
             type:'osm',
@@ -30,43 +42,11 @@
             }]
         });
     $('#layermanager').mqLayerManager({map:'#map'});
-
-    //create add layer options
-    $("#addOsm").click(function() {
-        jQuery('#map').data("mapQuery").layers({
-            type:'osm',
-            label:'OpenStreetMap',
-            legend:{url:'http://www.openstreetmap.org/images/osm_logo.png'}
-            });
-        });
-    $("#addPop").click(function() {
-        jQuery('#map').data("mapQuery").layers({
-            type:'wms',
-            minZoom:2,
-            label:'Population density 2010',
-            legend:{url:'http://mapserver.edugis.nl/cgi-bin/mapserv?map=maps/edugis/cache/population.map&version=1.1.1&service=WMS&request=GetLegendGraphic&layer=Bevolkingsdichtheid_2010&format=image/png'},
-            url:'http://t1.edugis.nl/tiles/tilecache.py?map=maps/edugis/cache/population.map', //note: this is actually a tileservice and only works with the spherical mercator tileschema
-            layers:'Bevolkingsdichtheid_2010'
-            });
-        });
-    $("#addBing").click(function() {
-        jQuery('#map').data("mapQuery").layers({
-            type:'bing',
-            label: 'Bing Aerial',
-            view:'satellite',
-            key:'ArAGGPJ16xm0RXRbw27PvYc9Tfuj1k1dUr_gfA5j8QBD6yAYMlsAtF6YkVyiiLGn'
-            });
-        });
     });
   </script>
 </head>
 <body>
   <div id="map" class="map"></div>
   <div id="layermanager" class="mq-widget"></div>
-  <ul style="display:inline-block; cursor:pointer">
-      <li id="addOsm">Add OpenStreetMap</li>
-      <li id="addPop">Add Population density</li>
-      <li id="addBing">Add Bing aerial</li>
-  </ul>
 </body>
 </html>
