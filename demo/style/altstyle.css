@@ -1,0 +1,153 @@
+.map {
+  height:512px;
+  width:512px;
+  border:solid 1px black;
+  display: inline-block;
+}
+.olControlAttribution {
+    bottom:0.5em !important;
+}
+.zoom {
+  position: absolute;
+  z-index: 100000;
+  margin: 5px;
+  cursor: pointer;
+}
+.zoom .ui-icon {
+  margin: 0 4px;
+}
+.zoom .ui-corner-all{
+  margin: 2px;
+  padding: 4px 0;
+}
+#layercontrol{
+    float:right;
+    width: 320px;
+    border:solid 1px black;
+    padding: 0px;
+    background: #ececec;
+}
+.mq-widget {
+    font-size:0.6em;
+}
+#layercontrol ul{
+    padding: 0px;
+    margin: 5px;
+}
+.mq-layercontrol {    
+    margin: 2px;
+    padding:2px;
+}
+.mq-layercontrol .ui-icon {
+    margin-bottom:-2px;
+    display:inline-block;
+}
+.mq-layercontrol-label {
+    width:160px;   
+    display:inline-block;
+}
+.mq-layercontrol-visibility {
+    text-align: right;
+}
+.mq-layercontrol-delete {
+    
+}
+.mq-mouseposition {
+    display: block;
+    width: 300px;
+}
+.mq-mouseposition-coordinate {
+    display: inline-block;  
+    margin:2px;       
+}
+
+.mq-overviewmap-dialog .ui-dialog-content{
+    padding: 0.4em;
+ 
+}
+.mq-overviewmap-button {
+  margin: 2px;
+  padding: 4px ;
+   cursor: pointer;
+    margin: 5px;
+ 
+    z-index: 999;
+       bottom: 0;
+    float: right;
+    position: absolute;
+    right: 0;
+}
+
+#layermanager{
+     width: 300px;
+}
+
+#featureinfo {
+    display: inline-block;
+    min-height: 100px;
+    height: auto;
+    position: relative;
+    vertical-align: top;
+    width: 256px;
+}
+
+#featureinfo h1 {
+    margin-left: 0.5em;
+}
+
+#featureinfo p {
+    font-size: 1.5em;
+    margin-left: 1em;
+}
+
+#popup {
+    position:absolute;
+}
+#layermanager {
+    display: inline-block;
+    height: 256px;
+    position: relative;
+    vertical-align: top;
+    width: 256px;
+}
+.mq-layermanager-element {
+    display: block;
+    padding: 0px;
+    margin: 0px 0px 3px 0px;
+}
+.mq-layermanager-label {
+    float: left;
+    margin: 0.5em 16px 0.5em 0.5em;
+}
+.ui-dialog-titlebar-close{
+    height: 18px;    
+    padding: 1px;
+    float:right;
+    width: 19px;
+}
+.mq-layermanager-element-header {
+    cursor: move;
+}
+
+.mq-layermanager-element-visibility{
+    display: block;
+}
+.mq-layermanager-element-vischeckbox{
+    float: left;
+    width: 19px;
+    height: 19px;
+    margin: 7px 0px 0px 6px;
+}
+.mq-layermanager-element-slider-container {
+    display: block;
+    margin: 4px 8px 4px 8px;
+    padding: 3px;
+}
+
+.mq-zoomslider {
+    position: absolute;
+    float: left;
+    margin: 10px;
+    z-index: 10000;
+   
+}
