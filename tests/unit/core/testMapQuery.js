@@ -121,18 +121,6 @@ test("Google layer can be created (works only with dev-build of openlayers)", fu
     ok(map.layersList.mapquery0.olLayer.type=='roadmap',
        'Google layer was loaded (type is roadmap)');
 });
-test("TMS can be created", function() {
-    expect(1);
-
-    var map = $('#map_tms').mapQuery().data('mapQuery');
-    map.layers({
-        type: 'tms',
-        url:'http://tilecache.osgeo.org/wms-c/Basic.py/',
-        layer:'xkcd-onlinecommunities'
-    });
-    ok(map.layersList.mapquery0.olLayer.type=='roadmap',
-       'Google layer was loaded (type is roadmap)');
-});
 test("Bing layer can be created", function() {
     expect(1);
 
