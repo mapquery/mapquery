@@ -11,6 +11,7 @@ asyncTest("Popup is shown", 1, function() {
             label: 'Polygons',
             url: '../../../demo/data/poly.json'
         },
+        projection:'EPSG:4326',
         maxExtent: [0, -90, 160, 90]
     });
     var popup = $('#popup1').mqPopup({
@@ -34,7 +35,7 @@ asyncTest("Popup is shown", 1, function() {
 });
 
 asyncTest("Popup outside of the map moves in", 1, function() {
-    var map = $('#map2').mapQuery({maxExtent: [0, -90, 160, 90]});
+    var map = $('#map2').mapQuery({projection:'EPSG:4326',maxExtent: [0, -90, 160, 90]});
     var mq = map.data('mapQuery');
     mq.layers({
         type: 'JSON',
@@ -52,7 +53,7 @@ asyncTest("Popup outside of the map moves in", 1, function() {
                     feature.geometry.getCentroid().getBounds()
                     .getCenterLonLat());
             start();
-            ok(pos1.x != pos2.x && pos1.y != pos2.y, 'Map moved');
+            ok(pos1.x != pos2.x || pos1.y != pos2.y, 'Map moved');
 
             mq.destroy();
             $('#popup2').empty();
@@ -69,7 +70,7 @@ asyncTest("Popup outside of the map moves in", 1, function() {
 });
 
 asyncTest("Hide popup when moved outside of map (and show it again)", 2, function() {
-    var map = $('#map3').mapQuery({maxExtent: [0, -120, 160, 90]});
+    var map = $('#map3').mapQuery({projection:'EPSG:4326',maxExtent: [0, -120, 160, 90]});
     var mq = map.data('mapQuery');
     mq.layers({
         type: 'JSON',
@@ -117,6 +118,7 @@ asyncTest("Unselect feature when popup is closed", 2, function() {
             label: 'Polygons',
             url: '../../../demo/data/poly.json'
         },
+        projection:'EPSG:4326',
         maxExtent: [0, -90, 160, 90]
     });
     var popup = $('#popup4').mqPopup({
@@ -149,6 +151,7 @@ asyncTest("Close popup when feature gets unselected", 2, function() {
             label: 'Polygons',
             url: '../../../demo/data/poly.json'
         },
+        projection:'EPSG:4326',
         maxExtent: [0, -90, 160, 90]
     });
     var popup = $('#popup5').mqPopup({
