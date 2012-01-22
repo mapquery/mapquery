@@ -74,6 +74,8 @@ $.MapQuery.Map = function(element, options) {
     this.olMapOptions.maxExtent = new OpenLayers.Bounds(
     this.maxExtent[0],this.maxExtent[1],this.maxExtent[2],this.maxExtent[3]);
 
+    this.projection = this.options.projection;
+    this.displayProjection = this.options.displayProjection;
 
     OpenLayers.IMAGE_RELOAD_ATTEMPTS = 3;
     OpenLayers.Util.onImageLoadErrorColor = "transparent";
@@ -239,7 +241,7 @@ extent from the map. The coordinates are returned in displayProjection.
  */
     center: function (options) {
         var position;
-        var mapProjection;
+        var mapProjection = new OpenLayers.Projection(this.projection);
         // Determine source projection
         var sourceProjection = null;
         var zoom;
@@ -249,7 +251,7 @@ extent from the map. The coordinates are returned in displayProjection.
             'OpenLayers.Projection' ? options.projection :
             new OpenLayers.Projection(options.projection);
         } else {
-            var displayProjection = this.olMap.displayProjection;
+            var displayProjection = this.displayProjection;
             if(!displayProjection) {
                 // source == target
                 sourceProjection = new OpenLayers.Projection('EPSG:4326');
@@ -265,8 +267,6 @@ extent from the map. The coordinates are returned in displayProjection.
             position = this.olMap.getCenter();
             zoom = this.olMap.getZoom();
             box = this.olMap.getExtent();
-            mapProjection = this.olMap.getProjectionObject();
-
 
             if (!mapProjection.equals(sourceProjection)) {
                 position.transform(mapProjection, sourceProjection);
@@ -282,9 +282,8 @@ extent from the map. The coordinates are returned in displayProjection.
 
         // Zoom to the extent of the box
         if (options.box!==undefined) {
-            mapProjection = this.olMap.getProjectionObject();
             box = new OpenLayers.Bounds(
-        options.box[0], options.box[1],options.box[2], options.box[3]);
+                options.box[0], options.box[1],options.box[2], options.box[3]);
             if (!mapProjection.equals(sourceProjection)) {
                 box.transform(sourceProjection,mapProjection);
             }
@@ -299,7 +298,6 @@ extent from the map. The coordinates are returned in displayProjection.
         else {
             position = new OpenLayers.LonLat(options.position[0],
                                              options.position[1]);
-            mapProjection = this.olMap.getProjectionObject();
             if (!mapProjection.equals(sourceProjection)) {
                 position.transform(sourceProjection, mapProjection);
             }
