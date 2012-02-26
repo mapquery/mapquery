@@ -190,6 +190,8 @@ to the map.
         }
         this._updateSelectFeatureControl(this.vectorLayers);
         this.events.trigger('mqAddLayer',layer);
+
+        this.olMap.addLayer(layer.olLayer);
         return layer;
     },
     // Creates a new unique ID for a layer
@@ -378,8 +380,6 @@ $.MapQuery.Layer = function(map, id, options) {
         };
     });
     this.olLayer.events.on(events);
-
-    this.map.olMap.addLayer(this.olLayer);
 };
 
 $.MapQuery.Layer.prototype = {
