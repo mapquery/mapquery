@@ -339,4 +339,62 @@ test("Layer events are bound to the map object as well", 2, function() {
         start();
     });
 });
+
+test('The addlayer event is triggered after MapQuery did the heavy lifting', 2, function() {
+    var mq = $('#map').mapQuery().data('mapQuery');
+
+    mq.bind('addlayer', function(evt, layer) {
+        // Check if the layer was added to the SelectFeature Control, to make
+        // sure MapQuery did what it is supposed to do
+        var wasAdded = false;
+        for (var i=0; i<mq.selectFeatureControl.layers.length; i++) {
+            if(mq.selectFeatureControl.layers[i].id===layer.olLayer.id) {
+                wasAdded = true;
+                break;
+            }
+        }
+        ok(wasAdded, 'layer was added correctly prior to the event');
+    });
+
+    mq.layers({
+        type: 'JSON',
+        label: 'Polygons',
+        url: '../../../demo/data/poly.json'
+    });
+    mq.layers({
+        type: 'JSON',
+        label: 'Polygons2',
+        url: '../../../demo/data/poly.json'
+    });
+});
+
+test('The removelayer event is triggered after MapQuery did the heavy lifting', 1, function() {
+    var mq = $('#map').mapQuery().data('mapQuery');
+
+    mq.bind('removelayer', function(evt, layer) {
+        // Check if the layer was removed from the SelectFeature Control, to
+        // make sure MapQuery did what it is supposed to do
+        var wasRemoved = true;
+        for (var i=0; i<mq.selectFeatureControl.layers.length; i++) {
+            if(mq.selectFeatureControl.layers[i].id===layer.olLayer.id) {
+                wasRemoved = false;
+                break;
+            }
+        }
+        ok(wasRemoved, 'layer was removed correctly prior to the event');
+    });
+
+    var layer1 = mq.layers({
+        type: 'JSON',
+        label: 'Polygons',
+        url: '../../../demo/data/poly.json'
+    });
+    var layer2 = mq.layers({
+        type: 'JSON',
+        label: 'Polygons2',
+        url: '../../../demo/data/poly.json'
+    });
+
+    layer2.remove();
+});
 })(jQuery);

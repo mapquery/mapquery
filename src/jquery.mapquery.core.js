@@ -98,14 +98,26 @@ $.MapQuery.Map = function(element, options) {
 
     // To bind and trigger jQuery events
     this.events = $({});
-    // create triggers for all OpenLayers map events
-    var events = {};
-    $.each(this.olMap.EVENT_TYPES, function(i, evt) {
-        events[evt] = function() {
-            self.events.trigger(evt, arguments);
-        };
+
+    // Triggering the event is the same for the `addlayer` and the
+    // `removelayer` event
+    var addRemoveLayer = function(data) {
+        // A Vector.RootContainer layer is only create by the
+        // SelectFeature Control. Those events get ignored by MapQuery.
+        if (data.layer.CLASS_NAME===
+            'OpenLayers.Layer.Vector.RootContainer') {
+            return;
+        }
+        // Get the MapQuery layer
+        var layer = this.layersList[data.layer.mapQueryId];
+        this.trigger(data.type, layer);
+    };
+
+    this.olMap.events.on({
+        scope: this,
+        addlayer: addRemoveLayer,
+        removelayer: addRemoveLayer
     });
-    this.olMap.events.on(events);
 
     // Add layers to the map
     if (this.options.layers!==undefined) {
@@ -189,7 +201,6 @@ to the map.
             this.vectorLayers.push(id);
         }
         this._updateSelectFeatureControl(this.vectorLayers);
-        this.events.trigger('mqAddLayer',layer);
 
         this.olMap.addLayer(layer.olLayer);
         return layer;
@@ -204,10 +215,11 @@ to the map.
             return elem != id;
         });
         this._updateSelectFeatureControl(this.vectorLayers);
-        this.events.trigger('mqRemoveLayer',id);
-        delete this.layersList[id];
+        this.olMap.removeLayer(this.layersList[id].olLayer);
+
         // XXX vmx: shouldn't the layer be destroyed() properly?
-        return this;
+
+        return id;
     },
 /**
  ###*map*.`center([options])`
@@ -329,6 +341,27 @@ extent from the map. The coordinates are returned in displayProjection.
     one: function() {
         this.events.one.apply(this.events, arguments);
     },
+/**
+###*map*.`trigger(name [, parameters])`
+_version added 0.2_
+####**Description**: triggers an event on the map
+
+ * **name** the name of the event
+ * **parameters** additional parameters that will be passed on with the event
+
+>Returns map (MapQuery.Map)
+
+To subscribe to the triggered events, you need to bind to the mapuuu.
+
+     map.bind('myEvent', function(evt) {
+         console.log('the values are: ' + evt.data[0] + ' and ' + evt.data[1])
+     });
+     map.trigger('myEvent', 'some', 'values');
+*/
+    trigger: function() {
+        this.events.trigger.apply(this.events, arguments);
+        return this;
+    },
     destroy: function() {
         this.olMap.destroy();
         this.element.removeData('mapQuery');
@@ -371,15 +404,10 @@ $.MapQuery.Layer = function(map, id, options) {
     this.olLayer = res.layer;
     this.options = res.options;
 
-    // create triggers for all OpenLayers layer events
-    var events = {};
-    $.each(this.olLayer.EVENT_TYPES, function(i, evt) {
-        events[evt] = function() {
-            self.events.trigger(evt, arguments);
-            self.map.events.trigger(evt, arguments);
-        };
-    });
-    this.olLayer.events.on(events);
+    // To be able to retreive the MapQuery layer, when we only have the
+    // OpenLayers layer available. For example on the layeradded event.
+    // NOTE vmx 2012-02-26: Any nicer solution is welcome
+    this.olLayer.mapQueryId = this.id;
 };
 
 $.MapQuery.Layer.prototype = {
@@ -434,7 +462,6 @@ destroyed layer.
 
  */
     remove: function() {
-        this.map.olMap.removeLayer(this.olLayer);
         // remove references to this layer that are stored in the
         // map object
         return this.map._removeLayer(this.id);
@@ -560,6 +587,29 @@ If no opacity is given, it will return the current opacity.
     },
     one: function() {
         this.events.one.apply(this.events, arguments);
+    },
+/**
+###*layer*.`trigger(name [, parameters])`
+_version added 0.2_
+####**Description**: triggers an event on the layer and map
+
+ * **name** the name of the event
+ * **parameters** additional parameters that will be passed on with the event
+
+>Returns layer (MapQuery.Layer)
+
+The events get triggered on the layer as well as on the map. To subscribe to
+the triggered events, you can either bind to the layer or the map.
+
+     map.bind('myEvent', function(evt) {
+         console.log('the values are: ' + evt.data[0] + ' and ' + evt.data[1])
+     });
+     map.trigger('myEvent', 'some', 'values');
+*/
+    trigger: function() {
+        this.events.trigger.apply(this.events, arguments);
+        this.map.events.trigger.apply(this.map.events, arguments);
+        return this;
     }
 };
 
