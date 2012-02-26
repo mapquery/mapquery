@@ -338,9 +338,6 @@ extent from the map. The coordinates are returned in displayProjection.
     bind: function() {
         this.events.bind.apply(this.events, arguments);
     },
-    one: function() {
-        this.events.one.apply(this.events, arguments);
-    },
 /**
 ###*map*.`trigger(name [, parameters])`
 _version added 0.2_
@@ -584,9 +581,6 @@ If no opacity is given, it will return the current opacity.
     // every event gets the layer passed in
     bind: function() {
         this.events.bind.apply(this.events, arguments);
-    },
-    one: function() {
-        this.events.one.apply(this.events, arguments);
     },
 /**
 ###*layer*.`trigger(name [, parameters])`
