@@ -5,6 +5,7 @@
 
 module('mapQuery');
 
+
 test("constructor", function() {
     expect(1);
 
@@ -249,9 +250,9 @@ test("center works properly (EPSG:900913)", function() {
         // the box given, doesn't match the final one
             console.log(center.box);
 
-        /* same(center.box, [-21.962936669741, 20.514147330259, 37.753491669741,
-                        80.230575669741],
-             'Setting box only (position is right)'); */
+        // same(center.box, [-21.962936669741, 20.514147330259, 37.753491669741,
+        //                80.230575669741],
+        //     'Setting box only (position is right)');
         equals((center.position[0] == 7.8952775000002) && (center.position[1] == 50.414584408364), true,
             'Setting box only (position is right)');
 
@@ -279,6 +280,148 @@ test("center works properly (EPSG:900913)", function() {
     }
 });
 
+test('Test that bind() works', 8, function() {
+    var mq = $('#map').mapQuery().data('mapQuery');
+
+    var testFn = function() {
+        ok(true, 'custom event was triggered');
+        // using `equals` won't work here because of to much recursion
+        ok(this === mq, '`this` is map object');
+    };
+
+    mq.bind('customevent', testFn);
+
+    mq.bind('customevent-multiple-binds', testFn);
+    mq.bind('customevent-multiple-binds', testFn);
+    mq.bind('customevent-multiple-binds', testFn);
+
+    mq.bind('customevent-that was not triggered', testFn);
+
+    mq.trigger('customevent');
+    mq.trigger('customevent-multiple-binds');
+});
+
+test('Test that bind() works with data', 12, function() {
+    var mq = $('#map').mapQuery().data('mapQuery');
+
+    var testFn = function(evt) {
+        // using `equals` won't work here because of to much recursion
+        ok(this === mq, '`this` is map object');
+        equals(evt.data.contains, 'data', 'bound with data (a)');
+        equals(evt.data.really, true, 'bound with data (b)');
+    };
+
+    mq.bind('customevent-bind-data',
+            {contains: 'data', really: true}, testFn);
+
+    mq.bind('customevent-bind-data-multiple',
+            {contains: 'data', really: true}, testFn);
+    mq.bind('customevent-bind-data-multiple',
+            {contains: 'data', really: true}, testFn);
+    mq.bind('customevent-bind-data-multiple',
+            {contains: 'data', really: true}, testFn);
+
+    mq.trigger('customevent-bind-data');
+    mq.trigger('customevent-bind-data-multiple');
+});
+
+test('Test that bind() works with object syntax', 4, function() {
+    var mq = $('#map').mapQuery().data('mapQuery');
+
+    var testFn = function() {
+        ok(true, 'custom event was triggered');
+        // using `equals` won't work here because of to much recursion
+        ok(this === mq, '`this` is map object');
+    };
+
+    mq.bind({
+        customevent: testFn,
+        anothercustomevent: testFn
+    });
+
+    mq.trigger('customevent');
+    mq.trigger('anothercustomevent');
+});
+
+test('Test that bind() works with binding to multiple events', 4, function() {
+    var mq = $('#map').mapQuery().data('mapQuery');
+
+    mq.bind('customevent anothercustomevent', function() {
+        ok(true, 'custom event was triggered');
+        // using `equals` won't work here because of to much recursion
+        ok(this === mq, '`this` is map object');
+    });
+
+    mq.trigger('customevent');
+    mq.trigger('anothercustomevent');
+});
+
+// NOTE vmx 20120304: Enable this test once we use jQuery 1.7
+/*
+test('Test that bind() works with object syntax and data', 4, function() {
+    var mq = $('#map').mapQuery().data('mapQuery');
+
+    var testFn = function(evt) {
+        // using `equals` won't work here because of to much recursion
+        ok(this === mq, '`this` is map object');
+        equals(evt.data.contains, 'data', 'bound with data (a)');
+        equals(evt.data.really, true, 'bound with data (b)');
+    };
+
+    mq.bind({
+        customevent: testFn,
+        anothercustomevent: testFn
+    }, {contains: 'data', really: true});
+
+    mq.trigger('customevent');
+    mq.trigger('anothercustomevent');
+});
+*/
+
+// A duplication of the basic bind() tests on the map object are not needed,
+// as layers use the same function
+test('Test that bind() works on the layer', 2, function() {
+    var mq = $('#map').mapQuery({
+        layers: {
+            type: 'JSON',
+            label: 'Polygons',
+            url: '../../../demo/data/poly.json'
+        }
+    }).data('mapQuery');
+
+    var layer = mq.layers()[0];
+
+    layer.bind('customevent', function() {
+        ok(true, 'custom event was triggered');
+        // using `equals` won't work here because of to much recursion
+        ok(this === layer, '`this` is layer object');
+    });
+
+    layer.trigger('customevent');
+});
+
+test('Test that trigger() works', 1, function() {
+    var mq = $('#map').mapQuery().data('mapQuery');
+
+    mq.bind('customevent', function() {
+        ok(true, 'custom event was triggered');
+    });
+
+    mq.trigger('customevent');
+});
+
+test('Test that trigger() works with data', 3, function() {
+    var mq = $('#map').mapQuery().data('mapQuery');
+
+    mq.bind('customevent', function(evt, data, bool, number) {
+        equals(data, 'data', 'trigger contained data (string)');
+        ok(bool, 'trigger contained data (boolean)');
+        equals(number, 5.7, 'trigger contained data (number)');
+    });
+
+    mq.trigger('customevent', ['data', true, 5.7]);
+});
+
 asyncTest("GeoJSON layer gets loaded correctly 2", 1, function() {
     var mq = $('#map_geojson').mapQuery({
         layers: {
@@ -288,8 +431,8 @@ asyncTest("GeoJSON layer gets loaded correctly 2", 1, function() {
         }
     }).data('mapQuery');
 
-    mq.layers()[0].bind('loadend', function(evt, data) {
-        var olLayer = data.object;
+    mq.layers()[0].bind('layerloadend', function(evt) {
+        var olLayer = this.olLayer;
         equals(olLayer.features.length, 2, "Number of features is correct");
         start();
     });
@@ -305,8 +448,8 @@ asyncTest("GeoJSON layer gets loaded correctly (JSONP)", 1, function() {
     }).data('mapQuery');
     var layers = mq.layers();
 
-    mq.layers()[0].bind('loadend', function(evt, data) {
-        var olLayer = data.object;
+    mq.layers()[0].bind('layerloadend', function(evt) {
+        var olLayer = this.olLayer;
         equals(olLayer.features.length, 47, "Number of features is correct");
         start();
     });
@@ -322,10 +465,9 @@ test("Layer events are bound to the map object as well", 2, function() {
     }).data('mapQuery');
 
     var layer = mq.layers()[0];
-    layer.bind('loadend', function(evt, data) {
-        var olLayer = data.object;
-        var feature = data.object.features[0];
-        olLayer.events.triggerEvent('featureselected', {feature: feature});
+    layer.bind('layerloadend', function(evt) {
+        var feature = this.olLayer.features[0];
+        this.olLayer.events.triggerEvent('featureselected', {feature: feature});
     });
 
     stop();
@@ -397,4 +539,266 @@ test('The removelayer event is triggered after MapQuery did the heavy lifting', 
 
     layer2.remove();
 });
+
+test('Test that the preaddlayer event works', 2, function() {
+    var mq = $('#map').mapQuery().data('mapQuery');
+
+    mq.bind({
+        preaddlayer: function(evt) {
+            ok(true, 'preaddlayer event was fired');
+        },
+        addlayer: function(evt, layer) {
+            equals(mq.layers().length, 1, 'layer was added');
+        }
+    });
+
+    mq.layers({
+        type: 'WMTS',
+        label: 'naturalearth',
+        url: '../../../demo/data/wmts/1.0.0/NE1_HR_LC_SR_W_DR/default/10m'
+    });
+});
+
+test('Test that cancelling the preaddlayer event works', 2, function() {
+    var mq = $('#map').mapQuery().data('mapQuery');
+
+    mq.bind({
+        preaddlayer: function(evt) {
+            ok(true, 'preaddlayer event was fired');
+            return false;
+        },
+        addlayer: function(evt, layer) {
+            // Shouldn't be triggered
+            ok(true, 'layer should not be added, as preaddlayer ' +
+               'returned false');
+        }
+    });
+
+    mq.layers({
+        type: 'WMTS',
+        label: 'naturalearth',
+        url: '../../../demo/data/wmts/1.0.0/NE1_HR_LC_SR_W_DR/default/10m'
+    });
+
+    equals(mq.layers().length, 0, "layer wasn't added");
+});
+
+test('Test that the preremovelayer event works', 2, function() {
+    var mq = $('#map').mapQuery().data('mapQuery');
+
+    mq.bind({
+        preremovelayer: function(evt, layer) {
+            // using `equals` won't work here because of to much recursion
+            ok(mq.layers()[0] === layer, 'correct layer was included');
+        },
+        removelayer: function(evt, layer) {
+            equals(mq.layers().length, 0, 'layer was removed');
+        }
+    });
+
+    var layer = mq.layers({
+        type: 'WMTS',
+        label: 'naturalearth',
+        url: '../../../demo/data/wmts/1.0.0/NE1_HR_LC_SR_W_DR/default/10m'
+    });
+
+    layer.remove();
+});
+
+test('Test that cancelling the preremovelayer event works', 2, function() {
+    var mq = $('#map').mapQuery().data('mapQuery');
+
+    mq.bind({
+        preremovelayer: function(evt, layer) {
+            // using `equals` won't work here because of to much recursion
+            ok(mq.layers()[0] === layer, 'correct layer was included');
+            return false;
+        },
+        removelayer: function(evt, layer) {
+            // Shouldn't be triggered
+            ok(true, 'layer should not be removed, as preremovelayer ' +
+               'returned false');
+        }
+    });
+
+    var layer = mq.layers({
+        type: 'WMTS',
+        label: 'naturalearth',
+        url: '../../../demo/data/wmts/1.0.0/NE1_HR_LC_SR_W_DR/default/10m'
+    });
+
+    layer.remove();
+    equals(mq.layers().length, 1, "layer wasn't removed");
+});
+
+test('Test that all move events on the map work', 4, function() {
+    var mq = $('#map').mapQuery({
+        layers: [{
+            type: 'WMTS',
+            label: 'naturalearth',
+            url: '../../../demo/data/wmts/1.0.0/NE1_HR_LC_SR_W_DR/default/10m'
+        }],
+        center: {position: [130,-70]}
+    }).data('mapQuery');
+
+    mq.bind('movestart', function() {
+        var position = this.center().position;
+        deepEqual([parseInt(position[0]), parseInt(position[1])], [130, -70],
+               'Position is still the original one');
+    });
+
+    mq.bind('move', function() {
+        var position = this.center().position;
+        deepEqual([parseInt(position[0]), parseInt(position[1])], [20, 50],
+               'Position was updated');
+    });
+
+    mq.bind('moveend', function() {
+        var position = this.center().position;
+        deepEqual([parseInt(position[0]), parseInt(position[1])], [20, 50],
+               'Position is still the new one');
+    });
+
+    mq.bind('zoomend', function() {
+        var position = this.center().position;
+        deepEqual([parseInt(position[0]), parseInt(position[1])], [20, 50],
+               'Position is still the new one');
+    });
+
+    var position = mq.center().position;
+    deepEqual([parseInt(position[0]), parseInt(position[1])], [130, -70],
+               'Initial position was set correctly');
+    mq.center({position: [20, 50]});
+});
+
+test('Test that zoomend event on the map works', 2, function() {
+    var mq = $('#map').mapQuery({
+        layers: [{
+            type: 'WMTS',
+            label: 'naturalearth',
+            url: '../../../demo/data/wmts/1.0.0/NE1_HR_LC_SR_W_DR/default/10m'
+        }],
+        center: {zoom: 6}
+    }).data('mapQuery');
+
+
+    mq.bind('zoomend', function() {
+        equals(this.center().zoom, 3, 'zoom was updated correctly');
+    });
+
+    equals(mq.center().zoom, 6, 'Initial zoom was set correctly');
+    mq.center({zoom: 3});
+});
+
+test('Test that changelayer event works on the Map object', 3, function() {
+    var mq = $('#map').mapQuery().data('mapQuery');
+
+    mq.bind({
+        changelayer: function(evt, layer, property) {
+            switch(property) {
+            case 'position':
+                // using `equals` won't work here because of to much recursion
+                // The layer (former at position [1]) is now at the top, due
+                // to the position change
+                ok(mq.layers()[0] === layer,
+                   'correct layer for position change');
+                break;
+            case 'opacity':
+                // using `equals` won't work here because of to much recursion
+                ok(mq.layers()[0] === layer,
+                   'correct layer for opacity change');
+                break;
+            case 'visibility':
+                // using `equals` won't work here because of to much recursion
+                ok(mq.layers()[0] === layer,
+                   'correct layer for visibility change');
+                break;
+            }
+        }
+    });
+
+    var layers = mq.layers([{
+        type: 'WMTS',
+        label: 'naturalearth',
+        url: '../../../demo/data/wmts/1.0.0/NE1_HR_LC_SR_W_DR/default/10m'
+    },{
+        type: 'JSON',
+        label: 'Polygons',
+        url: '../../../demo/data/poly.json'
+    }]);
+
+    layers[0].opacity(0.4);
+    layers[0].visible(false);
+    layers[1].position(5);
+});
+
+asyncTest('Test that the load* events on the Map Object', 2, function() {
+    var mq = $('#map').mapQuery().data('mapQuery');
+
+    mq.bind('layerloadstart', function(evt, layer) {
+            ok(true, 'loadstart event was fired');
+            start();
+    });
+    stop();
+    mq.bind('layerloadend', function(evt, layer) {
+        ok(true, 'layerloadend event was fired');
+        start();
+    });
+
+    mq.layers({
+        type: 'WMTS',
+        label: 'naturalearth',
+        url: '../../../demo/data/wmts/1.0.0/NE1_HR_LC_SR_W_DR/default/10m'
+    });
+});
+
+
+// There is no test for the `addlayer` event on the layer object
+// as you currently can't bind an event before the layer was added
+
+
+test('Test that removelayer event works on the Layer object', 2, function() {
+    var mq = $('#map').mapQuery({layers: {
+        type: 'WMTS',
+        label: 'naturalearth',
+        url: '../../../demo/data/wmts/1.0.0/NE1_HR_LC_SR_W_DR/default/10m'
+    }}).data('mapQuery');
+
+    var layer = mq.layers({
+        type: 'JSON',
+        label: 'Polygons',
+        url: '../../../demo/data/poly.json'
+    }).bind('removelayer', function(evt) {
+        // using `equals` won't work here because of to much recursion
+        var layers = mq.layers();
+        equals(layers.length, 1, 'layer was removed');
+        ok(this.map.layers()[0] !== this, 'correct layer was removed');
+    }).remove();
+});
+
+// There is no test for the `loadstart` event on the layer object
+// as you currently can't bind before it gets triggered
+
+asyncTest('Test that the layerloadend event on the layer works', 1, function() {
+    var mq = $('#map').mapQuery().data('mapQuery');
+
+    var layer = mq.layers({
+        type: 'WMTS',
+        label: 'naturalearth',
+        url: '../../../demo/data/wmts/1.0.0/NE1_HR_LC_SR_W_DR/default/10m'
+    }).bind('layerloadend', function() {
+        // using `equals` won't work here because of to much recursion
+        ok(mq.layers()[1] === this, 'correct layer for layerloadend event');
+        start();
+    });
+
+    mq.layers({
+        type: 'JSON',
+        label: 'Polygons',
+        url: '../../../demo/data/poly.json'
+    });
+});
+
+
+
 })(jQuery);
