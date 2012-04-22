@@ -125,7 +125,7 @@ $.MapQuery.Map = function(element, options) {
     //  - generally spoken, the map events follow the OpeLayer events
     //  - preaddlayer, movestart, move, moveend, zoomend: no additional
     //        argument
-    //  - addlayer, preremove, removelayer: layer as additional argument
+    //  - addlayer, preremovelayer, removelayer: layer as additional argument
     //  - changelayer: layer and the property that changed as additional
     //        argument. Possible values for the property are: position (in
     //        the layer stack), opacity, visibility
@@ -228,6 +228,7 @@ intentionally break the chain instead of hiding errors subtly).
         if (this._triggerReturn('preaddlayer', [layer])===false) {
             return false;
         }
+        this.olMap.addLayer(layer.olLayer);
 
         this.layersList[id] = layer;
         if (layer.isVector) {
@@ -235,13 +236,12 @@ intentionally break the chain instead of hiding errors subtly).
         }
         this._updateSelectFeatureControl(this.vectorLayers);
 
-        this.olMap.addLayer(layer.olLayer);
         layer.trigger('addlayer');
         return layer;
     },
     // Creates a new unique ID for a layer
     _createId: function() {
-        return 'mapquery' + this.idCounter++;
+        return 'mapquery_' + this.idCounter++;
     },
     _removeLayer: function(id) {
         var layer = this.layersList[id];
@@ -402,6 +402,9 @@ extent from the map. The coordinates are returned in displayProjection.
                 fn = data;
             }
             else {
+                if (!$.isFunction(fn)) {
+                    throw('bind: you might have a typo in the function name');
+                }
                 // Callback and data given (types, data, fn), hence include
                 // the data in the argument list
                 args.push(data);
@@ -497,6 +500,20 @@ $.MapQuery.Layer = function(map, id, options) {
         simple: function(data) {
             this.trigger(data.type);
         },
+        // All OpenLayers events that are triggered by user interaction,
+        // like clicking somewhere or selecting a feature, need to be
+        // handled in a special way. Those OpenLayers events will then be
+        // triggered by MapQuery as well
+        // In case of the "featureselected" event, this means that the
+        // logic of handling the event is completely within the event
+        // handler. When ".select()" on a feature is called, it will just
+        // trigger the OpenLayers "featureselected" event, whose handler
+        // will then trigger the corresponding jQuery event.
+        includeFeature: function(data) {
+            var feature = new $.MapQuery.Feature(this, {olFeature:
+                                                        data.feature});
+            this.trigger(data.type, [feature]);
+        },
         prependLayer: function(data) {
             this.trigger('layer' + data.type);
         }
@@ -522,7 +539,9 @@ $.MapQuery.Layer = function(map, id, options) {
         scope: this,
         loadstart: this.handlers.prependLayer,
         loadend: this.handlers.prependLayer,
-        featureselected: this.handlers.simple
+        featureselected: this.handlers.includeFeature,
+        featureunselected: this.handlers.includeFeature,
+        featureremoved: this.handlers.includeFeature
     });
 
     // To be able to retreive the MapQuery layer, when we only have the
@@ -568,15 +587,15 @@ will put the layer at the bottom.
     each: function () {},
 /**
 ###*layer*.`remove()`
-_version added 0.1_
+_version added 0.2_
 ####**Description**: remove the layer from the map
 
->Returns: map (MapQuery.Map)
+>Returns: map (MapQuery.Map) or false
 
 
 The `.remove()` method allows us to remove a layer from the map.
-It returns an id to allow widgets to remove their references to the
-destroyed layer.
+It returns the `map` object if the layer was removed, or `false` if the
+removal was prevented in the preremovelayer event.
 
      var id = layer.remove(); //remove this layer
 
@@ -693,9 +712,9 @@ If no opacity is given, it will return the current opacity.
 
  */
     opacity: function(opac) {
-         if (opac===undefined) {
+        if (opac===undefined) {
             // this.olLayer.opacity can be null if never
-        // set so return the visibility
+            // set so return the visibility
             var value = this.olLayer.opacity ?
             this.olLayer.opacity : this.olLayer.getVisibility();
             return value;
@@ -737,8 +756,27 @@ came from
 */
     trigger: function() {
         var args = Array.prototype.slice.call(arguments);
-        this.events.trigger.apply(this.events, args);
+        this.events.triggerHandler.apply(this.events, args);
 
+        this._addLayerToArgs(args);
+
+        this.map.events.triggerHandler.apply(this.map.events, args);
+        return this;
+    },
+    // Basically a trigger that returns the return value of the last listener
+    _triggerReturn: function() {
+        var args = Array.prototype.slice.call(arguments);
+        var ret = this.events.triggerHandler.apply(this.events, args);
+        if (ret !== undefined) {
+            return ret;
+        }
+
+        this._addLayerToArgs(args);
+        return this.events.triggerHandler.apply(this.map.events, args);
+    },
+    // Adds the current layer to the event arguments, so that it is included
+    // in the event on the map
+    _addLayerToArgs: function(args) {
         // Add layer for the map event
         if (args.length===1) {
             args.push([this]);
@@ -746,9 +784,193 @@ came from
         else {
             args[1].unshift(this);
         }
+    },
+/**
+###*layer*.`features([options])`
+_version added 0.2.0_
+####**Description**: get/set the features of a (vector) layer
 
-        this.map.events.trigger.apply(this.map.events, args);
-        return this;
+**options** an object of key-value pairs with options to create one or
+more features
+
+>Returns: [features] (array of MapQuery.Feature)
+
+
+The `.features()` method allows us to attach features to a mapQuery layer
+object. It takes an options object with feature options. To add multiple
+features, create an array of feature options objects. If an options object
+is given, it will return the resulting feature(s). We can also use it to
+retrieve all features currently attached to the layer.
+
+
+     // add an (vector) json layer to the map
+     var jsonlayer = map.layers({type:'json'});
+     // add a feature to the layer
+     jsonlayer.features({geometry: {type: "Point", coordinates: [5.3, 7.4]}});
+     // get all features of a layer (sorted with first added feature at the beginning
+     var features = jsonlayer.features();
+*/
+    features: function(options) {
+        var self = this;
+        switch(arguments.length) {
+        // return all features
+        case 0:
+            return this._allFeatures();
+        // add new feature(s)
+        case 1:
+            if (!$.isArray(options)) {
+                return this._addFeature(options);
+            }
+            else {
+                return $.map(options, function(feature) {
+                    return self._addFeature(feature);
+                });
+            }
+            break;
+        default:
+            throw('wrong argument number');
+        }
+    },
+    _allFeatures: function() {
+        var layer = this;
+        return $.map(layer.olLayer.features, function(feature) {
+            return new $.MapQuery.Feature(layer, {olFeature: feature});
+        });
+    },
+    _addFeature: function(options) {
+        var feature = new $.MapQuery.Feature(this, options);
+        // NOTE vmx 2012-04-19: Not sure if this is a good idea, or if it would
+        //     be better to include `options` with the preaddfeature event
+        if (this._triggerReturn('preaddfeature', [feature])===false) {
+            return false;
+        }
+        this.olLayer.addFeatures(feature.olFeature);
+        this.trigger('addfeature', [feature]);
+        return feature;
+    }
+};
+
+/**
+#MapQuery.Feature
+
+The MapQuery.Feature object. It is constructed with a feature options object
+in the layer.`features([options])` function. The Feautre object is refered to
+as _feature_ in the documentation.
+
+TODO vmx 20110905: Support other geometry types than GeoJSON
+options:
+ * geometry: A GeoJSON geometry
+ * properties: Properties for the feature
+*/
+// Not in the pulic API docs: You can pass in as options:
+//  * olFeature: This will wrap the olFeature in a MapQuery feature
+$.MapQuery.Feature = function(layer, options) {
+    // The ID is the
+    this._id = layer.map._createId();
+    this.layer = layer;
+
+    // Feature already exists on the layer, it just needs to be wrapped
+    // to an MapQuery feature
+    if (options.olFeature) {
+        this.olFeature = options.olFeature;
+    }
+    else {
+        // XXX vmx 20110905: Different feature types might make sense:
+        //     (Geo)JSON, KML, WKT
+        // vmx 2012-04-14: I changed my mind quite some time ago. We should onlu
+        //     support GeoJSON and let the user easily transfrom their format
+        //     (e.g. KML) to GeoJSON, before they add a feature to the layer
+        var GeoJSON = new OpenLayers.Format.GeoJSON();
+        var geometry = GeoJSON.parseGeometry(options.geometry);
+        geometry.transform(
+            new OpenLayers.Projection(this.layer.map.displaProjection),
+            new OpenLayers.Projection(this.layer.map.projection));
+
+        this.olFeature = new OpenLayers.Feature.Vector(geometry,
+            options.properties);
+    }
+
+    // Modify the features to be more practical
+    // e.g. copy properties that should be easily accessed from the
+    // outside, out of the olLayer and to the feature level
+    this.properties = $.extend(true, {}, this.olFeature.attributes);
+    this.geometry = $.parseJSON(
+        new OpenLayers.Format.GeoJSON().write(this.olFeature.geometry));
+
+    return this;
+};
+
+$.MapQuery.Feature.prototype = {
+/**
+###*feature*.`remove()`
+_version added 0.2.0_
+####**Description**: remove the feature from the layer
+
+>Returns: layer (layer) or false
+
+
+The `.remove()` method allows us to remove a feature from the layer.
+It returns the `layer` object if the feature was removed, or `false` if the
+removal was prevented in the preremovefeature event.
+
+     // add a feature to a layer
+     var feature = layer.features({geometry: {type: "Point", coordinates: [5.3, 7.4]}});
+     // remove the feature again
+     feature.remove();
+*/
+    remove: function() {
+        if (this.layer._triggerReturn('preremovefeature', [this])===false) {
+            return false;
+        }
+        this.layer.olLayer.removeFeatures(this.olFeature);
+        // The `removefeature` event is triggered by an OpenLayes event handler
+        return this.layer;
+    },
+/**
+###*feature*.`select(exclusive)`
+_version added 0.2.0_
+####**Description**: select a feature
+
+**exclusive** (boolean, default: true) True means that all other features get
+deselectd
+
+>Returns: layer (layer)
+
+
+The `.select()` method allows us to select a feature from the layer.
+A `featureselected` will be fired.
+
+     // add a feature to a layer
+     var feature = layer.features({geometry: {type: "Point", coordinates: [5.3, 7.4]}});
+     // select the feature again
+     feature.select();
+*/
+    select: function(exclusive) {
+        if (exclusive===undefined || exclusive===true) {
+            this.layer.map.selectFeatureControl.unselectAll();
+        }
+        this.layer.map.selectFeatureControl.select(this.olFeature);
+    },
+/**
+###*feature*.`unselect()`
+_version added 0.2.0_
+####**Description**: unselect a feature
+
+>Returns: layer (layer)
+
+
+The `.unselect()` method allows us to unselect a feature from the layer.
+A `featureunselected` will be fired.
+
+     // add a feature to a layer
+     var feature = layer.features({geometry: {type: "Point", coordinates: [5.3, 7.4]}});
+     // select the feature
+     feature.select();
+     // unselect the feature again
+     feature.unselect();
+*/
+    unselect: function() {
+        this.layer.map.selectFeatureControl.unselect(this.olFeature);
     }
 };
 
@@ -897,8 +1119,8 @@ stating which update strategy should be used (default fixed)
 */
         json: function(options) {
             var o = $.extend(true, {}, $.fn.mapQuery.defaults.layer.all,
-                    $.fn.mapQuery.defaults.layer.vector,
-                    options);
+                $.fn.mapQuery.defaults.layer.vector,
+                options);
             this.isVector = true;
             var strategies = [];
             for (var i in o.strategies) {
@@ -929,26 +1151,31 @@ stating which update strategy should be used (default fixed)
                 }
             }
             var protocol;
-            // only use JSONP if we use http(s)
-            if (o.url.match(/^https?:\/\//)!==null &&
-                !$.MapQuery.util.sameOrigin(o.url)) {
-                protocol = 'Script';
-            }
-            else {
-                protocol = 'HTTP';
-            }
 
             var params = {
-                protocol: new OpenLayers.Protocol[protocol]({
-                    url: o.url,
-                    format: new OpenLayers.Format.GeoJSON()
-                }),
                 strategies: strategies,
                 projection: o.projection || 'EPSG:4326',
                 styleMap: o.styleMap
             };
+
+            if (o.url) {
+                // only use JSONP if we use http(s)
+                if (o.url.match(/^https?:\/\//)!==null &&
+                    !$.MapQuery.util.sameOrigin(o.url)) {
+                    protocol = 'Script';
+                }
+                else {
+                    protocol = 'HTTP';
+                }
+                params.protocol = new OpenLayers.Protocol[protocol]({
+                    url: o.url,
+                    format: new OpenLayers.Format.GeoJSON()
+                });
+            };
+
+            var layer = new OpenLayers.Layer.Vector(o.label, params);
             return {
-                layer: new OpenLayers.Layer.Vector(o.label, params),
+                layer: layer,
                 options: o
             };
         },
@@ -1189,7 +1416,7 @@ $.fn.mapQuery.defaults = {
         },
         vector: {
             // options for vector layers
-            strategies: ['fixed']
+            strategies: ['bbox']
         },
         wmts: {
             format: 'image/jpeg',

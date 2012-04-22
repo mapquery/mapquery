@@ -29,7 +29,7 @@ $(document).ready(function() {
     $('#popup').mqPopup({
         map: '#map',
         contents: function(feature) {
-            return '<p>' + feature.data.id + '</p>';
+            return '<p>' + feature.properties.id + '</p>';
         }
     });
 });

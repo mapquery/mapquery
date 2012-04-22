@@ -30,7 +30,7 @@ the feature.
       $('#popup').mqPopup({
         map: '#map',
         contents: function(feature) {
-            return '<p>' + feature.data.id + '</p>';
+            return '<p>' + feature.properties.id + '</p>';
         }
       });
 
@@ -64,54 +64,28 @@ $.widget("mapQuery.mqPopup", {
     _create: function() {
         var map;
         var self = this;
-        var element = this.element;
 
-        //get the mapquery object
-        map = $(this.options.map).data('mapQuery');
-
-        var layers = $.map(map.layers(), function(layer) {
-            return layer.isVector ? layer : null;
-        });
-
-        $.each(layers, function() {
-            var layer = this;
-            layer.bind("featureselected",
-                {widget: self, map: map, layer: layer},
-                self._onFeatureselected);
-            layer.bind("featureunselected",
-                {widget: self},
-                self._onFeatureunselected);
-        });
         this.element.addClass('ui-dialog ui-widget ui-widget-content ' +
                               'ui-corner-all');
-        map.bind("move", {widget: self, map: map}, self._onMove);
-        
-        map.bind("mqAddLayer",
-            {widget:self,map:map},
-            self._onLayerAdd);
-            
+
+        map = $(this.options.map).data('mapQuery');
+        map.bind('featureselected', {widget: self}, self._onFeatureselected);
+        map.bind('featureunselected', {widget: self}, self._onFeatureunselected);
+        map.bind("move", {widget: self}, self._onMove);
     },
     _destroy: function() {
         this.element.removeClass('ui-dialog ui-widget ui-widget-content ' +
                                  'ui-corner-all')
             .empty();
     },
-    _onFeatureselected: function(evt, data) {
+    _onFeatureselected: function(evt, layer, feature) {
+        var map = this;
         var self = evt.data.widget;
-        var map = evt.data.map;
-        var layer = evt.data.layer;
         var element = self.element;
-        var contents = self.options.contents.call(this, data.feature);
+        var contents = self.options.contents.call(self.options, feature);
 
         // save position so that the popup can be moved with the feature
-        self.lonLat = $.MapQuery.getFeaturePosition(data.feature);
-
-        var pixels = map.pixelsFromPosition(self.lonLat[0], self.lonLat[1]);
-        element.show(0, function() {
-            $(this).css('z-index', layer.zIndex()+1000);
-            self._setPosition(map, pixels);
-        });
-
+        self.lonLat = $.MapQuery.getFeaturePosition(feature);
 
         element.html($.tmpl('mqPopup', {
             title: self.options.title,
@@ -119,7 +93,13 @@ $.widget("mapQuery.mqPopup", {
         })).find('a.ui-dialog-titlebar-close').bind('click', function() {
             element.hide();
             self.lonLat = null;
-            layer.unselectFeature(data.feature);
+            feature.unselect();
+        });
+
+        var pixels = map.pixelsFromPosition(self.lonLat[0], self.lonLat[1]);
+        element.show(0, function() {
+            $(this).css('z-index', layer.zIndex()+1000);
+            self._setPosition(map, pixels);
         });
 
         // if the popup is outside of the view, pan in
@@ -128,25 +108,14 @@ $.widget("mapQuery.mqPopup", {
         var yoffset = element.outerHeight() - pixels[1] + self.options.padding;
         map.pan(xoffset < 0 ? -xoffset : 0, yoffset > 0 ? -yoffset : 0);
     },
-    _onFeatureunselected: function(evt, data) {
+    _onFeatureunselected: function(evt) {
         var self = evt.data.widget;
         self.element.hide();
         self.lonLat = null;
     },
-    _onLayerAdd: function(evt,layer) {
-        if(layer.isVector) {
-            var self = evt.data.widget;
-            layer.bind("featureselected",
-                    {widget: self, map: evt.data.map, layer: layer},
-                    self._onFeatureselected);
-            layer.bind("featureunselected",
-                    {widget: self},
-                    self._onFeatureunselected);
-        }
-    },
-    _onMove: function(evt, data) {
+    _onMove: function(evt) {
+        var map = this;
         var self = evt.data.widget;
-        var map = evt.data.map;
 
         if (!self.lonLat) {
             return;
@@ -170,6 +139,5 @@ $.widget("mapQuery.mqPopup", {
             collision: 'none'
         });
     }
-
 });
 })(jQuery);

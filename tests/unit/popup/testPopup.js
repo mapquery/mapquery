@@ -5,7 +5,7 @@
 module('popup');
 
 asyncTest("Popup is shown", 1, function() {
-    var map = $('#map1').mapQuery({
+    var map = $('#map').mapQuery({
         layers: {
             type: 'JSON',
             label: 'Polygons',
@@ -14,105 +14,127 @@ asyncTest("Popup is shown", 1, function() {
         projection:'EPSG:4326',
         maxExtent: [0, -90, 160, 90]
     });
-    var popup = $('#popup1').mqPopup({
+
+    // There is no easy way to determine the moment when the popup
+    // is really opened. As monkey patching doesn't work with the
+    // widget factory (does anyone know why?) we just create a new
+    // widget, that triggers an event, once the _onFeatureselected
+    // function is done.
+    $.widget("mapQuery.mqPopupTest", $.mapQuery.mqPopup, {
+        _onFeatureselected: function() {
+            this._superApply("_onFeatureselected", arguments);
+            $('#popup').trigger('justfortestingpurpose');
+        }
+    });
+
+    var popup = $('#popup').mqPopupTest({
         map: map,
         contents: function(feature) {
-            return '<p>' + feature.data.id + '</p>';
+            return '<p>' + feature.properties.id + '</p>';
         }
     });
 
     var mq = map.data('mapQuery');
-    mq.layers()[0].bind('loadend', function(evt, data) {
-        var layer = data.object;
-        var feature = data.object.features[0];
-        layer.events.triggerEvent('featureselected', {feature: feature});
+    var layer = mq.layers()[0];
+    $('#popup').bind('justfortestingpurpose', function(evt, feature) {
+        equals($('#popup').find('p').length, 1, 'Popup contains data');
         start();
-        equals($('#popup1').find('p').length, 1, 'Popup contains data');
-
-        mq.destroy();
-        popup.empty();
+    });
+    layer.bind('layerloadend', function(evt) {
+        var feature = this.features()[0];
+        feature.select();
     });
 });
 
 asyncTest("Popup outside of the map moves in", 1, function() {
-    var map = $('#map2').mapQuery({projection:'EPSG:4326',maxExtent: [0, -90, 160, 90]});
-    var mq = map.data('mapQuery');
-    mq.layers({
-        type: 'JSON',
-        label: 'Polygons',
-        url: '../../../demo/data/poly.json'
-    }).bind('loadend', function(evt, data) {
-        var layer = data.object;
-        var feature = data.object.features[1];
-        var pos1 = mq.olMap.getViewPortPxFromLonLat(
-                feature.geometry.getCentroid().getBounds().getCenterLonLat());
-        layer.events.triggerEvent('featureselected', {feature: feature});
+    var map = $('#map').mapQuery({
+        projection: 'EPSG:4326',
+        maxExtent: [0, -90, 160, 90]});
 
-        mq.one('moveend', function() {
-            var pos2 = mq.olMap.getViewPortPxFromLonLat(
-                    feature.geometry.getCentroid().getBounds()
-                    .getCenterLonLat());
-            start();
-            ok(pos1.x != pos2.x || pos1.y != pos2.y, 'Map moved');
 
-            mq.destroy();
-            $('#popup2').empty();
-      });
-    });
-
-    $('#popup2').mqPopup({
+    $('#popup').mqPopup({
         map: map,
         contents: function(feature) {
-            return '<p>' + feature.data.id + '</p>';
+            return '<p>' + feature.properties.id + '</p>';
         }
     });
 
+    var mq = map.data('mapQuery');
+    var layer = mq.layers({
+        type: 'JSON',
+        label: 'Polygons',
+        url: '../../../demo/data/poly.json'
+    });
+
+    layer.bind('layerloadend', function(evt) {
+        var feature = this.features()[1];
+        var pos1 = mq.olMap.getViewPortPxFromLonLat(
+            feature.olFeature.geometry.getCentroid().getBounds()
+                .getCenterLonLat());
+        // open popup
+        feature.select();
+
+        mq.bind('moveend', function() {
+            var pos2 = mq.olMap.getViewPortPxFromLonLat(
+                feature.olFeature.geometry.getCentroid().getBounds()
+                    .getCenterLonLat());
+            ok(pos1.x != pos2.x || pos1.y != pos2.y, 'Map moved');
+            start();
+      });
+    });
 });
 
+// NOTE vmx 2012-04-22: This test fails with OpenLayers 2.11 due to a bug
 asyncTest("Hide popup when moved outside of map (and show it again)", 2, function() {
-    var map = $('#map3').mapQuery({projection:'EPSG:4326',maxExtent: [0, -120, 160, 90]});
+    var map = $('#map').mapQuery({
+        projection: 'EPSG:4326',
+        maxExtent: [0, -120, 160, 90]
+    });
+
     var mq = map.data('mapQuery');
     mq.layers({
         type: 'JSON',
         label: 'Polygons',
         url: '../../../demo/data/poly.json'
-    }).bind('loadend', function(evt, data) {
-        var layer = data.object;
-        var feature = data.object.features[0];
+    }).bind('layerloadend', function(evt) {
+        var feature = this.features()[0];
         var pos1 = mq.olMap.getViewPortPxFromLonLat(
-                feature.geometry.getCentroid().getBounds().getCenterLonLat());
-        layer.events.triggerEvent('featureselected', {feature: feature});
+            feature.olFeature.geometry.getCentroid().getBounds()
+                .getCenterLonLat());
+        var isVisible = null;
 
-        mq.one('moveend', function() {
-            var isVisible = $('#popup3').is(':visible');
+        // open the popup
+        feature.select();
 
-            mq.one('moveend', function() {
-                start();
+        mq.bind('moveend', function() {
+            // first pan
+            if (isVisible===null) {
+                isVisible = $('#popup').is(':visible');
+
+                // pan map back down => popup should appear again
+                mq.olMap.pan(0, -160, {animate: false});
+            }
+            // second pan
+            else {
                 ok(isVisible===false, 'Popup gets hidden');
-                ok($('#popup3').is(':visible')===true, 'Popup is shown again');
-            });
-
-            // pan map back down => popup should appear again
-            mq.olMap.pan(0, -160, {animate: false});
+                ok($('#popup').is(':visible')===true, 'Popup is shown again');
+                start();
+            }
         });
 
         // pan map up a lot => popup is hidden
         mq.olMap.pan(0, 160, {animate: false});
-
-        mq.destroy();
-        $('#popup3').empty();
     });
-
-    $('#popup3').mqPopup({
+    $('#popup').mqPopup({
         map: map,
         contents: function(feature) {
-            return '<p>' + feature.data.id + '</p>';
+            return '<p>' + feature.properties.id + '</p>';
         }
     });
 });
 
 asyncTest("Unselect feature when popup is closed", 2, function() {
-    var map = $('#map4').mapQuery({
+    var map = $('#map').mapQuery({
         layers: {
             type: 'JSON',
             label: 'Polygons',
@@ -121,31 +143,29 @@ asyncTest("Unselect feature when popup is closed", 2, function() {
         projection:'EPSG:4326',
         maxExtent: [0, -90, 160, 90]
     });
-    var popup = $('#popup4').mqPopup({
+    var popup = $('#popup').mqPopup({
         map: map,
         contents: function(feature) {
-            return '<p>' + feature.data.id + '</p>';
+            return '<p>' + feature.properties.id + '</p>';
         }
     });
 
     var mq = map.data('mapQuery');
-    mq.layers()[0].bind('loadend', function(evt, data) {
-        var layer = data.object;
-        var feature = data.object.features[0];
-        layer.events.triggerEvent('featureselected', {feature: feature});
+    mq.layers()[0].bind('layerloadend', function(evt) {
+        var feature = this.features()[0];
+        // open the popup
+        feature.select();
+
+        ok($('#popup').is(':visible')===true, 'Popup is visible');
+
+        $('#popup a.ui-dialog-titlebar-close').trigger('click');
+        ok($('#popup').is(':visible')===false, 'Popup is hidden');
         start();
-        ok($('#popup4').is(':visible')===true, 'Popup is visible');
-
-        $('#popup4 a.ui-dialog-titlebar-close').trigger('click');
-        ok($('#popup4').is(':visible')===false, 'Popup is hidden');
-
-        mq.destroy();
-        popup.empty();
     });
 });
 
 asyncTest("Close popup when feature gets unselected", 2, function() {
-    var map = $('#map4').mapQuery({
+    var map = $('#map').mapQuery({
         layers: {
             type: 'JSON',
             label: 'Polygons',
@@ -154,26 +174,24 @@ asyncTest("Close popup when feature gets unselected", 2, function() {
         projection:'EPSG:4326',
         maxExtent: [0, -90, 160, 90]
     });
-    var popup = $('#popup5').mqPopup({
+    var popup = $('#popup').mqPopup({
         map: map,
         contents: function(feature) {
-            return '<p>' + feature.data.id + '</p>';
+            return '<p>' + feature.properties.id + '</p>';
         }
     });
 
     var mq = map.data('mapQuery');
-    mq.layers()[0].bind('loadend', function(evt, data) {
-        var layer = data.object;
-        var feature = data.object.features[0];
-        layer.events.triggerEvent('featureselected', {feature: feature});
+    mq.layers()[0].bind('layerloadend', function(evt) {
+        var feature = this.features()[0];
+        // open popup
+        feature.select();
+        ok($('#popup').is(':visible')===true, 'Popup is visible');
+
+        // close popup
+        feature.unselect();
+        ok($('#popup').is(':visible')===false, 'Popup is hidden');
         start();
-        ok($('#popup5').is(':visible')===true, 'Popup is visible');
-
-        layer.events.triggerEvent('featureunselected', {feature: feature});
-        ok($('#popup5').is(':visible')===false, 'Popup is hidden');
-
-        mq.destroy();
-        popup.empty();
     });
 });
 

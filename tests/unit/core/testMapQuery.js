@@ -5,6 +5,30 @@
 
 module('mapQuery');
 
+// Compares two arrays with floats (must have the same size)
+var equalsFloatArray = function (a, b, msg, precision) {
+    if (a.length!=b.length) {
+        throw('Arrays must have the same size');
+    }
+    var aFixed = [];
+    var bFixed = [];
+    for (var i=0; i<a.length; i++) {
+        aFixed.push(a[i].toFixed(precision));
+        bFixed.push(b[i].toFixed(precision));
+    }
+    same(aFixed, bFixed, msg);
+};
+
+// Convert the first array from floats to ints, to compare it with the
+// second array which is ints only
+var equalsIntArray = function (a, b, msg) {
+    var aInts = [];
+    for (var i=0; i<a.length; i++) {
+        aInts.push(parseInt(a[i].toFixed(0)));
+    }
+    same(aInts, b, msg);
+};
+
 
 test("constructor", function() {
     expect(1);
@@ -24,9 +48,9 @@ test("create only one instance", function() {
         url: 'http://vmap0.tiles.osgeo.org/wms/vmap0',
         layers: 'basic'
     });
-    equals(map.layersList.mapquery0.id, 'mapquery0', 'Layer was added');
+    equals(map.layersList.mapquery_0.id, 'mapquery_0', 'Layer was added');
     map = $('#map').mapQuery().data('mapQuery');
-    equals(map.layersList.mapquery0.id, 'mapquery0', 'Layers are still there');
+    equals(map.layersList.mapquery_0.id, 'mapquery_0', 'Layers are still there');
 });
 
 test("WMTS layer parses URL correctly", function() {
@@ -38,13 +62,13 @@ test("WMTS layer parses URL correctly", function() {
         label: 'naturalearth',
         url: '../../../demo/data/wmts/1.0.0/NE1_HR_LC_SR_W_DR/default/10m'
     });
-    equals(map.layersList.mapquery0.olLayer.layer, 'NE1_HR_LC_SR_W_DR',
+    equals(map.layersList.mapquery_0.olLayer.layer, 'NE1_HR_LC_SR_W_DR',
            'layer is correct');
-    equals(map.layersList.mapquery0.olLayer.matrixSet, '10m',
+    equals(map.layersList.mapquery_0.olLayer.matrixSet, '10m',
            'matrixSet is correct');
-    equals(map.layersList.mapquery0.olLayer.style, 'default',
+    equals(map.layersList.mapquery_0.olLayer.style, 'default',
            'style is correct');
-    equals(map.layersList.mapquery0.olLayer.url,
+    equals(map.layersList.mapquery_0.olLayer.url,
            '../../../demo/data/wmts', 'url is correct');
 
     map.layers({
@@ -52,7 +76,7 @@ test("WMTS layer parses URL correctly", function() {
         label: 'naturalearth2',
         url: 'http://example.com/wmts/1.0.0/NE1_HR_LC_SR_W_DR/default/10m'
     });
-    equals(map.layersList.mapquery1.olLayer.url,
+    equals(map.layersList.mapquery_1.olLayer.url,
            'http://example.com/wmts', 'Remote URL is parsed correctly');
 
     map.layers({
@@ -60,7 +84,7 @@ test("WMTS layer parses URL correctly", function() {
         label: 'naturalearth3',
         url: 'http://usr:passwd@example.com/wmts/1.0.0/NE1_HR_LC_SR_W_DR/default/10m'
     });
-    equals(map.layersList.mapquery2.olLayer.url,
+    equals(map.layersList.mapquery_2.olLayer.url,
            'http://usr:passwd@example.com/wmts',
            'Remote URL with username and password is parsed correctly');
 });
@@ -75,14 +99,14 @@ test("WMTS layer sets paramters for spherical mercator correctly", function() {
         url: '../../../demo/data/wmts/1.0.0/NE1_HR_LC_SR_W_DR/default/10m',
         sphericalMercator: true
     });
-    equals(map.layersList.mapquery0.olLayer.maxExtent.toString(),
+    equals(map.layersList.mapquery_0.olLayer.maxExtent.toString(),
            '-20037508.3392,-20037508.3392,20037508.3392,20037508.3392',
            'maxExtent was set');
-    equals(map.layersList.mapquery0.olLayer.maxResolution, 156543.0339,
+    equals(map.layersList.mapquery_0.olLayer.maxResolution, 156543.0339,
            'maxResolution was set');
-    equals(map.layersList.mapquery0.olLayer.projection, 'EPSG:900913',
+    equals(map.layersList.mapquery_0.olLayer.projection, 'EPSG:900913',
            'projection was set');
-    equals(map.layersList.mapquery0.olLayer.units, 'm',
+    equals(map.layersList.mapquery_0.olLayer.units, 'm',
            'units was set');
 
     map = $('#map_wmts3').mapQuery().data('mapQuery');
@@ -93,7 +117,7 @@ test("WMTS layer sets paramters for spherical mercator correctly", function() {
         numZoomLevels: 3,
         sphericalMercator: true
     });
-    equals(map.layersList.mapquery0.olLayer.numZoomLevels, 3,
+    equals(map.layersList.mapquery_0.olLayer.numZoomLevels, 3,
            'Number of zoom level is set correctly even if ' +
            '"sphericalMercator" is to true');
 
@@ -108,7 +132,7 @@ test("OSM layer can be created", function() {
         type: 'OSM',
         label: 'OpenStreetMap'
     });
-    ok(map.layersList.mapquery0.olLayer.attribution.indexOf('OpenStreetMap')!==-1,
+    ok(map.layersList.mapquery_0.olLayer.attribution.indexOf('OpenStreetMap')!==-1,
        'OpenStreetMap layer was loaded (attribution is there)');
 });
 test("Google layer can be created (works only with dev-build of openlayers)", function() {
@@ -119,7 +143,7 @@ test("Google layer can be created (works only with dev-build of openlayers)", fu
         type: 'google',
         view: 'road'
     });
-    ok(map.layersList.mapquery0.olLayer.type=='roadmap',
+    ok(map.layersList.mapquery_0.olLayer.type=='roadmap',
        'Google layer was loaded (type is roadmap)');
 });
 test("Bing layer can be created", function() {
@@ -129,7 +153,7 @@ test("Bing layer can be created", function() {
     map.layers({
         type:'bing',view:'satellite',key:'ArAGGPJ16xm0RXRbw27PvYc9Tfuj1k1dUr_gfA5j8QBD6yAYMlsAtF6YkVyiiLGn'
     });
-    ok(map.layersList.mapquery0.olLayer.name=="Bing Aerial",
+    ok(map.layersList.mapquery_0.olLayer.name=="Bing Aerial",
        'Bing layer was loaded (name is Bing Aerial)');
 });
 test("Add layers on initialisation", function() {
@@ -143,7 +167,7 @@ test("Add layers on initialisation", function() {
         }]
     });
     var map = mapDom.data("mapQuery");
-    equals(map.layersList.mapquery0.label, 'naturalearth', 'Layer was added');
+    equals(map.layersList.mapquery_0.label, 'naturalearth', 'Layer was added');
 
     var mapDom2 = $('#map_init2').mapQuery({
         layers: [{
@@ -159,9 +183,9 @@ test("Add layers on initialisation", function() {
         }]
     });
     var map2 = mapDom2.data("mapQuery");
-    equals(map2.layersList.mapquery0.label, 'naturalearth',
+    equals(map2.layersList.mapquery_0.label, 'naturalearth',
            'Layer1 was added');
-    equals(map2.layersList.mapquery1.label, 'World', 'Layer2 was added');
+    equals(map2.layersList.mapquery_1.label, 'World', 'Layer2 was added');
 });
 
 test("Go to a certain position on initialisation", 2, function() {
@@ -179,7 +203,7 @@ test("Go to a certain position on initialisation", 2, function() {
     }).data('mapQuery');
     var center = mq.center();
     equals(center.zoom, 2, 'Got to the right zoom level');
-    deepEqual(center.position, [-20, 30], 'Got to the right position');
+    equalsIntArray(center.position, [-20, 30], 'Got to the right position');
 });
 
 test("center works properly (EPSG:900913)", function() {
@@ -206,41 +230,42 @@ test("center works properly (EPSG:900913)", function() {
 
         map.center({position: [10.898333, 48.371667]});
         var center = map.center();
-        same(center.position, [10.898333, 48.371667],
-             'Setting the position only');
+        equalsFloatArray(center.position, [10.898333, 48.371667],
+            'Setting the position only', 6);
         map.center({position: [4.892222, 52.373056]});
         center = map.center();
-        same(center.position, [4.892222, 52.373056],
-             'Setting the position only (2)');
+        equalsFloatArray(center.position, [4.892222, 52.373056],
+            'Setting the position only (2)', 5);
         map.center({position: [4.892222, 52.373056], zoom: 5});
         map.center({position: [4.892222, 52.373056], zoom: 7});
         map.center({position: [10.898333, 48.371667]});
         center = map.center();
         equals(center.zoom, 7,
-             'Setting the position only, keep the current zoom level');
+            'Setting the position only, keep the current zoom level');
 
         // zoom
 
         map.center({position: [10.898333, 48.371667], zoom: 5});
         map.center({zoom: 3});
         center = map.center();
-        same(center.position, [10.898333, 48.371667],
-             'Setting the zoom only zoom (position is right)');
+        equalsFloatArray(center.position, [10.898333, 48.371667],
+            'Setting the zoom only (position is right)', 6);
         equals(center.zoom, 3, 'Setting the zoom only (zoom is right)');
 
         // position + zoom
 
         map.center({position: [10.898333, 48.371667], zoom: 6});
         center = map.center();
-        same(center.position, [10.898333, 48.371667],
-             'Setting the position and zoom (position is right)');
-        equals(center.zoom, 6, 'Setting the position and zoom (zoom is right)');
+        equalsFloatArray(center.position, [10.898333, 48.371667],
+            'Setting the position and zoom (position is right)', 6);
+        equals(center.zoom, 6,
+            'Setting the position and zoom (zoom is right)');
         map.center({position: [4.892222, 52.373056], zoom: 4});
         center = map.center();
-        same(center.position, [4.892222, 52.373056],
-             'Setting the position and zoom (position is right) (2)');
+        equalsFloatArray(center.position, [4.892222, 52.373056],
+            'Setting the position and zoom (position is right) (2)', 6);
         equals(center.zoom, 4, 'Setting the position and zoom ' +
-               '(zoom is right) (2)');
+            '(zoom is right) (2)');
 
         // box
 
@@ -248,35 +273,32 @@ test("center works properly (EPSG:900913)", function() {
         center = map.center();
         // The extend will be fit in to the nearest zoom level, hence
         // the box given, doesn't match the final one
-            console.log(center.box);
-
         // same(center.box, [-21.962936669741, 20.514147330259, 37.753491669741,
         //                80.230575669741],
         //     'Setting box only (position is right)');
-        equals((center.position[0] == 7.8952775000002) && (center.position[1] == 50.414584408364), true,
+        equalsFloatArray(center.position, [7.895277, 50.414584],
             'Setting box only (position is right)');
 
-        same(center.zoom, 4,
-             'Setting box only (zoom is right)');
+        equals(center.zoom, 4, 'Setting box only (zoom is right)');
 
         // ignore position or zoom settings
         map.center({position: [-22.566667, 17.15], zoom: 9});
         center = map.center();
-        same(center.position, [-22.566667, 17.15],
-             'Reset position to somewhere outside of the box we\'ll set');
+        equalsFloatArray(center.position, [-22.566667, 17.15],
+            'Reset position to somewhere outside of the box we\'ll set');
         equals(center.zoom, 9,
-               'Reset position to somewhere outside of the box we\'ll set ' +
-               '(zoom)');
+            'Reset position to somewhere outside of the box we\'ll set ' +
+            '(zoom)');
         map.center({box: [4.892222, 48.371667, 10.898333, 52.373056],
                   position: [135, -25], zoom: 7});
         center = map.center();
         // The extend will be fit in to the nearest zoom level, hence
         // the box given, doesn't match the final one
         console.log(center.box);
-        equals((center.position[0] == 7.8952775000002) && (center.position[1] == 50.414584408364), true,
+        equalsFloatArray(center.position, [7.8952775000002, 50.414584408364],
             'Setting box only (position is right)');
         equals(center.zoom, 4,
-             'Setting box only (zoom is right)');
+            'Setting box only (zoom is right)');
     }
 });
 
@@ -643,31 +665,27 @@ test('Test that all move events on the map work', 4, function() {
 
     mq.bind('movestart', function() {
         var position = this.center().position;
-        deepEqual([parseInt(position[0]), parseInt(position[1])], [130, -70],
-               'Position is still the original one');
+        equalsIntArray(position, [130, -70],
+            'Position is still the original one');
     });
 
     mq.bind('move', function() {
         var position = this.center().position;
-        deepEqual([parseInt(position[0]), parseInt(position[1])], [20, 50],
-               'Position was updated');
+        equalsIntArray(position, [20, 50], 'Position was updated');
     });
 
     mq.bind('moveend', function() {
         var position = this.center().position;
-        deepEqual([parseInt(position[0]), parseInt(position[1])], [20, 50],
-               'Position is still the new one');
+        equalsIntArray(position, [20, 50], 'Position is still the new one');
     });
 
     mq.bind('zoomend', function() {
         var position = this.center().position;
-        deepEqual([parseInt(position[0]), parseInt(position[1])], [20, 50],
-               'Position is still the new one');
+        equalsIntArray(position, [20, 50], 'Position is still the new one');
     });
 
     var position = mq.center().position;
-    deepEqual([parseInt(position[0]), parseInt(position[1])], [130, -70],
-               'Initial position was set correctly');
+    equalsIntArray(position, [130, -70], 'Initial position was set correctly');
     mq.center({position: [20, 50]});
 });
 
@@ -800,5 +818,283 @@ asyncTest('Test that the layerloadend event on the layer works', 1, function() {
 });
 
 
+// Tests for features
+
+test('Add a feature manually to the layer', 2, function() {
+    var mq = $('#map').mapQuery({
+        layers: {
+            type: 'JSON',
+            strategies: null
+        }
+    }).data('mapQuery');
+
+    var layer = mq.layers()[0];
+
+    equals(layer.olLayer.features.length, 0, 'No features on the map');
+    layer.features({
+        geometry: {type: 'Point', coordinates: [34.2, 20.4]},
+        properties: {foo: 'bar'}
+    });
+    equals(layer.olLayer.features.length, 1, 'Feature was added to map');
+});
+
+test('Add multiple features manually to the layer', 2, function() {
+    var mq = $('#map').mapQuery({
+        layers: {
+            type: 'JSON',
+            strategies: null
+        }
+    }).data('mapQuery');
+
+    var layer = mq.layers()[0];
+
+    equals(layer.olLayer.features.length, 0, 'No features on the map');
+    layer.features([{
+        geometry: {type: 'Point', coordinates: [34.2, 20.4]},
+        properties: {foo: 'bar'}
+    },{
+        geometry: {type: 'LineString', coordinates: [[34.2, 20.4], [63.1, 5]]},
+        properties: {anotherProp: true}
+    },{
+        geometry: {type: 'Point', coordinates: [5, 7.4]},
+        properties: {
+            some: 'more',
+            properties: 34,
+            thisTime: false
+        }
+    }]);
+    equals(layer.olLayer.features.length, 3, 'Features were added to map');
+});
+
+test('Return manually added features', 5, function() {
+    var mq = $('#map').mapQuery({
+        layers: {
+            type: 'JSON',
+            strategies: null
+        }
+    }).data('mapQuery');
+
+    var layer = mq.layers()[0];
+
+    equals(layer.olLayer.features.length, 0, 'No features on the map');
+    layer.features([{
+        geometry: {type: 'Point', coordinates: [34.2, 20.4]},
+        properties: {foo: 'bar'}
+    },{
+        geometry: {type: 'LineString', coordinates: [[34.2, 20.4], [63.1, 5]]},
+        properties: {anotherProp: true}
+    },{
+        geometry: {type: 'Point', coordinates: [5, 7.4]},
+        properties: {
+            some: 'more',
+            properties: 34,
+            thisTime: false
+        }
+    }]);
+    equals(layer.olLayer.features.length, 3, 'Features were added to map');
+
+    var features = layer.features();
+    equals(features[1].properties.anotherProp, true,
+           'Feature properties were correctly retreived');
+    equals(features[2].geometry.type, 'Point',
+           'Feature geometry type was correctly retreived');
+    same(features[2].geometry.coordinates, [5, 7.4],
+         'Feature geometry coordinates was correctly retreived');
+});
+
+test('Remove manually added features', 6, function() {
+    var mq = $('#map').mapQuery({
+        layers: {
+            type: 'JSON',
+            strategies: null
+        }
+    }).data('mapQuery');
+
+    var layer = mq.layers()[0];
+
+    equals(layer.olLayer.features.length, 0, 'No features on the map');
+    layer.features([{
+        geometry: {type: 'Point', coordinates: [34.2, 20.4]},
+        properties: {foo: 'bar'}
+    },{
+        geometry: {type: 'LineString', coordinates: [[34.2, 20.4], [63.1, 5]]},
+        properties: {anotherProp: true}
+    },{
+        geometry: {type: 'Point', coordinates: [5, 7.4]},
+        properties: {
+            some: 'more',
+            properties: 34,
+            thisTime: false
+        }
+    }]);
+    equals(layer.features().length, 3, 'All features were added to map');
+
+    var features = layer.features();
+    features[1].remove();
+
+    equals(layer.features().length, 2, 'One features was removed');
+
+    // Check if other features are still there
+    features = layer.features();
+    equals(features[0].properties.foo, 'bar',
+           'Feature properties were correctly retreived');
+    equals(features[1].geometry.type, 'Point',
+           'Feature geometry type was correctly retreived');
+    same(features[1].geometry.coordinates, [5, 7.4],
+         'Feature geometry coordinates was correctly retreived');
+
+    console.log(features);
+});
+
+test('Select feature: event triggering', 4, function() {
+    var mq = $('#map').mapQuery({
+        layers: [{
+            type: 'JSON',
+            strategies: null,
+            label: 'Layer 1'
+        }]
+    }).data('mapQuery');
+
+    var layer = mq.layers()[0];
+
+    layer.features({
+        geometry: {type: 'Point', coordinates: [34.2, 20.4]},
+        properties: {foo: 'bar'}
+    });
+
+
+    var features = layer.features();
+
+    layer.bind('featureselected', function(evt, feature) {
+        ok(true, 'featureselected event was fired on the layer');
+        equals(feature.properties.foo, 'bar', 'it is the correct feature (a)');
+        start();
+    });
+
+    mq.bind('featureselected', function(evt, layer, feature) {
+        ok(true, 'featureselected event was fired on the map');
+        equals(feature.properties.foo, 'bar', 'it is the correct feature (b)');
+        start();
+    });
+
+    features[0].select();
+    stop();
+});
+
+test('Select feature: was really selected', 2, function() {
+    var mq = $('#map').mapQuery({
+        layers: [{
+            type: 'JSON',
+            strategies: null,
+            label: 'Layer 1'
+        }]
+    }).data('mapQuery');
+
+    var layer = mq.layers()[0];
+
+    layer.features([{
+        geometry: {type: 'LineString', coordinates: [[34.2, 20.4], [63.1, 5]]},
+        properties: {anotherProp: true}
+    },{
+        geometry: {type: 'Point', coordinates: [5, 7.4]},
+        properties: {
+            some: 'more',
+            properties: 34,
+            thisTime: false
+        }
+    }]);
+
+
+    var features = layer.features();
+
+    layer.bind('featureselected', function(evt, feature) {
+        equals(feature.olFeature.renderIntent, 'select',
+               'Feature was selected (layer event)');
+        start();
+    });
+
+    mq.bind('featureselected', function(evt, layer, feature) {
+        equals(feature.olFeature.renderIntent, 'select',
+               'Feature was selected (map event)');
+        start();
+    });
+
+    features[0].select();
+    stop();
+});
+
+
+test('Test event dispatching', 4, function() {
+    // The assertions for the layers should should run once each
+    // The assertions for the map should run twice
+
+    var mq = $('#map').mapQuery({
+        layers: [{
+            type: 'JSON',
+            strategies: null,
+            label: 'Layer 1'
+        },{
+            type: 'JSON',
+            strategies: null,
+            label: 'Layer 2'
+        }]
+    }).data('mapQuery');
+
+    var layer1 = mq.layers()[0];
+    var layer2 = mq.layers()[1];
+
+    layer1.bind('customevent', function() {
+        ok(true, 'customevent event was fired on the Layer 1');
+        start();
+    });
+    layer2.bind('customevent', function() {
+        ok(true, 'customevent event was fired on the Layer 2');
+        start();
+    });
+
+    mq.bind('customevent', function() {
+        ok(true, 'customevent event was fired on the map');
+        start();
+    });
+
+    layer1.trigger('customevent');
+    layer2.trigger('customevent');
+    stop();
+});
+
+test('Test event dispatching with extra data', 9, function() {
+    var mq = $('#map').mapQuery({
+        layers: [{
+            type: 'JSON',
+            strategies: null,
+            label: 'Layer 1'
+        }]
+    }).data('mapQuery');
+
+    var layer = mq.layers()[0];
+
+    layer.bind('customevent', function(evt, somedata, num, bool, notused) {
+        equals(somedata, 'somedata', 'Correct data was included (a, layer)');
+        equals(num, 100, 'Correct data was inclued (b, layer)');
+        ok(bool, 'Correct data was inclued (c, layer)');
+        equals(notused, undefined, 'Correct data was inclued (d, layer)');
+        start();
+    });
+
+
+    mq.bind('customevent', function(evt, evtLayer, somedata, num, bool,
+                                    notused) {
+        // using `equals` won't work here because of to much recursion
+        ok(evtLayer === layer, 'Correct data was included (a, map)');
+        equals(somedata, 'somedata', 'Correct data was included (b, map)');
+        equals(num, 100, 'Correct data was inclued (c, map)');
+        ok(bool, 'Correct data was inclued (d, map)');
+        equals(notused, undefined, 'Correct data was inclued (e, map)');
+        start();
+    });
+
+    layer.trigger('customevent', ['somedata', 100, true]);
+    stop();
+});
 
 })(jQuery);
