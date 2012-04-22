@@ -82,17 +82,13 @@ The `.zIndex()` function allows us to get the z-index of the current layer.
  */
     zIndex: function() {
         return this.olLayer.getZIndex();
-    },
-    //TODO: write docs
-    unselectFeature: function(feature) {
-        this.map.selectFeatureControl.unselect(feature);
     }
 });
 $.extend(MQ, {
-    // Returns the position (lon/lat) of an OpenLayers feature as an array
+    // Returns the position (lon/lat) of a feature as an array
     //TODO: write docs
     getFeaturePosition: function(feature) {
-        var lonLat = feature.geometry.getCentroid().getBounds()
+        var lonLat = feature.olFeature.geometry.getCentroid().getBounds()
             .getCenterLonLat();
         return [lonLat.lon, lonLat.lat];
     }

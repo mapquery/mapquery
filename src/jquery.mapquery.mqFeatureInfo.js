@@ -28,7 +28,7 @@ of a selected feature.
      $('#featureinfo').mqFeatureInfo({
         map: '#map',
         contents: function(feature) {
-            return '<p>' + feature.data.id + '</p>';
+            return '<p>' + feature.properties.id + '</p>';
         }
      });
 
@@ -60,19 +60,12 @@ $.widget("mapQuery.mqFeatureInfo", {
         //get the mapquery object
         map = $(this.options.map).data('mapQuery');
 
-        var layers = $.map(map.layers(), function(layer) {
-            return layer.isVector ? layer : null;
-        });
-
-        $.each(layers, function() {
-            var layer = this;
-            layer.bind("featureselected", {widget: self},
-                       self._onFeatureselected);
-            layer.bind("featureunselected", {widget: self},
-                       self._onFeatureunselected);
-        });
         this.element.addClass('ui-dialog ui-widget ui-widget-content ' +
                               'ui-corner-all');
+
+        map.bind("featureselected", {widget: self}, self._onFeatureselected);
+        map.bind("featureunselected", {widget: self},
+                 self._onFeatureunselected);
 
     },
     _destroy: function() {
@@ -80,17 +73,17 @@ $.widget("mapQuery.mqFeatureInfo", {
                                  'ui-corner-all')
             .empty();
     },
-    _onFeatureselected: function(evt, data) {
+    _onFeatureselected: function(evt, layer, feature) {
         var self = evt.data.widget;
         var element = self.element;
-        var contents = self.options.contents.call(this, data.feature);
+        var contents = self.options.contents.call(self.options, feature);
 
         element.html($.tmpl('mqFeatureInfo', {
             title: self.options.title,
             contents: contents
         }));
     },
-    _onFeatureunselected: function(evt, data) {
+    _onFeatureunselected: function(evt) {
         var self = evt.data.widget;
         self.element.empty();
     }
