@@ -92,11 +92,11 @@ $.widget("mapQuery.mqLayerControl", {
         });
 
          //binding events
-        map.bind("mqAddLayer",
+        map.bind("addlayer",
             {widget:self,map:map,control:ulElement},
             self._onLayerAdd);
 
-        map.bind("mqRemoveLayer",
+        map.bind("removeLayer",
             {widget:self},
             self._onLayerRemove);
     },

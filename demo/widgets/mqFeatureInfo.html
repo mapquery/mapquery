@@ -21,16 +21,21 @@ $(document).ready(function() {
             type: 'JSON',
             label: 'Polygons',
             url: '../data/poly.json'
+        },
+        {
+            type: 'JSON',
+            label: 'Polygons2',
+            url: '../data/poly2.json'
         }],
         projection:'EPSG:4326',
         maxExtent: [0, -90, 160, 90]
     });
-    //map.data('mapQuery').center({zoom:2});
+
     //add a widget to the application and pass the map
     $('#featureinfo').mqFeatureInfo({
         map: '#map',
         contents: function(feature) {
-            return '<p>' + feature.data.id + '</p>';
+            return '<p>' + feature.properties.id + '</p>';
         }
     });
 });

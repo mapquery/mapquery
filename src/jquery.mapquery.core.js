@@ -68,12 +68,17 @@ $.MapQuery.Map = function(element, options) {
     delete this.olMapOptions.layers;
     delete this.olMapOptions.maxExtent;
     delete this.olMapOptions.zoomToMaxExtent;
+    delete this.olMapOptions.center;
+
     //TODO SMO20110630 the maxExtent is in mapprojection, decide whether or
     //not we need to change it to displayProjection
     this.maxExtent = this.options.maxExtent;
     this.olMapOptions.maxExtent = new OpenLayers.Bounds(
     this.maxExtent[0],this.maxExtent[1],this.maxExtent[2],this.maxExtent[3]);
 
+
+    this.projection = this.options.projection;
+    this.displayProjection = this.options.displayProjection;
 
     OpenLayers.IMAGE_RELOAD_ATTEMPTS = 3;
     OpenLayers.Util.onImageLoadErrorColor = "transparent";
@@ -96,14 +101,46 @@ $.MapQuery.Map = function(element, options) {
 
     // To bind and trigger jQuery events
     this.events = $({});
-    // create triggers for all OpenLayers map events
-    var events = {};
-    $.each(this.olMap.EVENT_TYPES, function(i, evt) {
-        events[evt] = function() {
-            self.events.trigger(evt, arguments);
-        };
+
+    this.handlers = {
+        // Triggers the jQuery events, after the OpenLayers events
+        // happened without any further processing
+        simple: function(data) {
+            this.trigger(data.type);
+        }
+    };
+
+    // MapQuery doesn't bind all OpenLayers events automatically,
+    // but just the ones that make sense.
+    // Events that are left out intensionally are:
+    //  - changebaselayer: MapQuery doesn't have the concept of base layers
+    //  - mouseover, mouseout, mousemove: Handle those with jQuery on the
+    //        DOM level
+    // Some events can be triggered by MapQuery without listening to the
+    // OpenLayers events. This only works for events that are triggered
+    // by functionality that MapQuery implements in some custom way, e.g.
+    // (pre)addlayer, (pre)removelayer, changelayer.
+    // TODO vmx 20120309: Proper docs for the events, here's some quickly
+    // written info:
+    //  - generally spoken, the map events follow the OpeLayer events
+    //  - preaddlayer, movestart, move, moveend, zoomend: no additional
+    //        argument
+    //  - addlayer, preremovelayer, removelayer: layer as additional argument
+    //  - changelayer: layer and the property that changed as additional
+    //        argument. Possible values for the property are: position (in
+    //        the layer stack), opacity, visibility
+    //        Currently this event is always fired, even if the property
+    //        was only meant to be changed, but wasn't exctually changed.
+    //        I.e. that the event is fired even if you call
+    //        `layer.visible(true)` although the layer is already visible.
+    //        I'm (vmx) not sure if we want to change that :)
+    this.olMap.events.on({
+        scope: this,
+        movestart: this.handlers.simple,
+        move: this.handlers.simple,
+        moveend: this.handlers.simple,
+        zoomend: this.handlers.simple
     });
-    this.olMap.events.on(events);
 
     // Add layers to the map
     if (this.options.layers!==undefined) {
@@ -129,7 +166,7 @@ _version added 0.1_
 **options** an object of key-value pairs with options to create one or
 more layers
 
->Returns: [layer] (array of MapQuery.Layer)
+>Returns: [layer] (array of MapQuery.Layer) _or_ false
 
 
 The `.layers()` method allows us to attach layers to a mapQuery object. It takes
@@ -137,6 +174,10 @@ an options object with layer options. To add multiple layers, create an array of
 layer options objects. If an options object is given, it will return the
 resulting layer(s). We can also use it to retrieve all layers currently attached
 to the map.
+
+When adding layers, those are returned. If the creation is cancled by returning
+`false` in the `preaddlayer` event, this function returns `false` to
+intentionally break the chain instead of hiding errors subtly).
 
 
      var osm = map.layers({type:'osm'}); //add an osm layer to the map
@@ -156,7 +197,7 @@ to the map.
             else {
                 return $.map(options, function(layer) {
                     return self._addLayer(layer);
-                });
+                }).reverse();
             }
             break;
         default:
@@ -182,27 +223,43 @@ to the map.
     _addLayer: function(options) {
         var id = this._createId();
         var layer = new $.MapQuery.Layer(this, id, options);
+        // NOTE vmx 20120305: Not sure if this is a good idea, or if it would
+        //     be better to include `options` with the preaddlayer event
+        if (this._triggerReturn('preaddlayer', [layer])===false) {
+            return false;
+        }
+        this.olMap.addLayer(layer.olLayer);
+
         this.layersList[id] = layer;
         if (layer.isVector) {
             this.vectorLayers.push(id);
         }
         this._updateSelectFeatureControl(this.vectorLayers);
-        this.events.trigger('mqAddLayer',layer);
+
+        layer.trigger('addlayer');
         return layer;
     },
     // Creates a new unique ID for a layer
     _createId: function() {
-        return 'mapquery' + this.idCounter++;
+        return 'mapquery_' + this.idCounter++;
     },
     _removeLayer: function(id) {
+        var layer = this.layersList[id];
+        if (this._triggerReturn('preremovelayer', [layer])===false) {
+            return false;
+        }
+
         // remove id from vectorlayer if it is there list
         this.vectorLayers = $.grep(this.vectorLayers, function(elem) {
             return elem != id;
         });
         this._updateSelectFeatureControl(this.vectorLayers);
-        this.events.trigger('mqRemoveLayer',id);
-        delete this.layersList[id];
+        this.olMap.removeLayer(layer.olLayer);
+
         // XXX vmx: shouldn't the layer be destroyed() properly?
+        delete this.layersList[id];
+
+        layer.trigger('removelayer');
         return this;
     },
 /**
@@ -239,7 +296,7 @@ extent from the map. The coordinates are returned in displayProjection.
  */
     center: function (options) {
         var position;
-        var mapProjection;
+        var mapProjection = new OpenLayers.Projection(this.projection);
         // Determine source projection
         var sourceProjection = null;
         var zoom;
@@ -249,7 +306,7 @@ extent from the map. The coordinates are returned in displayProjection.
             'OpenLayers.Projection' ? options.projection :
             new OpenLayers.Projection(options.projection);
         } else {
-            var displayProjection = this.olMap.displayProjection;
+            var displayProjection = this.displayProjection;
             if(!displayProjection) {
                 // source == target
                 sourceProjection = new OpenLayers.Projection('EPSG:4326');
@@ -265,8 +322,6 @@ extent from the map. The coordinates are returned in displayProjection.
             position = this.olMap.getCenter();
             zoom = this.olMap.getZoom();
             box = this.olMap.getExtent();
-            mapProjection = this.olMap.getProjectionObject();
-
 
             if (!mapProjection.equals(sourceProjection)) {
                 position.transform(mapProjection, sourceProjection);
@@ -282,9 +337,8 @@ extent from the map. The coordinates are returned in displayProjection.
 
         // Zoom to the extent of the box
         if (options.box!==undefined) {
-            mapProjection = this.olMap.getProjectionObject();
             box = new OpenLayers.Bounds(
-        options.box[0], options.box[1],options.box[2], options.box[3]);
+                options.box[0], options.box[1],options.box[2], options.box[3]);
             if (!mapProjection.equals(sourceProjection)) {
                 box.transform(sourceProjection,mapProjection);
             }
@@ -299,7 +353,6 @@ extent from the map. The coordinates are returned in displayProjection.
         else {
             position = new OpenLayers.LonLat(options.position[0],
                                              options.position[1]);
-            mapProjection = this.olMap.getProjectionObject();
             if (!mapProjection.equals(sourceProjection)) {
                 position.transform(sourceProjection, mapProjection);
             }
@@ -323,11 +376,89 @@ extent from the map. The coordinates are returned in displayProjection.
         this.olMap.addControl(this.selectFeatureControl);
         this.selectFeatureControl.activate();
     },
-    bind: function() {
-        this.events.bind.apply(this.events, arguments);
+    // This function got a bit too clever. The reason is, that jQuery's
+    // bind() is overloaded with so many possible combinations of arguments.
+    // And, of course, MapQuery wants to support them all
+    // The essence of the function is to wrap the original callback into
+    // the correct scope
+    bind: function(types, data, fn) {
+        var self = this;
+
+        // A map of event/handle pairs, wrap each of them
+        if(arguments.length===1) {
+            var wrapped = {};
+            $.each(types, function(type, fn) {
+                wrapped[type] = function() {
+                    return fn.apply(self, arguments);
+                };
+            });
+            this.events.bind.apply(this.events, [wrapped]);
+        }
+        else {
+            var args = [types];
+            // Only callback given, but no data (types, fn), hence
+            // `data` is the function
+            if(arguments.length===2) {
+                fn = data;
+            }
+            else {
+                if (!$.isFunction(fn)) {
+                    throw('bind: you might have a typo in the function name');
+                }
+                // Callback and data given (types, data, fn), hence include
+                // the data in the argument list
+                args.push(data);
+            }
+
+            args.push(function() {
+                return fn.apply(self, arguments);
+            });
+
+            this.events.bind.apply(this.events, args);
+        }
+
+        //this.events.bind.call(this.events, types, function() {
+        //    data.apply(self, arguments);
+        //});
+        //this.events.bind.call(this.events, types, function() {
+        //    data.apply(self, arguments);
+        //});
+
+        //this.events.bind.apply(this.events, arguments);
+        //this.events.bind.call(this.events, types, $.proxy(data, self));
+        //this.events.bind.apply(this.events, arguments);//.bind(this);
+        //this.events.bind.apply(this.events, $.proxy(arguments));//.bind(this);
+        //this.events.bind.apply(this.events, $.proxy(arguments));//.bind(this);
+        //this.events.bind(types, data, fn);//.bind(this);
+        //this.events.bind.call(this.events, types, data, fn);//.bind(this);
+        return this;
     },
-    one: function() {
-        this.events.one.apply(this.events, arguments);
+/**
+###*map*.`trigger(name [, parameters])`
+_version added 0.2_
+####**Description**: triggers an event on the map
+
+ * **name** the name of the event
+ * **parameters** additional parameters that will be passed on with the event
+
+>Returns: map (MapQuery.Map)
+
+To subscribe to the triggered events, you need to bind to the mapuuu.
+
+     map.bind('myEvent', function(evt) {
+         console.log('the values are: ' + evt.data[0] + ' and ' + evt.data[1])
+     });
+     map.trigger('myEvent', 'some', 'values');
+*/
+    trigger: function() {
+        // There is no point in using trigger() insted of triggerHandler(), as
+        // we don't fire native events
+        this.events.triggerHandler.apply(this.events, arguments);
+        return this;
+    },
+    // Basically a trigger that returns the return value of the last listener
+    _triggerReturn: function() {
+        return this.events.triggerHandler.apply(this.events, arguments);
     },
     destroy: function() {
         this.olMap.destroy();
@@ -363,6 +494,32 @@ $.MapQuery.Layer = function(map, id, options) {
     // to bind and trigger jQuery events
     this.events = $({});
 
+    this.handlers = {
+        // Triggers the jQuery events, after the OpenLayers events
+        // happened without any further processing
+        simple: function(data) {
+            this.trigger(data.type);
+        },
+        // All OpenLayers events that are triggered by user interaction,
+        // like clicking somewhere or selecting a feature, need to be
+        // handled in a special way. Those OpenLayers events will then be
+        // triggered by MapQuery as well
+        // In case of the "featureselected" event, this means that the
+        // logic of handling the event is completely within the event
+        // handler. When ".select()" on a feature is called, it will just
+        // trigger the OpenLayers "featureselected" event, whose handler
+        // will then trigger the corresponding jQuery event.
+        includeFeature: function(data) {
+            var feature = new $.MapQuery.Feature(this, {olFeature:
+                                                        data.feature});
+            this.trigger(data.type, [feature]);
+        },
+        prependLayer: function(data) {
+            this.trigger('layer' + data.type);
+        }
+    };
+
+
     // create the actual layer based on the options
     // Returns layer and final options for the layer (for later re-use,
     // e.g. zoomToMaxExtent).
@@ -371,17 +528,26 @@ $.MapQuery.Layer = function(map, id, options) {
     this.olLayer = res.layer;
     this.options = res.options;
 
-    // create triggers for all OpenLayers layer events
-    var events = {};
-    $.each(this.olLayer.EVENT_TYPES, function(i, evt) {
-        events[evt] = function() {
-            self.events.trigger(evt, arguments);
-            self.map.events.trigger(evt, arguments);
-        };
+    // Some good documentation for the events is needed. Here is a short
+    // description on how the current events compare to the OpenLayer
+    // events on the layer:
+    // - added, remove: not needed, there's addlayer and removelayer
+    // - visibilitychanged: not needed, there's the changelayer event
+    // - move, moveend: not needed as you get them from the map, not the layer
+    // - loadstart, loadend: renamed to layerloadstart, layerloadend
+    this.olLayer.events.on({
+        scope: this,
+        loadstart: this.handlers.prependLayer,
+        loadend: this.handlers.prependLayer,
+        featureselected: this.handlers.includeFeature,
+        featureunselected: this.handlers.includeFeature,
+        featureremoved: this.handlers.includeFeature
     });
-    this.olLayer.events.on(events);
 
-    this.map.olMap.addLayer(this.olLayer);
+    // To be able to retreive the MapQuery layer, when we only have the
+    // OpenLayers layer available. For example on the layeradded event.
+    // NOTE vmx 2012-02-26: Any nicer solution is welcome
+    this.olLayer.mapQueryId = this.id;
 };
 
 $.MapQuery.Layer.prototype = {
@@ -421,22 +587,21 @@ will put the layer at the bottom.
     each: function () {},
 /**
 ###*layer*.`remove()`
-_version added 0.1_
+_version added 0.2_
 ####**Description**: remove the layer from the map
 
->Returns: id (string)
+>Returns: map (MapQuery.Map) or false
 
 
 The `.remove()` method allows us to remove a layer from the map.
-It returns an id to allow widgets to remove their references to the
-destroyed layer.
+It returns the `map` object if the layer was removed, or `false` if the
+removal was prevented in the preremovelayer event.
 
      var id = layer.remove(); //remove this layer
 
 
  */
     remove: function() {
-        this.map.olMap.removeLayer(this.olLayer);
         // remove references to this layer that are stored in the
         // map object
         return this.map._removeLayer(this.id);
@@ -449,7 +614,7 @@ stack of the map
 
  * **position** an integer setting the new position of the layer in the layer stack
 
->Returns: position (integer)
+>Returns: position (integer) _or_ layer (MapQuery.Layer)
 
 
 The `.position()` method allows us to change the position of the layer in the
@@ -467,7 +632,9 @@ return the current postion.
             return this.map.olMap.getLayerIndex(this.olLayer)-1;
         }
         else {
-            return this.map.olMap.setLayerIndex(this.olLayer, pos+1);
+            this.map.olMap.setLayerIndex(this.olLayer, pos+1);
+            this.trigger('changelayer', ['position']);
+            return this;
         }
     },
 /**
@@ -503,7 +670,7 @@ given.
 _version added 0.1_
 ####**Description**: get/set the `visible` state of the layer
 
- * **visible** a boolean setting the visibiliyu of the layer
+ * **visible** a boolean setting the visibility of the layer
 
 >Returns: visible (boolean)
 
@@ -522,6 +689,7 @@ If no visible is given, it will return the current visibility.
         }
         else {
             this.olLayer.setVisibility(vis);
+            this.trigger('changelayer', ['visibility']);
             return this;
         }
     },
@@ -532,7 +700,7 @@ _version added 0.1_
 
  * **position** a float [0-1] setting the opacity of the layer
 
->Returns: opacity (float)
+>Returns: opacity (float) _or_ layer (MapQuery.Layer)
 
 
 The `.opacity()` method allows us to change the opacity of the layer.
@@ -544,24 +712,265 @@ If no opacity is given, it will return the current opacity.
 
  */
     opacity: function(opac) {
-         if (opac===undefined) {
+        if (opac===undefined) {
             // this.olLayer.opacity can be null if never
-        // set so return the visibility
+            // set so return the visibility
             var value = this.olLayer.opacity ?
             this.olLayer.opacity : this.olLayer.getVisibility();
             return value;
         }
         else {
             this.olLayer.setOpacity(opac);
+            this.trigger('changelayer', ['opacity']);
             return this;
         }
     },
     // every event gets the layer passed in
     bind: function() {
-        this.events.bind.apply(this.events, arguments);
+        // Use the same bind function as for the map
+        this.map.bind.apply(this, arguments);
+        return this;
     },
-    one: function() {
-        this.events.one.apply(this.events, arguments);
+/**
+###*layer*.`trigger(name [, parameters])`
+_version added 0.2_
+####**Description**: triggers an event on the layer and map
+
+ * **name** the name of the event
+ * **parameters** additional parameters that will be passed on with the event
+
+>Returns: layer (MapQuery.Layer)
+
+The events get triggered on the layer as well as on the map. To subscribe to
+the triggered events, you can either bind to the layer or the map. If bound
+to the map, the second argument in the bind will be the layer the event
+came from
+
+     layer.bind('myEvent', function(evt) {
+         console.log('the values are: ' + evt.data[0] + ' and ' + evt.data[1])
+     });
+     map.bind('myEvent', function(evt, layer) {
+         console.log('the values are: ' + evt.data[0] + ' and ' + evt.data[1])
+     });
+     layer.trigger('myEvent', 'some', 'values');
+*/
+    trigger: function() {
+        var args = Array.prototype.slice.call(arguments);
+        this.events.triggerHandler.apply(this.events, args);
+
+        this._addLayerToArgs(args);
+
+        this.map.events.triggerHandler.apply(this.map.events, args);
+        return this;
+    },
+    // Basically a trigger that returns the return value of the last listener
+    _triggerReturn: function() {
+        var args = Array.prototype.slice.call(arguments);
+        var ret = this.events.triggerHandler.apply(this.events, args);
+        if (ret !== undefined) {
+            return ret;
+        }
+
+        this._addLayerToArgs(args);
+        return this.events.triggerHandler.apply(this.map.events, args);
+    },
+    // Adds the current layer to the event arguments, so that it is included
+    // in the event on the map
+    _addLayerToArgs: function(args) {
+        // Add layer for the map event
+        if (args.length===1) {
+            args.push([this]);
+        }
+        else {
+            args[1].unshift(this);
+        }
+    },
+/**
+###*layer*.`features([options])`
+_version added 0.2.0_
+####**Description**: get/set the features of a (vector) layer
+
+**options** an object of key-value pairs with options to create one or
+more features
+
+>Returns: [features] (array of MapQuery.Feature)
+
+
+The `.features()` method allows us to attach features to a mapQuery layer
+object. It takes an options object with feature options. To add multiple
+features, create an array of feature options objects. If an options object
+is given, it will return the resulting feature(s). We can also use it to
+retrieve all features currently attached to the layer.
+
+
+     // add an (vector) json layer to the map
+     var jsonlayer = map.layers({type:'json'});
+     // add a feature to the layer
+     jsonlayer.features({geometry: {type: "Point", coordinates: [5.3, 7.4]}});
+     // get all features of a layer (sorted with first added feature at the beginning
+     var features = jsonlayer.features();
+*/
+    features: function(options) {
+        var self = this;
+        switch(arguments.length) {
+        // return all features
+        case 0:
+            return this._allFeatures();
+        // add new feature(s)
+        case 1:
+            if (!$.isArray(options)) {
+                return this._addFeature(options);
+            }
+            else {
+                return $.map(options, function(feature) {
+                    return self._addFeature(feature);
+                });
+            }
+            break;
+        default:
+            throw('wrong argument number');
+        }
+    },
+    _allFeatures: function() {
+        var layer = this;
+        return $.map(layer.olLayer.features, function(feature) {
+            return new $.MapQuery.Feature(layer, {olFeature: feature});
+        });
+    },
+    _addFeature: function(options) {
+        var feature = new $.MapQuery.Feature(this, options);
+        // NOTE vmx 2012-04-19: Not sure if this is a good idea, or if it would
+        //     be better to include `options` with the preaddfeature event
+        if (this._triggerReturn('preaddfeature', [feature])===false) {
+            return false;
+        }
+        this.olLayer.addFeatures(feature.olFeature);
+        this.trigger('addfeature', [feature]);
+        return feature;
+    }
+};
+
+/**
+#MapQuery.Feature
+
+The MapQuery.Feature object. It is constructed with a feature options object
+in the layer.`features([options])` function. The Feautre object is refered to
+as _feature_ in the documentation.
+
+TODO vmx 20110905: Support other geometry types than GeoJSON
+options:
+ * geometry: A GeoJSON geometry
+ * properties: Properties for the feature
+*/
+// Not in the pulic API docs: You can pass in as options:
+//  * olFeature: This will wrap the olFeature in a MapQuery feature
+$.MapQuery.Feature = function(layer, options) {
+    // The ID is the
+    this._id = layer.map._createId();
+    this.layer = layer;
+
+    // Feature already exists on the layer, it just needs to be wrapped
+    // to an MapQuery feature
+    if (options.olFeature) {
+        this.olFeature = options.olFeature;
+    }
+    else {
+        // XXX vmx 20110905: Different feature types might make sense:
+        //     (Geo)JSON, KML, WKT
+        // vmx 2012-04-14: I changed my mind quite some time ago. We should onlu
+        //     support GeoJSON and let the user easily transfrom their format
+        //     (e.g. KML) to GeoJSON, before they add a feature to the layer
+        var GeoJSON = new OpenLayers.Format.GeoJSON();
+        var geometry = GeoJSON.parseGeometry(options.geometry);
+        geometry.transform(
+            new OpenLayers.Projection(this.layer.map.displaProjection),
+            new OpenLayers.Projection(this.layer.map.projection));
+
+        this.olFeature = new OpenLayers.Feature.Vector(geometry,
+            options.properties);
+    }
+
+    // Modify the features to be more practical
+    // e.g. copy properties that should be easily accessed from the
+    // outside, out of the olLayer and to the feature level
+    this.properties = $.extend(true, {}, this.olFeature.attributes);
+    this.geometry = $.parseJSON(
+        new OpenLayers.Format.GeoJSON().write(this.olFeature.geometry));
+
+    return this;
+};
+
+$.MapQuery.Feature.prototype = {
+/**
+###*feature*.`remove()`
+_version added 0.2.0_
+####**Description**: remove the feature from the layer
+
+>Returns: layer (layer) or false
+
+
+The `.remove()` method allows us to remove a feature from the layer.
+It returns the `layer` object if the feature was removed, or `false` if the
+removal was prevented in the preremovefeature event.
+
+     // add a feature to a layer
+     var feature = layer.features({geometry: {type: "Point", coordinates: [5.3, 7.4]}});
+     // remove the feature again
+     feature.remove();
+*/
+    remove: function() {
+        if (this.layer._triggerReturn('preremovefeature', [this])===false) {
+            return false;
+        }
+        this.layer.olLayer.removeFeatures(this.olFeature);
+        // The `removefeature` event is triggered by an OpenLayes event handler
+        return this.layer;
+    },
+/**
+###*feature*.`select(exclusive)`
+_version added 0.2.0_
+####**Description**: select a feature
+
+**exclusive** (boolean, default: true) True means that all other features get
+deselectd
+
+>Returns: layer (layer)
+
+
+The `.select()` method allows us to select a feature from the layer.
+A `featureselected` will be fired.
+
+     // add a feature to a layer
+     var feature = layer.features({geometry: {type: "Point", coordinates: [5.3, 7.4]}});
+     // select the feature again
+     feature.select();
+*/
+    select: function(exclusive) {
+        if (exclusive===undefined || exclusive===true) {
+            this.layer.map.selectFeatureControl.unselectAll();
+        }
+        this.layer.map.selectFeatureControl.select(this.olFeature);
+    },
+/**
+###*feature*.`unselect()`
+_version added 0.2.0_
+####**Description**: unselect a feature
+
+>Returns: layer (layer)
+
+
+The `.unselect()` method allows us to unselect a feature from the layer.
+A `featureunselected` will be fired.
+
+     // add a feature to a layer
+     var feature = layer.features({geometry: {type: "Point", coordinates: [5.3, 7.4]}});
+     // select the feature
+     feature.select();
+     // unselect the feature again
+     feature.unselect();
+*/
+    unselect: function() {
+        this.layer.map.selectFeatureControl.unselect(this.olFeature);
     }
 };
 
@@ -710,8 +1119,8 @@ stating which update strategy should be used (default fixed)
 */
         json: function(options) {
             var o = $.extend(true, {}, $.fn.mapQuery.defaults.layer.all,
-                    $.fn.mapQuery.defaults.layer.vector,
-                    options);
+                $.fn.mapQuery.defaults.layer.vector,
+                options);
             this.isVector = true;
             var strategies = [];
             for (var i in o.strategies) {
@@ -742,26 +1151,31 @@ stating which update strategy should be used (default fixed)
                 }
             }
             var protocol;
-            // only use JSONP if we use http(s)
-            if (o.url.match(/^https?:\/\//)!==null &&
-                !$.MapQuery.util.sameOrigin(o.url)) {
-                protocol = 'Script';
-            }
-            else {
-                protocol = 'HTTP';
-            }
 
             var params = {
-                protocol: new OpenLayers.Protocol[protocol]({
-                    url: o.url,
-                    format: new OpenLayers.Format.GeoJSON()
-                }),
                 strategies: strategies,
                 projection: o.projection || 'EPSG:4326',
                 styleMap: o.styleMap
             };
+
+            if (o.url) {
+                // only use JSONP if we use http(s)
+                if (o.url.match(/^https?:\/\//)!==null &&
+                    !$.MapQuery.util.sameOrigin(o.url)) {
+                    protocol = 'Script';
+                }
+                else {
+                    protocol = 'HTTP';
+                }
+                params.protocol = new OpenLayers.Protocol[protocol]({
+                    url: o.url,
+                    format: new OpenLayers.Format.GeoJSON()
+                });
+            };
+
+            var layer = new OpenLayers.Layer.Vector(o.label, params);
             return {
-                layer: new OpenLayers.Layer.Vector(o.label, params),
+                layer: layer,
                 options: o
             };
         },
@@ -1002,7 +1416,7 @@ $.fn.mapQuery.defaults = {
         },
         vector: {
             // options for vector layers
-            strategies: ['fixed']
+            strategies: ['bbox']
         },
         wmts: {
             format: 'image/jpeg',
