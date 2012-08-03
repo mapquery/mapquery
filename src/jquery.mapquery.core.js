@@ -296,24 +296,20 @@ extent from the map. The coordinates are returned in displayProjection.
  */
     center: function (options) {
         var position;
-        var mapProjection = new OpenLayers.Projection(this.projection);
+        var mapProjection = this.projection;
         // Determine source projection
         var sourceProjection = null;
         var zoom;
         var box;
         if(options && options.projection) {
-            sourceProjection = options.projection.CLASS_NAME ===
-            'OpenLayers.Projection' ? options.projection :
-            new OpenLayers.Projection(options.projection);
+            sourceProjection = options.projection;
         } else {
             var displayProjection = this.displayProjection;
             if(!displayProjection) {
                 // source == target
-                sourceProjection = new OpenLayers.Projection('EPSG:4326');
+                sourceProjection = 'EPSG:4326';
             } else {
-                sourceProjection = displayProjection.CLASS_NAME ===
-            'OpenLayers.Projection' ? displayProjection :
-            new OpenLayers.Projection(displayProjection);
+                sourceProjection = displayProjection;
             }
         }
 
@@ -323,7 +319,7 @@ extent from the map. The coordinates are returned in displayProjection.
             zoom = this.olMap.getZoom();
             box = this.olMap.getExtent();
 
-            if (!mapProjection.equals(sourceProjection)) {
+            if (mapProjection != sourceProjection) {
                 position.transform(mapProjection, sourceProjection);
             }
             box.transform(mapProjection,sourceProjection);
@@ -339,7 +335,7 @@ extent from the map. The coordinates are returned in displayProjection.
         if (options.box!==undefined) {
             box = new OpenLayers.Bounds(
                 options.box[0], options.box[1],options.box[2], options.box[3]);
-            if (!mapProjection.equals(sourceProjection)) {
+            if (mapProjection != sourceProjection) {
                 box.transform(sourceProjection,mapProjection);
             }
             this.olMap.zoomToExtent(box);
@@ -353,7 +349,7 @@ extent from the map. The coordinates are returned in displayProjection.
         else {
             position = new OpenLayers.LonLat(options.position[0],
                                              options.position[1]);
-            if (!mapProjection.equals(sourceProjection)) {
+            if (mapProjection != sourceProjection) {
                 position.transform(sourceProjection, mapProjection);
             }
             // options.zoom might be undefined, so we are good to
@@ -882,9 +878,8 @@ $.MapQuery.Feature = function(layer, options) {
         //     (e.g. KML) to GeoJSON, before they add a feature to the layer
         var GeoJSON = new OpenLayers.Format.GeoJSON();
         var geometry = GeoJSON.parseGeometry(options.geometry);
-        geometry.transform(
-            new OpenLayers.Projection(this.layer.map.displaProjection),
-            new OpenLayers.Projection(this.layer.map.projection));
+        geometry.transform(this.layer.map.displaProjection,
+            this.layer.map.projection);
 
         this.olFeature = new OpenLayers.Feature.Vector(geometry,
             options.properties);

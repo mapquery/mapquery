@@ -73,14 +73,14 @@ $.widget("mapQuery.mqMousePosition", {
         var self = evt.data.widget;
         var x = evt.pageX;
         var y = evt.pageY;
-        var mapProjection = new OpenLayers.Projection(self.map.projection);
-        var displayProjection = new OpenLayers.Projection(
-            self.map.displayProjection);
+        var mapProjection = self.map.projection;
+        var displayProjection = 
+            self.map.displayProjection;
         var pos = self.map.olMap.getLonLatFromLayerPx(
             new OpenLayers.Pixel(x, y));
         //if the coordinates should be displayed in something else,
         //set them via the map displayProjection option
-        if(!mapProjection.equals(self.map.displayProjection)) {
+        if(mapProjection != self.map.displayProjection) {
             pos = pos.transform(mapProjection, displayProjection);
         }
         $("#mq-mouseposition-x", self.element).html(
