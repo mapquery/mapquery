@@ -33,7 +33,7 @@ $.widget("mapQuery.mqLayerControl", {
 
  - Name your widget in the constructor mapQuery.mq<anameyoulike>:
 
-    $.widget("mapQuery.mqLayerControl", {...
+    `$.widget("mapQuery.mqLayerControl", {...`
 
  - Use jQuery-tmpl for templating
 
