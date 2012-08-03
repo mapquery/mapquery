@@ -259,7 +259,7 @@ $.widget("mapQuery.mqLayerManager", {
 
         //update legend image
         layerElement.find('.mq-layermanager-element-legend img').css(
-            {visibility:layer.visible()?true:'hidden'});
+            {visibility:layer.visible()?'visible':'hidden'});
     },
 
     _layerOpacity: function(widget, layer) {
@@ -271,7 +271,7 @@ $.widget("mapQuery.mqLayerManager", {
         //update legend image
         layerElement.find(
             '.mq-layermanager-element-legend img').css(
-            {opacity:layer.opacity()});
+            {opacity:layer.opacity(),visibility:layer.visible()?'visible':'hidden'});
     },
 
     _moveEnd: function (widget,lmElement,map) {
