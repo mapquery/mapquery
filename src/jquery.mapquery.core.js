@@ -1171,7 +1171,7 @@ stating which update strategy should be used (default fixed)
                     url: o.url,
                     format: new OpenLayers.Format.GeoJSON()
                 });
-            };
+            }
 
             var layer = new OpenLayers.Layer.Vector(o.label, params);
             return {
