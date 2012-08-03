@@ -1018,7 +1018,7 @@ http://bingmapsportal.com/
                     view = 'Aerial'; break;
             }
             return {
-                layer: new OpenLayers.Layer.Bing({type:view,key:o.key}),
+                layer: new OpenLayers.Layer.Bing({name: o.label, type:view,key:o.key}),
                 options: o
             };
         },
@@ -1069,7 +1069,7 @@ layer to use (default road)
                     view = google.maps.MapTypeId.SATELLITE; break;
             }
             return {
-                layer: new OpenLayers.Layer.Google({type:view}),
+                layer: new OpenLayers.Layer.Google(o.label, {type:view}),
                 options: o
             };
         },
